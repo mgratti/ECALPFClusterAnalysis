@@ -8,6 +8,7 @@
 #ifndef PFClusterAnalyzer_h
 #define PFClusterAnalyzer_h
 
+// ROOT libraries
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
@@ -15,12 +16,11 @@
 #include <TTreeReader.h>
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
+#include <TH1D.h>
 
-// Headers needed by this particular selector
+// C++ libraries 
 #include <vector>
-
 #include "vector"
-
 #include <map>
 
 
@@ -30,35 +30,42 @@ public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
-   // Readers to access the data (delete the ones you do not need).
-   TTreeReaderValue<UInt_t> event = {fReader, "event"};
-   TTreeReaderValue<UInt_t> run = {fReader, "run"};
-   TTreeReaderValue<UInt_t> genParticle_id = {fReader, "genParticle_id"};
-   TTreeReaderValue<Float_t> genParticle_energy = {fReader, "genParticle_energy"};
-   TTreeReaderValue<Float_t> genParticle_pt = {fReader, "genParticle_pt"};
-   TTreeReaderValue<Float_t> genParticle_eta = {fReader, "genParticle_eta"};
-   TTreeReaderValue<Float_t> genParticle_phi = {fReader, "genParticle_phi"};
-   TTreeReaderValue<Float_t> caloParticle_energy = {fReader, "caloParticle_energy"};
-   TTreeReaderValue<Float_t> caloParticle_pt = {fReader, "caloParticle_pt"};
-   TTreeReaderValue<Float_t> caloParticle_eta = {fReader, "caloParticle_eta"};
-   TTreeReaderValue<Float_t> caloParticle_phi = {fReader, "caloParticle_phi"};
-   //TTreeReaderArray<float> caloHit_energy = {fReader, "caloHit_energy"};
-   //TTreeReaderArray<float> caloHit_time = {fReader, "caloHit_time"};
-   TTreeReaderArray<float> simHit_energy = {fReader, "simHit_energy"};
-   TTreeReaderArray<float> simHit_eta = {fReader, "simHit_eta"};
-   TTreeReaderArray<float> simHit_phi = {fReader, "simHit_phi"};
-   TTreeReaderArray<int> simHit_ieta = {fReader, "simHit_ieta"};
-   TTreeReaderArray<int> simHit_iphi = {fReader, "simHit_iphi"};
-   TTreeReaderArray<int> simHit_iz = {fReader, "simHit_iz"};
-   TTreeReaderArray<float> recHit_energy = {fReader, "recHit_energy"};
-   TTreeReaderValue<vector<bool>> pfRecHit_isMatched = {fReader, "pfRecHit_isMatched"};
-   TTreeReaderArray<float> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
-   TTreeReaderArray<float> pfCluster_energy = {fReader, "pfCluster_energy"};
-   TTreeReaderArray<float> pfCluster_eta = {fReader, "pfCluster_eta"};
-   TTreeReaderArray<float> pfCluster_phi = {fReader, "pfCluster_phi"};
-   TTreeReaderArray<pair<int,int>> map_simHit_pfCluster = {fReader, "map_simHit_pfCluster"};
+   // Readers
+   TTreeReaderValue<Long64_t> eventId = {fReader, "eventId"};
+   TTreeReaderValue<Int_t> lumiId = {fReader, "lumiId"};
+   TTreeReaderValue<Int_t> runId = {fReader, "runId"};
+   TTreeReaderArray<int> genParticle_id = {fReader, "genParticle_id"};
+   TTreeReaderArray<float> genParticle_energy = {fReader, "genParticle_energy"};
+   TTreeReaderArray<float> genParticle_pt = {fReader, "genParticle_pt"};
+   TTreeReaderArray<float> genParticle_eta = {fReader, "genParticle_eta"};
+   TTreeReaderArray<float> genParticle_phi = {fReader, "genParticle_phi"};
+   TTreeReaderArray<float> caloParticle_energy = {fReader, "caloParticle_energy"};
+   TTreeReaderArray<float> caloParticle_pt = {fReader, "caloParticle_pt"};
+   TTreeReaderArray<float> caloParticle_eta = {fReader, "caloParticle_eta"};
+   TTreeReaderArray<float> caloParticle_phi = {fReader, "caloParticle_phi"};
+   TTreeReaderArray<vector<float>> simHit_energy = {fReader, "simHit_energy"};
+   TTreeReaderArray<vector<float>> simHit_eta = {fReader, "simHit_eta"};
+   TTreeReaderArray<vector<float>> simHit_phi = {fReader, "simHit_phi"};
+   TTreeReaderArray<vector<int>> simHit_ieta = {fReader, "simHit_ieta"};
+   TTreeReaderArray<vector<int>> simHit_iphi = {fReader, "simHit_iphi"};
+   TTreeReaderArray<vector<int>> simHit_iz = {fReader, "simHit_iz"};
+   TTreeReaderArray<vector<float>> recHit_energy = {fReader, "recHit_energy"};
+   TTreeReaderArray<vector<bool>> pfRecHit_isMatched = {fReader, "pfRecHit_isMatched"};
+   TTreeReaderArray<vector<float>> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
+   TTreeReaderArray<vector<float>> pfCluster_energy = {fReader, "pfCluster_energy"};
+   TTreeReaderArray<vector<float>> pfCluster_eta = {fReader, "pfCluster_eta"};
+   TTreeReaderArray<vector<float>> pfCluster_phi = {fReader, "pfCluster_phi"};
+   TTreeReaderArray<map<int,int>> map_simHit_pfCLuster = {fReader, "map_simHit_pfCLuster"};
 
+   // non reader members 
+   // -- non root members
+   float min_simHit_energy=0.08; // 80 MeV
 
+   // -- root members
+   TFile *fout;
+   TH1D *h_PFClusters_caloMatched_energy;
+
+   // functions
    PFClusterAnalyzer(TTree * /*tree*/ =0) { }
    virtual ~PFClusterAnalyzer() { }
    virtual Int_t   Version() const { return 2; }

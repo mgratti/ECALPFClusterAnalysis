@@ -26,7 +26,6 @@
 
 
 #include "PFClusterAnalyzer.h"
-#include <TH2.h>
 #include <TStyle.h>
 
 void PFClusterAnalyzer::Begin(TTree * /*tree*/)
@@ -36,6 +35,12 @@ void PFClusterAnalyzer::Begin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
+   Info("Begin", "Called with option %s", option.Data());
+   
+   TH1::SetDefaultSumw2();
+
+   fout = 0;
+
 }
 
 void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
@@ -45,6 +50,18 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
+   // here you could handle more complcated options
+   TString foutName = option;
+
+   // output
+   fout = new TFile(foutName, "RECREATE"); 
+   if(!fout->IsOpen()) throw std::runtime_error("Output file could not be created");
+   Info("SlaveBegin", "Writing on %s", foutName.Data());
+
+   // initialize histograms
+   h_PFClusters_caloMatched_energy = new TH1D("h_PFclusters_genMatched_EB_energy","h_PFclusters_genMatched_EB_energy",500,0.,100.);
+   
+   Info("Begin", "Booked Histograms");
 
 }
 
@@ -66,17 +83,27 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    //
    // The return value is currently not used.
 
-   fReader.SetLocalEntry(entry);
+   fReader.SetLocalEntry(entry); // read the event 
 
-   std::cout << "Event information: evt=" << *event << std::endl;
+   if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   std::cout << "caloParticle information: energy=" << *caloParticle_energy << " eta=" << *caloParticle_eta << " phi=" << *caloParticle_phi << std::endl;
+   //std::cout << "Event information: evt=" << *eventId << std::endl;
 
-   for (unsigned int iPFcl=0; iPFcl<pfCluster_energy.GetSize(); iPFcl++){
-     std::cout << "iPFcl=" << iPFcl << " energy=" << pfCluster_energy[iPFcl] << " eta=" << pfCluster_eta[iPFcl] << " phi=" << pfCluster_phi[iPFcl] << std::endl;
-     iPFcl++;
-   }
-   
+   // loop over caloParticles
+   for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
+     std::cout << "icP=" << icP << " energy=" << caloParticle_energy[icP] << " eta=" << caloParticle_eta[icP] << " phi=" << caloParticle_phi[icP] << std::endl;
+
+     // loop over SimHits associated to calo particle
+     for (unsigned int isH=0; isH<simHit_energy[icP].size(); isH++){
+       // if there is match bw SH and PFClusters 
+       if (map_simHit_pfCLuster[icP][isH] != -1 and simHit_energy[icP][isH] >= min_simHit_energy){
+         std::cout << "   isH=" << isH <<  " energy= " << simHit_energy[icP][isH] << " associated to PFCluster= " << map_simHit_pfCLuster[icP][isH] << std::endl;
+         int match_PFCluster_index = map_simHit_pfCLuster[icP][isH]; 
+         h_PFClusters_caloMatched_energy->Fill(pfCluster_energy[icP][match_PFCluster_index]);
+       }
+     } // end loop simhits
+   } // end loop calo particles
+
 
 
    return kTRUE;
@@ -87,6 +114,15 @@ void PFClusterAnalyzer::SlaveTerminate()
    // The SlaveTerminate() function is called after all entries or objects
    // have been processed. When running with PROOF SlaveTerminate() is called
    // on each slave server.
+
+   // Write histograms to outputfile
+   //h_PFClusters_caloMatched_energy->Write();
+
+   // write and close 
+   fout->Write();
+   fout->Close();
+
+   Info("SlaveTerminate", "Wrote and closed output file");
 
 }
 
