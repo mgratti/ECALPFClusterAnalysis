@@ -16,7 +16,8 @@
 #include <TTreeReader.h>
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
-#include <TH1D.h>
+#include <TH1F.h>
+#include <TH2F.h>
 
 // C++ libraries 
 #include <vector>
@@ -40,30 +41,46 @@ public :
    TTreeReaderArray<float> genParticle_eta = {fReader, "genParticle_eta"};
    TTreeReaderArray<float> genParticle_phi = {fReader, "genParticle_phi"};
    TTreeReaderArray<float> caloParticle_energy = {fReader, "caloParticle_energy"};
+   TTreeReaderArray<float> caloParticle_simEnergy = {fReader, "caloParticle_simEnergy"};
    TTreeReaderArray<float> caloParticle_pt = {fReader, "caloParticle_pt"};
    TTreeReaderArray<float> caloParticle_eta = {fReader, "caloParticle_eta"};
    TTreeReaderArray<float> caloParticle_phi = {fReader, "caloParticle_phi"};
-   TTreeReaderArray<vector<float>> simHit_energy = {fReader, "simHit_energy"};
-   TTreeReaderArray<vector<float>> simHit_eta = {fReader, "simHit_eta"};
-   TTreeReaderArray<vector<float>> simHit_phi = {fReader, "simHit_phi"};
-   TTreeReaderArray<vector<int>> simHit_ieta = {fReader, "simHit_ieta"};
-   TTreeReaderArray<vector<int>> simHit_iphi = {fReader, "simHit_iphi"};
-   TTreeReaderArray<vector<int>> simHit_iz = {fReader, "simHit_iz"};
-   TTreeReaderArray<vector<float>> recHit_energy = {fReader, "recHit_energy"};
-   TTreeReaderArray<vector<bool>> pfRecHit_isMatched = {fReader, "pfRecHit_isMatched"};
+   //TTreeReaderArray<vector<float>> simHit_energy = {fReader, "simHit_energy"};
+   //TTreeReaderArray<vector<float>> simHit_eta = {fReader, "simHit_eta"};
+   //TTreeReaderArray<vector<float>> simHit_phi = {fReader, "simHit_phi"};
+   //TTreeReaderArray<vector<int>> simHit_ieta = {fReader, "simHit_ieta"};
+   //TTreeReaderArray<vector<int>> simHit_iphi = {fReader, "simHit_iphi"};
+   //TTreeReaderArray<vector<int>> simHit_iz = {fReader, "simHit_iz"};
+   //TTreeReaderArray<vector<float>> recHit_energy = {fReader, "recHit_energy"};
+   //TTreeReaderArray<vector<bool>> pfRecHit_isMatched = {fReader, "pfRecHit_isMatched"};
    TTreeReaderArray<vector<float>> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
-   TTreeReaderArray<vector<float>> pfCluster_energy = {fReader, "pfCluster_energy"};
-   TTreeReaderArray<vector<float>> pfCluster_eta = {fReader, "pfCluster_eta"};
-   TTreeReaderArray<vector<float>> pfCluster_phi = {fReader, "pfCluster_phi"};
-   TTreeReaderArray<map<int,int>> map_simHit_pfCLuster = {fReader, "map_simHit_pfCLuster"};
+   TTreeReaderArray<vector<float>> pfClusterHit_eta = {fReader, "pfClusterHit_eta"};
+   TTreeReaderArray<vector<float>> pfClusterHit_phi = {fReader, "pfClusterHit_phi"};
+   TTreeReaderArray<vector<int>> pfClusterHit_ieta = {fReader, "pfClusterHit_ieta"};
+   TTreeReaderArray<vector<int>> pfClusterHit_iphi = {fReader, "pfClusterHit_iphi"};
+   TTreeReaderArray<vector<int>> pfClusterHit_iz = {fReader, "pfClusterHit_iz"};
+   TTreeReaderArray<float> pfCluster_energy = {fReader, "pfCluster_energy"};
+   TTreeReaderArray<float> pfCluster_eta = {fReader, "pfCluster_eta"};
+   TTreeReaderArray<float> pfCluster_phi = {fReader, "pfCluster_phi"};
+   //TTreeReaderArray<map<int,int>> map_simHit_pfCluster = {fReader, "map_simHit_pfCluster"};
+   TTreeReaderArray<map<int,int>> map_pfClusterHit_pfCluster = {fReader, "map_pfClusterHit_pfCluster"};
+
 
    // non reader members 
    // -- non root members
-   float min_simHit_energy=0.08; // 80 MeV
+   //float min_simHit_energy=0.08; // 80 MeV
+   int N_perEvent_plots = 100;
 
    // -- root members
    TFile *fout;
-   TH1D *h_PFClusters_caloMatched_energy;
+   TH1F* h_PFClusters_caloMatched_size    ;
+   TH1F* h_PFClusters_caloMatched_nXtals  ;
+   TH1F* h_PFClusters_caloMatched_energy  ;
+   TH1F* h_PFClusters_caloMatched_et      ;
+   TH1F* h_PFClusters_caloMatched_eta     ;
+   TH1F* h_PFClusters_caloMatched_phi     ;
+   TH1F* h_PFClusters_caloMatched_eOverEtrue;
+   std::vector<TH2F*> h_PFClusterHit_EB_ietaiphi;
 
    // functions
    PFClusterAnalyzer(TTree * /*tree*/ =0) { }

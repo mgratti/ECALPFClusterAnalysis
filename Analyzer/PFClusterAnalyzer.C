@@ -27,6 +27,7 @@
 
 #include "PFClusterAnalyzer.h"
 #include <TStyle.h>
+#include <TMath.h>
 
 void PFClusterAnalyzer::Begin(TTree * /*tree*/)
 {
@@ -38,6 +39,7 @@ void PFClusterAnalyzer::Begin(TTree * /*tree*/)
    Info("Begin", "Called with option %s", option.Data());
    
    TH1::SetDefaultSumw2();
+   TH1::StatOverflows(kTRUE); // force overflows and underflows in the stats computation
 
    fout = 0;
 
@@ -59,8 +61,19 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    Info("SlaveBegin", "Writing on %s", foutName.Data());
 
    // initialize histograms
-   h_PFClusters_caloMatched_energy = new TH1D("h_PFclusters_genMatched_EB_energy","h_PFclusters_genMatched_EB_energy",500,0.,100.);
-   
+   h_PFClusters_caloMatched_size    = new TH1F("h_PFClusters_caloMatched_size","h_PFClusters_caloMatched_size",100,0.,100.);
+   h_PFClusters_caloMatched_nXtals  = new TH1F("h_PFClusters_caloMatched_nXtals","h_PFClusters_caloMatched_nXtals",50,0.,50.);
+   h_PFClusters_caloMatched_energy  = new TH1F("h_PFClusters_caloMatched_energy","h_PFClusters_caloMatched_energy",500,0.,100.);
+   h_PFClusters_caloMatched_et      = new TH1F("h_PFClusters_caloMatched_et","h_PFClusters_caloMatched_et",500,0.,100.);
+   h_PFClusters_caloMatched_eta     = new TH1F("h_PFClusters_caloMatched_eta","h_PFClusters_caloMatched_eta",148,-1.48,1.48);
+   h_PFClusters_caloMatched_phi     = new TH1F("h_PFClusters_caloMatched_phi","h_PFClusters_caloMatched_phi",128,-3.2,3.2);
+   h_PFClusters_caloMatched_eOverEtrue = new TH1F("h_PFClusters_caloMatched_eOverEtrue","h_PFClusters_caloMatched_eOverEtrue",100,0.,2.);
+
+   for (int i=0; i<N_perEvent_plots; i++){
+     TString histo_name = "h_PFClusterHit_EB_ietaiphi_" + TString::Format("%d", i);
+     h_PFClusterHit_EB_ietaiphi.push_back(new TH2F(histo_name, histo_name, 172,-86.,86.,360,1.,361.));
+   }
+
    Info("Begin", "Booked Histograms");
 
 }
@@ -87,24 +100,57 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //std::cout << "Event information: evt=" << *eventId << std::endl;
+   std::cout << "Event information: evt=" << *eventId << std::endl;
+
+   // loop over genParticles
+   for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
+     std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
+   }
+
+   int N_pfCl = 0;
 
    // loop over caloParticles
    for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
      std::cout << "icP=" << icP << " energy=" << caloParticle_energy[icP] << " eta=" << caloParticle_eta[icP] << " phi=" << caloParticle_phi[icP] << std::endl;
+     //std::cout                  << " genParticle_energy=" << genParticle_energy[icP] << " eta=" << genParticle_eta[icP] << " phi=" << genParticle_phi[icP] << std::endl;
 
-     // loop over SimHits associated to calo particle
-     for (unsigned int isH=0; isH<simHit_energy[icP].size(); isH++){
-       // if there is match bw SH and PFClusters 
-       if (map_simHit_pfCLuster[icP][isH] != -1 and simHit_energy[icP][isH] >= min_simHit_energy){
-         std::cout << "   isH=" << isH <<  " energy= " << simHit_energy[icP][isH] << " associated to PFCluster= " << map_simHit_pfCLuster[icP][isH] << std::endl;
-         int match_PFCluster_index = map_simHit_pfCLuster[icP][isH]; 
-         h_PFClusters_caloMatched_energy->Fill(pfCluster_energy[icP][match_PFCluster_index]);
-       }
-     } // end loop simhits
+     int N_pfClH=0;
+     int match_pfC_idx=-1;
+
+     // loop over pfClusterHits associated to calo particle
+     for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+
+       // if there is a match bw pfClusterHit and PFClusters, save the index of the PFCluster
+       if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
+
+         N_pfClH++;
+
+         if (entry<N_perEvent_plots) h_PFClusterHit_EB_ietaiphi.at(entry)->Fill(pfClusterHit_ieta[icP][ipfClH], pfClusterHit_iphi[icP][ipfClH], pfClusterHit_energy[icP][ipfClH]);
+
+         match_pfC_idx = map_pfClusterHit_pfCluster[icP][ipfClH]; 
+
+         std::cout << "   ipfClH=" << ipfClH <<  " energy= " << pfClusterHit_energy[icP][ipfClH] << " associated to PFCluster= " << match_pfC_idx << std::endl;
+
+
+       } // if match 
+     } // end loop pfClusterHits
+
+     // fill histograms of the matched pfclusters
+     if (match_pfC_idx!=-1){
+
+       N_pfCl++;
+       h_PFClusters_caloMatched_nXtals->Fill(N_pfClH);
+       h_PFClusters_caloMatched_energy->Fill(pfCluster_energy[match_pfC_idx]);
+       h_PFClusters_caloMatched_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
+       h_PFClusters_caloMatched_phi->Fill(pfCluster_phi[match_pfC_idx]);
+       h_PFClusters_caloMatched_eta->Fill(pfCluster_eta[match_pfC_idx]);
+       h_PFClusters_caloMatched_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
+
+     }
+
    } // end loop calo particles
 
-
+   h_PFClusters_caloMatched_size->Fill(N_pfCl);
 
    return kTRUE;
 }
