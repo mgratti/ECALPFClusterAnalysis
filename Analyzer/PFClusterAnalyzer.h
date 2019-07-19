@@ -68,7 +68,7 @@ public :
 
    // non reader members 
    // -- non root members
-   //float min_simHit_energy=0.08; // 80 MeV
+   float min_pfClusterHit_energy=0.08; // 80 MeV
    int N_perEvent_plots = 100;
 
    // -- root members
@@ -80,6 +80,8 @@ public :
    TH1F* h_PFClusters_caloMatched_eta     ;
    TH1F* h_PFClusters_caloMatched_phi     ;
    TH1F* h_PFClusters_caloMatched_eOverEtrue;
+   TH2F* h_PFClusters_caloMatched_nXtals_vs_xtalEnergy;
+   TH2F* h_PFClusters_caloMatched_nXtals_vs_energy;
    std::vector<TH2F*> h_PFClusterHit_EB_ietaiphi;
 
    // functions

@@ -61,13 +61,16 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    Info("SlaveBegin", "Writing on %s", foutName.Data());
 
    // initialize histograms
-   h_PFClusters_caloMatched_size    = new TH1F("h_PFClusters_caloMatched_size","h_PFClusters_caloMatched_size",100,0.,100.);
+   h_PFClusters_caloMatched_size    = new TH1F("h_PFClusters_caloMatched_size","h_PFClusters_caloMatched_size",50,0.,50.);
    h_PFClusters_caloMatched_nXtals  = new TH1F("h_PFClusters_caloMatched_nXtals","h_PFClusters_caloMatched_nXtals",50,0.,50.);
    h_PFClusters_caloMatched_energy  = new TH1F("h_PFClusters_caloMatched_energy","h_PFClusters_caloMatched_energy",500,0.,100.);
    h_PFClusters_caloMatched_et      = new TH1F("h_PFClusters_caloMatched_et","h_PFClusters_caloMatched_et",500,0.,100.);
-   h_PFClusters_caloMatched_eta     = new TH1F("h_PFClusters_caloMatched_eta","h_PFClusters_caloMatched_eta",148,-1.48,1.48);
+   h_PFClusters_caloMatched_eta     = new TH1F("h_PFClusters_caloMatched_eta","h_PFClusters_caloMatched_eta",300,-3.,3.);
    h_PFClusters_caloMatched_phi     = new TH1F("h_PFClusters_caloMatched_phi","h_PFClusters_caloMatched_phi",128,-3.2,3.2);
    h_PFClusters_caloMatched_eOverEtrue = new TH1F("h_PFClusters_caloMatched_eOverEtrue","h_PFClusters_caloMatched_eOverEtrue",100,0.,2.);
+
+   h_PFClusters_caloMatched_nXtals_vs_xtalEnergy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", "h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", 50, 0., 50., 50., 0., 50.);
+   h_PFClusters_caloMatched_nXtals_vs_energy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_energy", "h_PFClusters_caloMatched_nXtals_vs_energy", 50, 0., 50., 100., 0., 100.);
 
    for (int i=0; i<N_perEvent_plots; i++){
      TString histo_name = "h_PFClusterHit_EB_ietaiphi_" + TString::Format("%d", i);
@@ -121,7 +124,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
      for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
 
        // if there is a match bw pfClusterHit and PFClusters, save the index of the PFCluster
-       if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
+       if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1 and pfClusterHit_energy[icP][ipfClH]>min_pfClusterHit_energy){
 
          N_pfClH++;
 
@@ -146,6 +149,13 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
        h_PFClusters_caloMatched_eta->Fill(pfCluster_eta[match_pfC_idx]);
        h_PFClusters_caloMatched_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
 
+       h_PFClusters_caloMatched_nXtals_vs_energy->Fill(N_pfClH, pfCluster_energy[match_pfC_idx]);
+     }
+     // reloop over pfCluserHits 
+     for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+       if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
+         h_PFClusters_caloMatched_nXtals_vs_xtalEnergy->Fill(N_pfClH,pfClusterHit_energy[icP][ipfClH]);
+       }
      }
 
    } // end loop calo particles
