@@ -239,6 +239,7 @@ if __name__ == "__main__":
 
   from argparse import ArgumentParser
   parser = ArgumentParser(description='', add_help=True)
+  parser.add_argument('-f', '--inputFile', type=str, dest='inputFile', help='e.g. path/to/file/filename', default=None)
   parser.add_argument('-e', '--ecalVersion', type=str, dest='ecalVersion', help='e.g. ecalV13', default=None)
   parser.add_argument('-p', '--prodVersion', type=str, dest='prodVersion', help='e.g. 450ifb_nominal', default=None)
   parser.add_argument('-a', '--anaName', type=str, dest='anaName', help='e.g. DoublePhoton', default=None)
@@ -261,6 +262,7 @@ if __name__ == "__main__":
   ####################################
   version = '{}_{}'.format(options.prodVersion, options.ecalVersion)
   anaName = options.anaName # photonGun
+  inputFile = options.inputFile
   global anaLabel
   anaLabel = 'ee, w/ tracker' if anaName == 'DoubleElectron' else '#gamma#gamma, no tracker'
   global histoname
@@ -269,8 +271,8 @@ if __name__ == "__main__":
   else:
     histoname = 'h_PFclusters_genMatched_eOverEtrue'
 
-  #inputfile = '../test/outputfiles/{a}_{v}_numEvent{n}.root'
-  inputfile = '{a}_{v}_numEvent{n}.root'
+  #inputfile = '{a}_{v}_numEvent{n}.root'
+  inputfile = '../Analyzer/outputfiles/{f}.root'
   params = {}
   params["nevts"] =     [150000]#[50000]
   params["gathering"] = [1.0]#[1.0, 2.0, 5.0, 10.] # below it doesn't make sense
@@ -293,6 +295,7 @@ if __name__ == "__main__":
       results[eta][et]=[]
 
   outputdir = 'myPlots/anaEoverEtrue_{a}_{v}'.format(a=anaName,v=version)
+  outputdir = 'myPlots/{f}'.format(f=inputFile)
   if not options.doCB: outputdir = outputdir + '_noCB'
   if options.suffix!=None: outputdir = outputdir + options.suffix
   os.system('mkdir {}'.format(outputdir))
@@ -310,7 +313,8 @@ if __name__ == "__main__":
       for iset in parameters_set:
         inevts,iseeding,igathering = iset
         ### FILTER OUT PATHOLOGICAL CASES
-        inputfilename = inputfile.format(a=anaName, s=iseeding, g=igathering, n=inevts, v=version)
+       # inputfilename = inputfile.format(a=anaName, s=iseeding, g=igathering, n=inevts, v=version)
+        inputfilename = inputfile.format(f=inputFile)
         if igathering * thrs[det[eta]]['gather'] > iseeding * thrs[det[eta]]['seed']: continue # minimal sense of decency # FIXME: do it at generation level directly
         ret,result = makeEoverEtrueAnalysis(inputfilename, eta, et, iseeding, igathering, inevts, outputdir, doCBfit=options.doCB)
         if ret:
@@ -501,7 +505,8 @@ if __name__ == "__main__":
 
   if options.doClusterAnalysis:
 
-    inputfile = inputfile.format(a=anaName, s=1.0, g=1.0, n=150000, v=version)
+    #inputfile = inputfile.format(a=anaName, s=1.0, g=1.0, n=150000, v=version)
+    inputfile = inputfile.format(f=inputFile)
 
     beautify1DPlot(outputdir=outputdir, inputfile=inputfile, inputdir='ecalnoisestudy/PFClusters', histoname='h_PFclusters_genMatched_EB_size', xtitle='N PF clusters in EB', ytitle='Entries', xrange=None)    
     beautify1DPlot(outputdir=outputdir, inputfile=inputfile, inputdir='ecalnoisestudy/PFClusters', histoname='h_PFclusters_genMatched_EEP_size', xtitle='N PF clusters in EE+', ytitle='Entries', xrange=None)    
