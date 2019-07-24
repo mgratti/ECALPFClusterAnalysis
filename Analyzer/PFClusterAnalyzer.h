@@ -8,6 +8,7 @@
 #ifndef PFClusterAnalyzer_h
 #define PFClusterAnalyzer_h
 
+
 // ROOT libraries
 #include <TROOT.h>
 #include <TChain.h>
@@ -23,7 +24,6 @@
 #include <vector>
 #include "vector"
 #include <map>
-
 
 
 class PFClusterAnalyzer : public TSelector {
@@ -74,7 +74,7 @@ public :
    // -- root members
    TFile *fout;
    TH1F* h_PFClusters_caloMatched_size    ;
-   TH1F* h_PFClusters_caloMatched_nXtals  ;
+	TH1F* h_PFClusters_caloMatched_nXtals  ;
    TH1F* h_PFClusters_caloMatched_energy  ;
    TH1F* h_PFClusters_caloMatched_et      ;
    TH1F* h_PFClusters_caloMatched_eta     ;
@@ -83,6 +83,46 @@ public :
    TH2F* h_PFClusters_caloMatched_nXtals_vs_xtalEnergy;
    TH2F* h_PFClusters_caloMatched_nXtals_vs_energy;
    std::vector<TH2F*> h_PFClusterHit_EB_ietaiphi;
+
+
+	//EEM
+	TH1F* h_PFClusters_caloMatched_EEM_eta;
+	TH1F* h_PFClusters_caloMatched_EEM_size;
+   TH1F* h_PFClusters_caloMatched_EEM_nXtals;
+   TH1F* h_PFClusters_caloMatched_EEM_energy;
+   TH1F* h_PFClusters_caloMatched_EEM_et;
+   TH1F* h_PFClusters_caloMatched_EEM_phi;
+   TH1F* h_PFClusters_caloMatched_EEM_eOverEtrue;
+   
+	//EBM
+	TH1F* h_PFClusters_caloMatched_EBM_eta;
+	TH1F* h_PFClusters_caloMatched_EBM_size;
+   TH1F* h_PFClusters_caloMatched_EBM_nXtals;
+   TH1F* h_PFClusters_caloMatched_EBM_energy;
+   TH1F* h_PFClusters_caloMatched_EBM_et;
+   TH1F* h_PFClusters_caloMatched_EBM_phi;
+   TH1F* h_PFClusters_caloMatched_EBM_eOverEtrue;
+   
+
+	//EBP
+	TH1F* h_PFClusters_caloMatched_EBP_eta;
+	TH1F* h_PFClusters_caloMatched_EBP_size;
+   TH1F* h_PFClusters_caloMatched_EBP_nXtals;
+   TH1F* h_PFClusters_caloMatched_EBP_energy;
+   TH1F* h_PFClusters_caloMatched_EBP_et;
+   TH1F* h_PFClusters_caloMatched_EBP_phi;
+   TH1F* h_PFClusters_caloMatched_EBP_eOverEtrue;
+   
+
+	//EEP
+	TH1F* h_PFClusters_caloMatched_EEP_eta;
+	TH1F* h_PFClusters_caloMatched_EEP_size;
+   TH1F* h_PFClusters_caloMatched_EEP_nXtals;
+   TH1F* h_PFClusters_caloMatched_EEP_energy;
+   TH1F* h_PFClusters_caloMatched_EEP_et;
+   TH1F* h_PFClusters_caloMatched_EEP_phi;
+   TH1F* h_PFClusters_caloMatched_EEP_eOverEtrue;
+   
 
    // functions
    PFClusterAnalyzer(TTree * /*tree*/ =0) { }

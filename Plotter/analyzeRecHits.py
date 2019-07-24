@@ -173,13 +173,13 @@ def beautify1DPlot(outputdir, inputfile, inputdir, histoname, xtitle, ytitle, xr
   gStyle.SetOptStat('emMrRo')
 
   f=TFile(inputfile, 'READ')
-  histo=f.Get('{}/{}'.format(inputdir,histoname))
-
+  #histo=f.Get('{}/{}'.format(inputdir,histoname))
+  histo=f.Get('{}'.format(histoname))
   c=TCanvas('c', 'c', 600,600)
   histo.SetLineWidth(2)
   histo.Draw('hist')
   #histo.Rebin(4)
-  c.SetLogy()
+  #c.SetLogy()
   histo.GetXaxis().SetTitle(xtitle)
   histo.GetYaxis().SetTitle(ytitle)
   if xrange!=None:
