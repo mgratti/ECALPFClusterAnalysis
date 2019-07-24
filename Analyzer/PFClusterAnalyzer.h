@@ -73,6 +73,8 @@ class PFClusterAnalyzer : public TSelector {
 
       // -- root members
       TFile *fout;
+     
+          
       TH1F* h_PFClusters_caloMatched_size    ;
       TH1F* h_PFClusters_caloMatched_nXtals  ;
       TH1F* h_PFClusters_caloMatched_energy  ;
@@ -123,6 +125,44 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_EEP_phi;
       TH1F* h_PFClusters_caloMatched_EEP_eOverEtrue;
 
+
+
+
+      TH1F* h_caloParticle_size;
+      TH1F* h_caloParticle_energy;
+      TH1F* h_caloParticle_simEnergy;
+      TH1F* h_caloParticle_et;
+      TH1F* h_caloParticle_eta;
+      TH1F* h_caloParticle_phi;
+     
+      TH1F* h_caloParticle_EEM_size;
+      TH1F* h_caloParticle_EEM_energy;
+      TH1F* h_caloParticle_EEM_simEnergy;
+      TH1F* h_caloParticle_EEM_et;
+      TH1F* h_caloParticle_EEM_eta;
+      TH1F* h_caloParticle_EEM_phi;
+     
+      TH1F* h_caloParticle_EBM_size;
+      TH1F* h_caloParticle_EBM_energy;
+      TH1F* h_caloParticle_EBM_simEnergy;
+      TH1F* h_caloParticle_EBM_et;
+      TH1F* h_caloParticle_EBM_eta;
+      TH1F* h_caloParticle_EBM_phi;
+     
+      TH1F* h_caloParticle_EBP_size;
+      TH1F* h_caloParticle_EBP_energy;
+      TH1F* h_caloParticle_EBP_simEnergy;
+      TH1F* h_caloParticle_EBP_et;
+      TH1F* h_caloParticle_EBP_eta;
+      TH1F* h_caloParticle_EBP_phi;
+     
+      TH1F* h_caloParticle_EEP_size;
+      TH1F* h_caloParticle_EEP_energy;
+      TH1F* h_caloParticle_EEP_simEnergy;
+      TH1F* h_caloParticle_EEP_et;
+      TH1F* h_caloParticle_EEP_eta;
+      TH1F* h_caloParticle_EEP_phi;
+     
 
       // functions
       PFClusterAnalyzer(TTree * /*tree*/ =0) { }
