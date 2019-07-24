@@ -28,66 +28,61 @@
 #include <TStyle.h>
 #include <TMath.h>
 
-
-#include "DataFormats/EcalDetId/interface/EEDetId.h"
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-
-
 using namespace std;
 
 
 void PFClusterAnalyzer::Begin(TTree * /*tree*/)
 {
-   // The Begin() function is called at the start of the query.
-   // When running with PROOF Begin() is only called on the client.
-   // The tree argument is deprecated (on PROOF 0 is passed).
+	// The Begin() function is called at the start of the query.
+	// When running with PROOF Begin() is only called on the client.
+	// The tree argument is deprecated (on PROOF 0 is passed).
 
-   TString option = GetOption();
-   Info("Begin", "Called with option %s", option.Data());
-   
-   TH1::SetDefaultSumw2();
-   TH1::StatOverflows(kTRUE); // force overflows and underflows in the stats computation
+	TString option = GetOption();
+	Info("Begin", "Called with option %s", option.Data());
 
-   fout = 0;
+	TH1::SetDefaultSumw2();
+	TH1::StatOverflows(kTRUE); // force overflows and underflows in the stats computation
+
+	fout = 0;
 
 }
 
 void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 {
-   // The SlaveBegin() function is called after the Begin() function.
-   // When running with PROOF SlaveBegin() is called on each slave server.
-   // The tree argument is deprecated (on PROOF 0 is passed).
+	// The SlaveBegin() function is called after the Begin() function.
+	// When running with PROOF SlaveBegin() is called on each slave server.
+	// The tree argument is deprecated (on PROOF 0 is passed).
 
-   TString option = GetOption();
-   // here you could handle more complicated options
-   TString foutName = option;
+	TString option = GetOption();
+	// here you could handle more complicated options
+	TString foutName = option;
 
-   // output
-   fout = new TFile(foutName, "RECREATE"); 
-   if(!fout->IsOpen()) throw std::runtime_error("Output file could not be created");
-   Info("SlaveBegin", "Writing on %s", foutName.Data());
-   
-   // initialize histograms
-   h_PFClusters_caloMatched_size    = new TH1F("h_PFClusters_caloMatched_size","h_PFClusters_caloMatched_size",50,0.,50.);
+	// output
+	fout = new TFile(foutName, "RECREATE"); 
+	if(!fout->IsOpen()) throw std::runtime_error("Output file could not be created");
+	Info("SlaveBegin", "Writing on %s", foutName.Data());
+
+	// initialize histograms
+	h_PFClusters_caloMatched_size    = new TH1F("h_PFClusters_caloMatched_size","h_PFClusters_caloMatched_size",50,0.,50.);
 	h_PFClusters_caloMatched_nXtals  = new TH1F("h_PFClusters_caloMatched_nXtals","h_PFClusters_caloMatched_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_energy  = new TH1F("h_PFClusters_caloMatched_energy","h_PFClusters_caloMatched_energy",500,0.,100.);
-   h_PFClusters_caloMatched_et      = new TH1F("h_PFClusters_caloMatched_et","h_PFClusters_caloMatched_et",500,0.,100.);
-   h_PFClusters_caloMatched_eta     = new TH1F("h_PFClusters_caloMatched_eta","h_PFClusters_caloMatched_eta",300,-3.,3.);
-   h_PFClusters_caloMatched_phi     = new TH1F("h_PFClusters_caloMatched_phi","h_PFClusters_caloMatched_phi",128,-3.2,3.2);
-   h_PFClusters_caloMatched_eOverEtrue = new TH1F("h_PFClusters_caloMatched_eOverEtrue","h_PFClusters_caloMatched_eOverEtrue",100,0.,2.);
+	h_PFClusters_caloMatched_energy  = new TH1F("h_PFClusters_caloMatched_energy","h_PFClusters_caloMatched_energy",500,0.,100.);
+	h_PFClusters_caloMatched_et      = new TH1F("h_PFClusters_caloMatched_et","h_PFClusters_caloMatched_et",500,0.,100.);
+	h_PFClusters_caloMatched_eta     = new TH1F("h_PFClusters_caloMatched_eta","h_PFClusters_caloMatched_eta",300,-3.,3.);
+	h_PFClusters_caloMatched_phi     = new TH1F("h_PFClusters_caloMatched_phi","h_PFClusters_caloMatched_phi",128,-3.2,3.2);
+	h_PFClusters_caloMatched_eOverEtrue = new TH1F("h_PFClusters_caloMatched_eOverEtrue","h_PFClusters_caloMatched_eOverEtrue",100,0.,2.);
 
-   h_PFClusters_caloMatched_nXtals_vs_xtalEnergy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", "h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", 50, 0., 50., 50., 0., 50.);
-   h_PFClusters_caloMatched_nXtals_vs_energy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_energy", "h_PFClusters_caloMatched_nXtals_vs_energy", 50, 0., 50., 100., 0., 100.);
+	h_PFClusters_caloMatched_nXtals_vs_xtalEnergy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", "h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", 50, 0., 50., 50., 0., 50.);
+	h_PFClusters_caloMatched_nXtals_vs_energy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_energy", "h_PFClusters_caloMatched_nXtals_vs_energy", 50, 0., 50., 100., 0., 100.);
 
 
 	//EEM
 	h_PFClusters_caloMatched_EEM_eta     = new TH1F("h_PFClusters_caloMatched_EEM_eta","h_PFClusters_caloMatched_EEM_eta",300,-3.,3.);
 	h_PFClusters_caloMatched_EEM_size    = new TH1F("h_PFClusters_caloMatched_EEM_size","h_PFClusters_caloMatched_EEM_size",50,0.,50.);
 	h_PFClusters_caloMatched_EEM_nXtals  = new TH1F("h_PFClusters_caloMatched_EEM_nXtals","h_PFClusters_caloMatched_EEM_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EEM_energy  = new TH1F("h_PFClusters_caloMatched_EEM_energy","h_PFClusters_caloMatched_EEM_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EEM_et      = new TH1F("h_PFClusters_caloMatched_EEM_et","h_PFClusters_caloMatched_EEM_et",500,0.,100.);
-   h_PFClusters_caloMatched_EEM_phi     = new TH1F("h_PFClusters_caloMatched_EEM_phi","h_PFClusters_caloMatched_EEM_phi",128,-3.2,3.2);
-   h_PFClusters_caloMatched_EEM_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EEM_eOverEtrue","h_PFClusters_caloMatched_EEM_eOverEtrue",100,0.,2.);
+	h_PFClusters_caloMatched_EEM_energy  = new TH1F("h_PFClusters_caloMatched_EEM_energy","h_PFClusters_caloMatched_EEM_energy",500,0.,100.);
+	h_PFClusters_caloMatched_EEM_et      = new TH1F("h_PFClusters_caloMatched_EEM_et","h_PFClusters_caloMatched_EEM_et",500,0.,100.);
+	h_PFClusters_caloMatched_EEM_phi     = new TH1F("h_PFClusters_caloMatched_EEM_phi","h_PFClusters_caloMatched_EEM_phi",128,-3.2,3.2);
+	h_PFClusters_caloMatched_EEM_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EEM_eOverEtrue","h_PFClusters_caloMatched_EEM_eOverEtrue",100,0.,2.);
 
 
 
@@ -95,211 +90,211 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 	h_PFClusters_caloMatched_EBM_eta     = new TH1F("h_PFClusters_caloMatched_EBM_eta","h_PFClusters_caloMatched_EBM_eta",300,-3.,3.);
 	h_PFClusters_caloMatched_EBM_size    = new TH1F("h_PFClusters_caloMatched_EBM_size","h_PFClusters_caloMatched_EBM_size",50,0.,50.);
 	h_PFClusters_caloMatched_EBM_nXtals  = new TH1F("h_PFClusters_caloMatched_EBM_nXtals","h_PFClusters_caloMatched_EBM_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EBM_energy  = new TH1F("h_PFClusters_caloMatched_EBM_energy","h_PFClusters_caloMatched_EBM_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EBM_et      = new TH1F("h_PFClusters_caloMatched_EBM_et","h_PFClusters_caloMatched_EBM_et",500,0.,100.);
-   h_PFClusters_caloMatched_EBM_phi     = new TH1F("h_PFClusters_caloMatched_EBM_phi","h_PFClusters_caloMatched_EBM_phi",128,-3.2,3.2);
-   h_PFClusters_caloMatched_EBM_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EBM_eOverEtrue","h_PFClusters_caloMatched_EBM_eOverEtrue",100,0.,2.);
+	h_PFClusters_caloMatched_EBM_energy  = new TH1F("h_PFClusters_caloMatched_EBM_energy","h_PFClusters_caloMatched_EBM_energy",500,0.,100.);
+	h_PFClusters_caloMatched_EBM_et      = new TH1F("h_PFClusters_caloMatched_EBM_et","h_PFClusters_caloMatched_EBM_et",500,0.,100.);
+	h_PFClusters_caloMatched_EBM_phi     = new TH1F("h_PFClusters_caloMatched_EBM_phi","h_PFClusters_caloMatched_EBM_phi",128,-3.2,3.2);
+	h_PFClusters_caloMatched_EBM_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EBM_eOverEtrue","h_PFClusters_caloMatched_EBM_eOverEtrue",100,0.,2.);
 
 
 	//EBP
 	h_PFClusters_caloMatched_EBP_eta     = new TH1F("h_PFClusters_caloMatched_EBP_eta","h_PFClusters_caloMatched_EBP_eta",300,-3.,3.);
 	h_PFClusters_caloMatched_EBP_size    = new TH1F("h_PFClusters_caloMatched_EBP_size","h_PFClusters_caloMatched_EBP_size",50,0.,50.);
 	h_PFClusters_caloMatched_EBP_nXtals  = new TH1F("h_PFClusters_caloMatched_EBP_nXtals","h_PFClusters_caloMatched_EBP_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EBP_energy  = new TH1F("h_PFClusters_caloMatched_EBP_energy","h_PFClusters_caloMatched_EBP_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EBP_et      = new TH1F("h_PFClusters_caloMatched_EBP_et","h_PFClusters_caloMatched_EBP_et",500,0.,100.);
-   h_PFClusters_caloMatched_EBP_phi     = new TH1F("h_PFClusters_caloMatched_EBP_phi","h_PFClusters_caloMatched_EBP_phi",128,-3.2,3.2);
-   h_PFClusters_caloMatched_EBP_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EBP_eOverEtrue","h_PFClusters_caloMatched_EBP_eOverEtrue",100,0.,2.);
+	h_PFClusters_caloMatched_EBP_energy  = new TH1F("h_PFClusters_caloMatched_EBP_energy","h_PFClusters_caloMatched_EBP_energy",500,0.,100.);
+	h_PFClusters_caloMatched_EBP_et      = new TH1F("h_PFClusters_caloMatched_EBP_et","h_PFClusters_caloMatched_EBP_et",500,0.,100.);
+	h_PFClusters_caloMatched_EBP_phi     = new TH1F("h_PFClusters_caloMatched_EBP_phi","h_PFClusters_caloMatched_EBP_phi",128,-3.2,3.2);
+	h_PFClusters_caloMatched_EBP_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EBP_eOverEtrue","h_PFClusters_caloMatched_EBP_eOverEtrue",100,0.,2.);
 
 
 	//EEP
 	h_PFClusters_caloMatched_EEP_eta     = new TH1F("h_PFClusters_caloMatched_EEP_eta","h_PFClusters_caloMatched_EEP_eta",300,-3.,3.);
 	h_PFClusters_caloMatched_EEP_size    = new TH1F("h_PFClusters_caloMatched_EEP_size","h_PFClusters_caloMatched_EEP_size",50,0.,50.);
 	h_PFClusters_caloMatched_EEP_nXtals  = new TH1F("h_PFClusters_caloMatched_EEP_nXtals","h_PFClusters_caloMatched_EEP_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EEP_energy  = new TH1F("h_PFClusters_caloMatched_EEP_energy","h_PFClusters_caloMatched_EEP_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EEP_et      = new TH1F("h_PFClusters_caloMatched_EEP_et","h_PFClusters_caloMatched_EEP_et",500,0.,100.);
-   h_PFClusters_caloMatched_EEP_phi     = new TH1F("h_PFClusters_caloMatched_EEP_phi","h_PFClusters_caloMatched_EEP_phi",128,-3.2,3.2);
-   h_PFClusters_caloMatched_EEP_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EEP_eOverEtrue","h_PFClusters_caloMatched_EEP_eOverEtrue",100,0.,2.);
+	h_PFClusters_caloMatched_EEP_energy  = new TH1F("h_PFClusters_caloMatched_EEP_energy","h_PFClusters_caloMatched_EEP_energy",500,0.,100.);
+	h_PFClusters_caloMatched_EEP_et      = new TH1F("h_PFClusters_caloMatched_EEP_et","h_PFClusters_caloMatched_EEP_et",500,0.,100.);
+	h_PFClusters_caloMatched_EEP_phi     = new TH1F("h_PFClusters_caloMatched_EEP_phi","h_PFClusters_caloMatched_EEP_phi",128,-3.2,3.2);
+	h_PFClusters_caloMatched_EEP_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EEP_eOverEtrue","h_PFClusters_caloMatched_EEP_eOverEtrue",100,0.,2.);
 
 
 
-   for (int i=0; i<N_perEvent_plots; i++){
-     TString histo_name = "h_PFClusterHit_EB_ietaiphi_" + TString::Format("%d", i);
-     h_PFClusterHit_EB_ietaiphi.push_back(new TH2F(histo_name, histo_name, 172,-86.,86.,360,1.,361.));
-   }
+	for (int i=0; i<N_perEvent_plots; i++){
+		TString histo_name = "h_PFClusterHit_EB_ietaiphi_" + TString::Format("%d", i);
+		h_PFClusterHit_EB_ietaiphi.push_back(new TH2F(histo_name, histo_name, 172,-86.,86.,360,1.,361.));
+	}
 
-   Info("Begin", "Booked Histograms");
+	Info("Begin", "Booked Histograms");
 
 }
 
 Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 {
-   // The Process() function is called for each entry in the tree (or possibly
-   // keyed object in the case of PROOF) to be processed. The entry argument
-   // specifies which entry in the currently loaded tree is to be processed.
-   // When processing keyed objects with PROOF, the object is already loaded
-   // and is available via the fObject pointer.
-   //
-   // This function should contain the \"body\" of the analysis. It can contain
-   // simple or elaborate selection criteria, run algorithms on the data
-   // of the event and typically fill histograms.
-   //
-   // The processing can be stopped by calling Abort().
-   //
-   // Use fStatus to set the return value of TTree::Process().
-   //
-   // The return value is currently not used.
+	// The Process() function is called for each entry in the tree (or possibly
+	// keyed object in the case of PROOF) to be processed. The entry argument
+	// specifies which entry in the currently loaded tree is to be processed.
+	// When processing keyed objects with PROOF, the object is already loaded
+	// and is available via the fObject pointer.
+	//
+	// This function should contain the \"body\" of the analysis. It can contain
+	// simple or elaborate selection criteria, run algorithms on the data
+	// of the event and typically fill histograms.
+	//
+	// The processing can be stopped by calling Abort().
+	//
+	// Use fStatus to set the return value of TTree::Process().
+	//
+	// The return value is currently not used.
 
-   fReader.SetLocalEntry(entry); // read the event 
+	fReader.SetLocalEntry(entry); // read the event 
 
-   if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
+	if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   std::cout << "Event information: evt=" << *eventId << std::endl;
+	std::cout << "Event information: evt=" << *eventId << std::endl;
 
-   // loop over genParticles
-   //for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
-     //std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
-   //}
+	// loop over genParticles
+	//for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
+	//std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
+	//}
 
-   int N_pfCl = 0;
+	int N_pfCl = 0;
 	int N_pfCl_EEM = 0;
 	int N_pfCl_EBM = 0;
 	int N_pfCl_EBP = 0;
 	int N_plCl_EEP = 0;
 
-   // loop over caloParticles
-   for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
-     //std::cout << "icP=" << icP << " energy=" << caloParticle_energy[icP] << " eta=" << caloParticle_eta[icP] << " phi=" << caloParticle_phi[icP] << std::endl;
+	// loop over caloParticles
+	for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
+		//std::cout << "icP=" << icP << " energy=" << caloParticle_energy[icP] << " eta=" << caloParticle_eta[icP] << " phi=" << caloParticle_phi[icP] << std::endl;
 
-     int N_pfClH=0;
-     int match_pfC_idx=-1;
+		int N_pfClH=0;
+		int match_pfC_idx=-1;
 
-     // loop over pfClusterHits associated to calo particle
-     for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+		// loop over pfClusterHits associated to calo particle
+		for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
 
-       // if there is a match bw pfClusterHit and PFClusters, save the index of the PFCluster
-       if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1 and pfClusterHit_energy[icP][ipfClH]>min_pfClusterHit_energy){
+			// if there is a match bw pfClusterHit and PFClusters, save the index of the PFCluster
+			if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1 and pfClusterHit_energy[icP][ipfClH]>min_pfClusterHit_energy){
 
-         N_pfClH++;
+				N_pfClH++;
 
-         if (entry<N_perEvent_plots){
-				h_PFClusterHit_EB_ietaiphi.at(entry)->Fill(pfClusterHit_ieta[icP][ipfClH], pfClusterHit_iphi[icP][ipfClH], pfClusterHit_energy[icP][ipfClH]);
+				if (entry<N_perEvent_plots){
+					h_PFClusterHit_EB_ietaiphi.at(entry)->Fill(pfClusterHit_ieta[icP][ipfClH], pfClusterHit_iphi[icP][ipfClH], pfClusterHit_energy[icP][ipfClH]);
+				}
+
+				match_pfC_idx = map_pfClusterHit_pfCluster[icP][ipfClH]; 
+
+				// std::cout << "   ipfClH=" << ipfClH <<  " energy= " << pfClusterHit_energy[icP][ipfClH] << " associated to PFCluster= " << match_pfC_idx << std::endl;
+
+
+			} // if match 
+		} // end loop pfClusterHits
+
+		// fill histograms of the matched pfclusters
+		if (match_pfC_idx!=-1){
+
+			N_pfCl++;
+			h_PFClusters_caloMatched_nXtals->Fill(N_pfClH);
+			h_PFClusters_caloMatched_energy->Fill(pfCluster_energy[match_pfC_idx]);
+			h_PFClusters_caloMatched_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
+			h_PFClusters_caloMatched_phi->Fill(pfCluster_phi[match_pfC_idx]);
+			h_PFClusters_caloMatched_eta->Fill(pfCluster_eta[match_pfC_idx]);
+			h_PFClusters_caloMatched_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
+
+			h_PFClusters_caloMatched_nXtals_vs_energy->Fill(N_pfClH, pfCluster_energy[match_pfC_idx]);
+
+			if(caloParticle_eta[icP]<-1.479){
+				N_pfCl_EEM++;
+
+				h_PFClusters_caloMatched_EEM_eta->Fill(pfCluster_eta[match_pfC_idx]);
+				h_PFClusters_caloMatched_EEM_nXtals->Fill(N_pfClH);
+				h_PFClusters_caloMatched_EEM_energy->Fill(pfCluster_energy[match_pfC_idx]);
+				h_PFClusters_caloMatched_EEM_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
+				h_PFClusters_caloMatched_EEM_phi->Fill(pfCluster_phi[match_pfC_idx]);
+				h_PFClusters_caloMatched_EEM_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
+
 			}
-         
-			match_pfC_idx = map_pfClusterHit_pfCluster[icP][ipfClH]; 
 
-        // std::cout << "   ipfClH=" << ipfClH <<  " energy= " << pfClusterHit_energy[icP][ipfClH] << " associated to PFCluster= " << match_pfC_idx << std::endl;
+			if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<0){
+				N_pfCl_EBM++;
 
-
-       } // if match 
-     } // end loop pfClusterHits
-
-     // fill histograms of the matched pfclusters
-     if (match_pfC_idx!=-1){
-
-       N_pfCl++;
-       h_PFClusters_caloMatched_nXtals->Fill(N_pfClH);
-       h_PFClusters_caloMatched_energy->Fill(pfCluster_energy[match_pfC_idx]);
-       h_PFClusters_caloMatched_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
-       h_PFClusters_caloMatched_phi->Fill(pfCluster_phi[match_pfC_idx]);
-       h_PFClusters_caloMatched_eta->Fill(pfCluster_eta[match_pfC_idx]);
-       h_PFClusters_caloMatched_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
-
-       h_PFClusters_caloMatched_nXtals_vs_energy->Fill(N_pfClH, pfCluster_energy[match_pfC_idx]);
-
-		if(caloParticle_eta[icP]<-1.479){
-			N_pfCl_EEM++;
-			
-			h_PFClusters_caloMatched_EEM_eta->Fill(pfCluster_eta[match_pfC_idx]);
-			h_PFClusters_caloMatched_EEM_nXtals->Fill(N_pfClH);
-		   h_PFClusters_caloMatched_EEM_energy->Fill(pfCluster_energy[match_pfC_idx]);
-         h_PFClusters_caloMatched_EEM_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
-         h_PFClusters_caloMatched_EEM_phi->Fill(pfCluster_phi[match_pfC_idx]);
-         h_PFClusters_caloMatched_EEM_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
-
-	   }
-		
-		if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<0){
-			N_pfCl_EBM++;
-			
-			h_PFClusters_caloMatched_EBM_eta->Fill(pfCluster_eta[match_pfC_idx]);
-			h_PFClusters_caloMatched_EBM_nXtals->Fill(N_pfClH);
-		   h_PFClusters_caloMatched_EBM_energy->Fill(pfCluster_energy[match_pfC_idx]);
-         h_PFClusters_caloMatched_EBM_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
-         h_PFClusters_caloMatched_EBM_phi->Fill(pfCluster_phi[match_pfC_idx]);
-         h_PFClusters_caloMatched_EBM_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
+				h_PFClusters_caloMatched_EBM_eta->Fill(pfCluster_eta[match_pfC_idx]);
+				h_PFClusters_caloMatched_EBM_nXtals->Fill(N_pfClH);
+				h_PFClusters_caloMatched_EBM_energy->Fill(pfCluster_energy[match_pfC_idx]);
+				h_PFClusters_caloMatched_EBM_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
+				h_PFClusters_caloMatched_EBM_phi->Fill(pfCluster_phi[match_pfC_idx]);
+				h_PFClusters_caloMatched_EBM_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
 
 
-	   }
-		
-		if(caloParticle_eta[icP]>=0 && caloParticle_eta[icP]<1.479){
-			N_pfCl_EBP++;
-			
-			h_PFClusters_caloMatched_EBP_eta->Fill(pfCluster_eta[match_pfC_idx]);
-			h_PFClusters_caloMatched_EBP_nXtals->Fill(N_pfClH);
-		   h_PFClusters_caloMatched_EBP_energy->Fill(pfCluster_energy[match_pfC_idx]);
-         h_PFClusters_caloMatched_EBP_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
-         h_PFClusters_caloMatched_EBP_phi->Fill(pfCluster_phi[match_pfC_idx]);
-         h_PFClusters_caloMatched_EBP_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
+			}
+
+			if(caloParticle_eta[icP]>=0 && caloParticle_eta[icP]<1.479){
+				N_pfCl_EBP++;
+
+				h_PFClusters_caloMatched_EBP_eta->Fill(pfCluster_eta[match_pfC_idx]);
+				h_PFClusters_caloMatched_EBP_nXtals->Fill(N_pfClH);
+				h_PFClusters_caloMatched_EBP_energy->Fill(pfCluster_energy[match_pfC_idx]);
+				h_PFClusters_caloMatched_EBP_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
+				h_PFClusters_caloMatched_EBP_phi->Fill(pfCluster_phi[match_pfC_idx]);
+				h_PFClusters_caloMatched_EBP_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
 
 
-	   }
-		
-		if(caloParticle_eta[icP]>=1.479){
-			N_plCl_EEP++;
-			
-			h_PFClusters_caloMatched_EEP_eta->Fill(pfCluster_eta[match_pfC_idx]);
-			h_PFClusters_caloMatched_EEP_nXtals->Fill(N_pfClH);
-		   h_PFClusters_caloMatched_EEP_energy->Fill(pfCluster_energy[match_pfC_idx]);
-         h_PFClusters_caloMatched_EEP_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
-         h_PFClusters_caloMatched_EEP_phi->Fill(pfCluster_phi[match_pfC_idx]);
-         h_PFClusters_caloMatched_EEP_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
+			}
+
+			if(caloParticle_eta[icP]>=1.479){
+				N_plCl_EEP++;
+
+				h_PFClusters_caloMatched_EEP_eta->Fill(pfCluster_eta[match_pfC_idx]);
+				h_PFClusters_caloMatched_EEP_nXtals->Fill(N_pfClH);
+				h_PFClusters_caloMatched_EEP_energy->Fill(pfCluster_energy[match_pfC_idx]);
+				h_PFClusters_caloMatched_EEP_et->Fill(pfCluster_energy[match_pfC_idx]*TMath::Sin(2*TMath::ATan(TMath::Exp(-pfCluster_eta[match_pfC_idx]))));
+				h_PFClusters_caloMatched_EEP_phi->Fill(pfCluster_phi[match_pfC_idx]);
+				h_PFClusters_caloMatched_EEP_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
 
 
-	   }
+			}
 
-     }
-     // reloop over pfCluserHits 
-     for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
-       if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
-         h_PFClusters_caloMatched_nXtals_vs_xtalEnergy->Fill(N_pfClH,pfClusterHit_energy[icP][ipfClH]);
-       }
-     }
+		}
+		// reloop over pfCluserHits 
+		for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+			if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
+				h_PFClusters_caloMatched_nXtals_vs_xtalEnergy->Fill(N_pfClH,pfClusterHit_energy[icP][ipfClH]);
+			}
+		}
 
 
 
-   } // end loop calo particles
+	} // end loop calo particles
 
-   h_PFClusters_caloMatched_size->Fill(N_pfCl);
+	h_PFClusters_caloMatched_size->Fill(N_pfCl);
 	h_PFClusters_caloMatched_EEM_size->Fill(N_pfCl_EEM);
 	h_PFClusters_caloMatched_EBM_size->Fill(N_pfCl_EBM);
 	h_PFClusters_caloMatched_EBP_size->Fill(N_pfCl_EBP);
 	h_PFClusters_caloMatched_EEP_size->Fill(N_plCl_EEP);
 
 
-   return kTRUE;
+	return kTRUE;
 }
 
 void PFClusterAnalyzer::SlaveTerminate()
 {
-   // The SlaveTerminate() function is called after all entries or objects
-   // have been processed. When running with PROOF SlaveTerminate() is called
-   // on each slave server.
+	// The SlaveTerminate() function is called after all entries or objects
+	// have been processed. When running with PROOF SlaveTerminate() is called
+	// on each slave server.
 
-   // Write histograms to outputfile
-   //h_PFClusters_caloMatched_energy->Write();
+	// Write histograms to outputfile
+	//h_PFClusters_caloMatched_energy->Write();
 
-   // write and close 
-   fout->Write();
-   fout->Close();
+	// write and close 
+	fout->Write();
+	fout->Close();
 
-   Info("SlaveTerminate", "Wrote and closed output file");
+	Info("SlaveTerminate", "Wrote and closed output file");
 
 }
 
 void PFClusterAnalyzer::Terminate()
 {
-   // The Terminate() function is the last function to be called during
-   // a query. It always runs on the client, it can be used to present
-   // the results graphically or save the results to file.
+	// The Terminate() function is the last function to be called during
+	// a query. It always runs on the client, it can be used to present
+	// the results graphically or save the results to file.
 
 }
