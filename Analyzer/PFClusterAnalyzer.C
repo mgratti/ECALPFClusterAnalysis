@@ -27,6 +27,7 @@
 #include "PFClusterAnalyzer.h"
 #include <TStyle.h>
 #include <TMath.h>
+#include <cmath>
 
 using namespace std;
 
@@ -64,6 +65,45 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    fout->mkdir("PFCluster_caloMatched");
    fout->mkdir("caloParticle");
+   fout->mkdir("EoverEtrue_binned");
+
+   Et_keys.push_back("1_20");
+   Et_keys.push_back("20_40");
+   Et_keys.push_back("40_60");
+   Et_keys.push_back("60_80");
+   Et_keys.push_back("80_100");
+   Et_edges["1_20"].first = 1.;
+   Et_edges["1_20"].second = 20.;
+   Et_edges["20_40"].first = 20.;
+   Et_edges["20_40"].second = 40.;
+   Et_edges["40_60"].first = 40.;
+   Et_edges["40_60"].second = 60.;
+   Et_edges["60_80"].first = 60.;
+   Et_edges["60_80"].second = 80.;
+   Et_edges["80_100"].first = 80.;
+   Et_edges["80_100"].second = 100.;
+
+   Eta_keys.push_back("0p00_0p50");
+   Eta_edges["0p00_0p50"].first = 0.;
+   Eta_edges["0p00_0p50"].second = 0.5;
+   Eta_keys.push_back("0p50_1p00");
+   Eta_edges["0p50_1p00"].first = 0.5;
+   Eta_edges["0p50_1p00"].second = 1.0;
+   Eta_keys.push_back("1p00_1p48");
+   Eta_edges["1p00_1p48"].first = 1.0;
+   Eta_edges["1p00_1p48"].second = 1.479;
+   Eta_keys.push_back("1p48_2p00");
+   Eta_edges["1p48_2p00"].first = 1.479;
+   Eta_edges["1p48_2p00"].second = 2.0;
+   Eta_keys.push_back("2p00_2p50");
+   Eta_edges["2p00_2p50"].first = 2.0;
+   Eta_edges["2p00_2p50"].second = 2.5;
+   Eta_keys.push_back("2p50_3p00");
+   Eta_edges["2p50_3p00"].first = 2.5;
+   Eta_edges["2p50_3p00"].second = 3.0;
+
+
+
 
    fout->cd("PFCluster_caloMatched");
 
@@ -166,6 +206,16 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
 
 
+
+   fout->cd("EoverEtrue_binned");
+   for (TString Et_key : Et_keys){
+      for (TString Eta_key: Eta_keys){
+         TString histo_name = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_Et" + Et_key;
+         h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name,histo_name,100,0.,2.);
+      }
+   }
+
+
    Info("Begin", "Booked Histograms");
 
 }
@@ -257,14 +307,14 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
       //---PFClusters_caloMatched---
       // loop over pfClusterHits associated to calo particle
-      for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+      for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
 
          // if there is a match bw pfClusterHit and PFClusters, save the index of the PFCluster
-         if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1 and pfClusterHit_energy[icP][ipfClH]>min_pfClusterHit_energy){
+         if(map_pfClusterHit_pfCluster[icP][ipfClH] != -1 and pfClusterHit_energy[icP][ipfClH]>min_pfClusterHit_energy){
 
             N_pfClH++;
 
-            if (entry<N_perEvent_plots){
+            if(entry<N_perEvent_plots){
                h_PFClusterHit_EB_ietaiphi.at(entry)->Fill(pfClusterHit_ieta[icP][ipfClH], pfClusterHit_iphi[icP][ipfClH], pfClusterHit_energy[icP][ipfClH]);
             }
 
@@ -340,7 +390,19 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
          }
 
-      }
+         //we fill the caloMatched histograms binned in eta and ET
+         for(TString Eta_key: Eta_keys){
+            for(TString Et_key: Et_keys){
+               double caloParticle_et = caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])));
+               if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
+                  && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
+                     h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key]->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);
+               }
+            }
+         }
+
+      }//end of match loop  caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])))
+
       // reloop over pfCluserHits 
       for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
          if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){

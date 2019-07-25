@@ -24,7 +24,7 @@
 #include <vector>
 #include "vector"
 #include <map>
-
+#include <cmath>
 
 class PFClusterAnalyzer : public TSelector {
    public :
@@ -73,8 +73,15 @@ class PFClusterAnalyzer : public TSelector {
 
       // -- root members
       TFile *fout;
+  
+      //needed to define the different eta and ET bins
+      std::vector<TString> Et_keys;
+      std::map<TString, std::pair<Float_t,Float_t>> Et_edges;
+      std::vector<TString> Eta_keys;
+      std::map<TString, std::pair<Float_t,Float_t>> Eta_edges;
      
-          
+      std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned;
+
       TH1F* h_PFClusters_caloMatched_size    ;
       TH1F* h_PFClusters_caloMatched_nXtals  ;
       TH1F* h_PFClusters_caloMatched_energy  ;
@@ -86,8 +93,6 @@ class PFClusterAnalyzer : public TSelector {
       TH2F* h_PFClusters_caloMatched_nXtals_vs_energy;
       std::vector<TH2F*> h_PFClusterHit_EB_ietaiphi;
 
-
-      //EEM
       TH1F* h_PFClusters_caloMatched_EEM_eta;
       TH1F* h_PFClusters_caloMatched_EEM_size;
       TH1F* h_PFClusters_caloMatched_EEM_nXtals;
@@ -96,7 +101,6 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_EEM_phi;
       TH1F* h_PFClusters_caloMatched_EEM_eOverEtrue;
 
-      //EBM
       TH1F* h_PFClusters_caloMatched_EBM_eta;
       TH1F* h_PFClusters_caloMatched_EBM_size;
       TH1F* h_PFClusters_caloMatched_EBM_nXtals;
@@ -105,8 +109,6 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_EBM_phi;
       TH1F* h_PFClusters_caloMatched_EBM_eOverEtrue;
 
-
-      //EBP
       TH1F* h_PFClusters_caloMatched_EBP_eta;
       TH1F* h_PFClusters_caloMatched_EBP_size;
       TH1F* h_PFClusters_caloMatched_EBP_nXtals;
@@ -115,8 +117,6 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_EBP_phi;
       TH1F* h_PFClusters_caloMatched_EBP_eOverEtrue;
 
-
-      //EEP
       TH1F* h_PFClusters_caloMatched_EEP_eta;
       TH1F* h_PFClusters_caloMatched_EEP_size;
       TH1F* h_PFClusters_caloMatched_EEP_nXtals;
@@ -162,8 +162,9 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_caloParticle_EEP_et;
       TH1F* h_caloParticle_EEP_eta;
       TH1F* h_caloParticle_EEP_phi;
-     
+    
 
+      
       // functions
       PFClusterAnalyzer(TTree * /*tree*/ =0) { }
       virtual ~PFClusterAnalyzer() { }
