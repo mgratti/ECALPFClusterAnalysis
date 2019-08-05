@@ -65,7 +65,7 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    fout->mkdir("PFCluster_caloMatched");
    fout->mkdir("caloParticle");
-   fout->mkdir("EoverEtrue_binned");
+   fout->mkdir("EtEta_binned");
 
    Et_keys.push_back("1_20");
    Et_keys.push_back("20_40");
@@ -84,21 +84,21 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    Et_edges["80_100"].second = 100.;
 
    Eta_keys.push_back("0p00_0p50");
+   Eta_keys.push_back("0p50_1p00");
+   Eta_keys.push_back("1p00_1p48");
+   Eta_keys.push_back("1p48_2p00");
+   Eta_keys.push_back("2p00_2p50");
+   Eta_keys.push_back("2p50_3p00");
    Eta_edges["0p00_0p50"].first = 0.;
    Eta_edges["0p00_0p50"].second = 0.5;
-   Eta_keys.push_back("0p50_1p00");
    Eta_edges["0p50_1p00"].first = 0.5;
    Eta_edges["0p50_1p00"].second = 1.0;
-   Eta_keys.push_back("1p00_1p48");
    Eta_edges["1p00_1p48"].first = 1.0;
    Eta_edges["1p00_1p48"].second = 1.479;
-   Eta_keys.push_back("1p48_2p00");
    Eta_edges["1p48_2p00"].first = 1.479;
    Eta_edges["1p48_2p00"].second = 2.0;
-   Eta_keys.push_back("2p00_2p50");
    Eta_edges["2p00_2p50"].first = 2.0;
    Eta_edges["2p00_2p50"].second = 2.5;
-   Eta_keys.push_back("2p50_3p00");
    Eta_edges["2p50_3p00"].first = 2.5;
    Eta_edges["2p50_3p00"].second = 3.0;
 
@@ -207,11 +207,14 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
 
 
-   fout->cd("EoverEtrue_binned");
+   fout->cd("EtEta_binned");
    for (TString Et_key : Et_keys){
       for (TString Eta_key: Eta_keys){
          TString histo_name = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_Et" + Et_key;
          h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name,histo_name,100,0.,2.);
+         TString histo_name_size = "h_caloParticle_size_Eta" + Eta_key + "_Et" + Et_key;
+         h_caloParticle_size_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_size,histo_name_size,100,0.,2.);
+
       }
    }
 
@@ -249,11 +252,19 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    //std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
    //}
 
+
+   //count indices needed to retrieve the size
    int N_pfCl = 0;
    int N_pfCl_EEM = 0;
    int N_pfCl_EBM = 0;
    int N_pfCl_EBP = 0;
    int N_plCl_EEP = 0;
+
+   int N_Cl = 0;
+   int N_Cl_EEM = 0;
+   int N_Cl_EBM = 0;
+   int N_Cl_EBP = 0;
+   int N_Cl_EEP = 0;
 
    // loop over caloParticles
    for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
@@ -262,6 +273,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       int N_pfClH=0;
       int match_pfC_idx=-1;
 
+      N_Cl++;
 
       //---caloParticle---
       h_caloParticle_energy->Fill(caloParticle_energy[icP]);
@@ -271,6 +283,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       h_caloParticle_eta->Fill(caloParticle_eta[icP]);
 
       if(caloParticle_eta[icP]<-1.479){
+         N_Cl_EEM++;
          h_caloParticle_EEM_energy->Fill(caloParticle_energy[icP]);
          h_caloParticle_EEM_simEnergy->Fill(caloParticle_simEnergy[icP]);
          h_caloParticle_EEM_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
@@ -279,6 +292,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }
 
       if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<0){
+         N_Cl_EBM++;
          h_caloParticle_EBM_energy->Fill(caloParticle_energy[icP]);
          h_caloParticle_EBM_simEnergy->Fill(caloParticle_simEnergy[icP]);
          h_caloParticle_EBM_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
@@ -287,6 +301,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }
 
       if(caloParticle_eta[icP]>=0 && caloParticle_eta[icP]<1.479){
+         N_Cl_EBP++;
          h_caloParticle_EBP_energy->Fill(caloParticle_energy[icP]);
          h_caloParticle_EBP_simEnergy->Fill(caloParticle_simEnergy[icP]);
          h_caloParticle_EBP_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
@@ -295,6 +310,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }
 
       if(caloParticle_eta[icP]>=1.479){
+         N_Cl_EEP++;
          h_caloParticle_EEP_energy->Fill(caloParticle_energy[icP]);
          h_caloParticle_EEP_simEnergy->Fill(caloParticle_simEnergy[icP]);
          h_caloParticle_EEP_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
@@ -302,14 +318,28 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          h_caloParticle_EEP_eta->Fill(caloParticle_eta[icP]);
       }
 
-
-
+      h_caloParticle_size->Fill(N_Cl);
+      h_caloParticle_EEM_size->Fill(N_Cl_EEM); 
+      h_caloParticle_EBM_size->Fill(N_Cl_EBM);
+      h_caloParticle_EBP_size->Fill(N_Cl_EBP);
+      h_caloParticle_EEP_size->Fill(N_Cl_EEP);
+      
+      //eta ET binned quantity that stores the number of events (equal to the number of entries of the histogram)
+      for(TString Eta_key: Eta_keys){
+            for(TString Et_key: Et_keys){
+               double caloParticle_et = caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])));
+               if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
+                  && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
+                     h_caloParticle_size_EtaEtBinned[Eta_key][Et_key]->Fill(1.);
+               }
+            }
+         }
 
       //---PFClusters_caloMatched---
       // loop over pfClusterHits associated to calo particle
       for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
 
-         // if there is a match bw pfClusterHit and PFClusters, save the index of the PFCluster
+        // if there is a match bw pfClusterHit and PFClusters, save the index of the PFCluster
          if(map_pfClusterHit_pfCluster[icP][ipfClH] != -1 and pfClusterHit_energy[icP][ipfClH]>min_pfClusterHit_energy){
 
             N_pfClH++;
@@ -401,7 +431,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             }
          }
 
-      }//end of match loop  caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])))
+      }//end of match loop  
 
       // reloop over pfCluserHits 
       for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){

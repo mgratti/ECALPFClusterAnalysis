@@ -81,6 +81,8 @@ class PFClusterAnalyzer : public TSelector {
       std::map<TString, std::pair<Float_t,Float_t>> Eta_edges;
      
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned;
+      std::map<TString, std::map<TString, TH1F*>> h_caloParticle_size_EtaEtBinned;
+
 
       TH1F* h_PFClusters_caloMatched_size    ;
       TH1F* h_PFClusters_caloMatched_nXtals  ;
