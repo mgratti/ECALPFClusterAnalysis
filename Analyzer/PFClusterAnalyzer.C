@@ -210,9 +210,11 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    fout->cd("EtEta_binned");
    for (TString Et_key : Et_keys){
       for (TString Eta_key: Eta_keys){
-         TString histo_name = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_Et" + Et_key;
+         TString histo_name            = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_Et" + Et_key;
          h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name,histo_name,100,0.,2.);
-         TString histo_name_size = "h_caloParticle_size_Eta" + Eta_key + "_Et" + Et_key;
+         TString histo_name_efficiency = "h_PFclusters_caloMatched_size_Eta" + Eta_key + "_Et" + Et_key + "_forEfficiency";
+         h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiency,histo_name_efficiency,100,0.,2.);
+         TString histo_name_size       = "h_caloParticle_size_Eta" + Eta_key + "_Et" + Et_key;
          h_caloParticle_size_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_size,histo_name_size,100,0.,2.);
 
       }
@@ -427,6 +429,12 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
                   && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
                      h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key]->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);
+
+                  //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
+                  if(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP] > 0.4 && pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP] < 1.4){
+                     h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
+
+                  }
                }
             }
          }
