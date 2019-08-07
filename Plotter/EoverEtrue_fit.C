@@ -1,0 +1,691 @@
+#include "TStyle.h"
+#include "RooGlobalFunc.h"
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooPlot.h"
+#include "RooAbsPdf.h"
+#include "RooFitResult.h"
+#include "RooMCStudy.h"
+#include "RooCBShape.h"
+#include "RooBifurGauss.h"
+#include "RooGaussian.h"
+#include "RooProdPdf.h"
+#include "RooPolynomial.h"
+#include "RooExponential.h"
+#include "RooAddPdf.h"
+#include "RooDataHist.h"
+#include "RooHist.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TPad.h"
+#include "TGraphErrors.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TSystem.h"
+#include "TLine.h"
+#include "TPaveText.h"
+#include <iostream>
+#include <iomanip>
+
+using namespace RooFit ;
+using namespace std;
+
+/*
+   The main functions of this script are the following:
+   1. This script enables to fit the E/Etrue distribution.The residuals are plotted and the chi square is computed.
+   2. Produce the scale, resolution and efficiency plots
+   */
+
+
+
+//////////////////////////////////////////////////////////////////////
+//                    User's decision board                         //
+
+// enter the file name
+TString fileName = "test_singlePhoton_150k";
+
+// enter the number of k events
+Int_t kEvents = 50;
+
+// choose between endcap and barrel
+Bool_t do_EB = true;
+Bool_t do_EE = false;
+
+// choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
+Bool_t do_CBfit       = false; 
+Bool_t do_doubleCBfit = true;
+Bool_t do_BGfit       = false;
+
+// choose between fitting the whole distribution or the peak only
+Bool_t do_fitAll  = false;
+Bool_t do_fitPeak = true;
+
+// choose which plots to produce
+Bool_t do_resolutionPlot = false;
+Bool_t do_scalePlot      = false;
+Bool_t do_efficiencyPlot = false;
+
+//////////////////////////////////////////////////////////////////////
+
+
+
+// will be used to retrieve that boundaries of the ranges
+struct Edges{
+   Float_t first;
+   Float_t second;
+};
+
+
+// additional functions
+// converts double to string with adjusting the number of decimals
+TString getString(Float_t num, int decimal = 0);
+// produce the resolution and scale plots
+void producePlots(TString, map<TString, map<TString, Float_t>>, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor>,string);
+// produce the efficiency plots
+void produceEfficiencyPlot(TFile*, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string);
+
+
+// main function
+void EoverEtrue_fit(){
+
+   // define the different Et and Eta slots
+   vector<TString> ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
+   vector<TString> ETAranges;
+   if(do_EB){
+      ETAranges = {"0p00_0p50", "0p50_1p00", "1p00_1p48", "1p48_2p00"};
+   }
+   else if(do_EE){
+      ETAranges = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
+   }
+
+
+   map<TString, Edges> ETvalue;
+   map<TString, Edges> ETAvalue;
+
+   // and adjust the boundaries
+   ETvalue["1_20"].first  = 1;
+   ETvalue["1_20"].second = 20; 
+   ETvalue["20_40"].first  = 20;
+   ETvalue["20_40"].second = 40; 
+   ETvalue["40_60"].first  = 40;
+   ETvalue["40_60"].second = 60; 
+   ETvalue["60_80"].first  = 60;
+   ETvalue["60_80"].second = 80; 
+   ETvalue["80_100"].first  = 80;
+   ETvalue["80_100"].second = 100; 
+
+
+   ETAvalue["0p00_0p50"].first  = 0.0;
+   ETAvalue["0p00_0p50"].second = 0.5;
+   ETAvalue["0p50_1p00"].first  = 0.5;
+   ETAvalue["0p50_1p00"].second = 1.0;
+   ETAvalue["1p00_1p48"].first  = 1.0;
+   ETAvalue["1p00_1p48"].second = 1.48;
+   ETAvalue["1p48_2p00"].first  = 1.48;
+   ETAvalue["1p48_2p00"].second = 2.0;
+   ETAvalue["2p00_2p50"].first  = 2.0;
+   ETAvalue["2p00_2p50"].second = 2.5;
+   ETAvalue["2p50_3p00"].first  = 2.5;
+   ETAvalue["2p50_3p00"].second = 3.0;
+
+
+   //color for the resolution, scale and efficiency plots
+   map<int, EColor> color;
+   color[0]=kRed;
+   color[1]=kOrange;
+   color[2]=kBlue;
+   color[3]=kGreen;
+   color[4]=kBlack;
+
+
+   // for the resolution (sigma of the gaussian)
+   map<TString, map<TString, Float_t>> map_sigma;
+
+   // for the scale (mean of the gaussian)
+   map<TString, map<TString, Float_t>> map_mean;
+
+   TFile* inputFile = 0;
+   if(do_EB==true){
+      inputFile = TFile::Open("../Analyzer/outputfiles/" + fileName + "_EB.root");
+   }
+   else if(do_EE==true){
+      inputFile = TFile::Open("../Analyzer/outputfiles/" + fileName + "_EE.root");
+   }
+
+   string outputdir = "myPlots/fits/";
+
+   // ranges of the distribution
+   Double_t rangeMin = 0.;
+   Double_t rangeMax = 2.;
+
+
+   // we loop on the different ET and ETA ranges
+   for(unsigned int i(0); i<ETranges.size(); ++i){
+      for(unsigned int j(0); j<ETAranges.size(); ++j){
+
+         // we get te necessary files and histograms
+         TH1D* dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
+
+         // we declare dm as a RooRealVar (for the residual) and as a RooDataHist (for the fit):
+         RooRealVar* EoverEtrue = new RooRealVar("EoverEtrue","EoverEtrue" ,rangeMin,rangeMax);
+         EoverEtrue ->setBins(150);
+
+         RooDataHist* rdh = new RooDataHist("rdh", "rdh", *EoverEtrue, dmhist);
+
+
+         //Define the PDF to fit: 
+
+         // crystal ball (gaussian + exponential decaying tails)
+         // we declare all the parameters needed for the fits	
+         //RooRealVar *mean   = new RooRealVar("mean","mean",1.,0.5,1.5);
+         //RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.00115, 0.0, 0.1);
+         //RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
+         //RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
+         RooRealVar *mean   = new RooRealVar("mean","mean",1.,0.5,1.5);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.09, 0.0, 0.3);
+         RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
+         RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
+
+         RooCBShape *CBpdf = new RooCBShape("CBpdf", "CBpdf", *EoverEtrue, *mean, *sigma, *alpha, *n);
+
+
+         // double crystal ball (same gaussian body but different exponential tails)
+         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 1., 0, 2.);
+         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 1., 0., 10.);
+         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 1., 0, 2.);
+         RooRealVar *n_2      = new RooRealVar("n_2", "n_2", 1., 0., 10.);
+
+         RooCBShape *CBpdf_1 = new RooCBShape("CBpdf_1", "CBpdf_1", *EoverEtrue, *mean, *sigma, *alpha_1, *n_1);
+         RooCBShape *CBpdf_2 = new RooCBShape("CBpdf_2", "CBpdf_2", *EoverEtrue, *mean, *sigma, *alpha_2, *n_2);
+
+         // defines the relative importance of the fit
+         RooRealVar *sigfrac  = new RooRealVar("sigfrac","sigfrac",0.0 ,1.0);
+
+         // we add the two CB pdfs together
+         RooAddPdf *doubleCBpdf   = new RooAddPdf("doubleCBpdf", "doubleCBpdf", *CBpdf_1, *CBpdf_2, *sigfrac); 
+
+         // bifurcated gaussian:
+         RooRealVar *mean_BG     = new RooRealVar("mean_BG","mean_BG",0.98,0.9,1.1);
+         RooRealVar *sigma_left  = new RooRealVar("#sigma_{l}","sigmal",0.015, 0.0, 0.1);
+         RooRealVar *sigma_right = new RooRealVar("#sigma_{r}","sigmar",0.0075, 0.0, 0.1);
+
+         RooAbsPdf *BGpdf = new RooBifurGauss("BGpdf","BGpdf", *EoverEtrue, *mean_BG, *sigma_left, *sigma_right);
+
+
+         // we define the frame where to plot
+         TCanvas *canv = new TCanvas("canv", "canv", 700, 600);
+         RooPlot *frame = EoverEtrue->frame(Title("Single photon produced in front of ECAL"));
+
+         // plot the data
+         rdh->plotOn(frame, RooFit::Name("data"));
+
+         // fit the PDF to the data
+         RooFitResult *result;
+         if(do_CBfit==true){
+            if(do_fitAll){
+               result = CBpdf->fitTo(*rdh);
+            }
+            else if(do_fitPeak){
+               EoverEtrue->setRange("peak",  0.6, 1.1);
+               result = CBpdf->fitTo(*rdh, Range("peak"));
+            }      
+         }
+         else if(do_doubleCBfit){
+            if(do_fitAll){
+               result = doubleCBpdf->fitTo(*rdh);
+            }
+            else if(do_fitPeak){
+               EoverEtrue->setRange("peak",  0.6, 1.1);
+               result = doubleCBpdf->fitTo(*rdh, Range("peak"));
+            }      
+         }
+         else if(do_BGfit==true){
+            if(do_fitAll){
+               result = BGpdf->fitTo(*rdh);
+            }
+            else if(do_fitPeak){
+               EoverEtrue->setRange("peak",  0.6, 1.1);
+               result = BGpdf->fitTo(*rdh, Range("peak"));
+            }      
+         }
+
+
+         // plot the fit 		
+         if(do_CBfit==true){
+            CBpdf->plotOn(frame,LineColor(4),RooFit::Name("CBpdf"),Components("CBpdf"));
+         }
+         if(do_doubleCBfit==true){
+            doubleCBpdf->plotOn(frame,LineColor(4),RooFit::Name("doubleCBpdf"),Components("doubleCBpdf"));
+         }
+         else if(do_BGfit==true){
+            BGpdf->plotOn(frame,LineColor(4),RooFit::Name("BGpdf"),Components("BGpdf"));
+         }
+
+
+         // and write the fit parameters
+         if(do_CBfit==true){
+            CBpdf->paramOn(frame,   
+                  Layout(0.2, 0.4, 0.8),
+                  Format("NEU",AutoPrecision(1))
+                  );
+         }
+         else if(do_doubleCBfit==true){
+            doubleCBpdf->paramOn(frame,   
+                  Layout(0.2, 0.4, 0.8),
+                  Format("NEU",AutoPrecision(1))
+                  );
+         }
+         else if(do_BGfit==true){
+            BGpdf->paramOn(frame,   
+                  Layout(0.2, 0.4, 0.8),
+                  Format("NEU",AutoPrecision(1))
+                  );
+         }
+         frame->getAttText()->SetTextSize(0.03);
+         frame->getAttLine()->SetLineColorAlpha(0, 0);
+         frame->getAttFill()->SetFillColorAlpha(0, 0);
+
+         // define the pavetext
+         TPaveText* label;
+         if(!do_doubleCBfit){
+            label = new TPaveText(0.2,0.25,0.4,0.45,"brNDC");
+         }
+         else{
+            label = new TPaveText(0.626,0.25,0.726,0.45,"brNDC");
+         }
+         label->SetBorderSize(0);
+         label->SetFillColor(kWhite);
+         label->SetTextSize(0.03);
+         label->SetTextFont(42);
+         label->SetTextAlign(11);
+         TString kevt = to_string(kEvents);
+         label->AddText(kevt + "k events");
+         label->AddText(getString(ETvalue[ETranges[i]].first, 0) + " < E_{T} < " + getString(ETvalue[ETranges[i]].second, 0) + "  GeV");
+         label->AddText(getString(ETAvalue[ETAranges[j]].first, 2) + " < #eta < " + getString(ETAvalue[ETAranges[j]].second, 2));
+
+         // we compute the chisquare
+         Double_t chisquare;
+         if(do_CBfit==true){
+            chisquare = frame->chiSquare("CBpdf","data");
+         }
+         else if(do_doubleCBfit==true){
+            chisquare = frame->chiSquare("doubleCBpdf","data");
+         }
+         else if(do_BGfit==true){
+            chisquare = frame->chiSquare("BGpdf","data");
+         }
+
+         // and print it
+         TPaveText* label_2 = new TPaveText(0.62,0.65,0.72,0.8,"brNDC");
+         label_2->SetBorderSize(0);
+         label_2->SetFillColor(kWhite);
+         label_2->SetTextSize(0.03);
+         label_2->SetTextFont(42);
+         label_2->SetTextAlign(11);
+         if(do_CBfit==true){
+            label_2->AddText("CrystalBall PDF");
+         }
+         else if(do_doubleCBfit==true){
+            label_2->AddText("Double-Sided CrystalBall PDF");
+         }
+         else if(do_BGfit==true){
+            label_2->AddText("Bifurcated gaussian PDF");
+         }
+         TString chi2 = to_string(chisquare);
+         label_2->AddText("#chi^{2} = " + chi2);
+         cout << "chisquare = " << chisquare << endl;
+
+
+         // We define and plot the residuals 		
+
+         // construct a histogram with the pulls of the data w.r.t the curve
+         RooHist* hpull = frame->pullHist();
+         for(int i(0); i<frame->GetNbinsX(); ++i)
+         {
+            hpull->SetPointError(i,0,0,0,0);
+         }
+
+         // create a new frame to draw the pull distribution and add the distribution to the frame
+         RooPlot* frame2 = EoverEtrue->frame(Title(" "));
+         frame2->addPlotable(hpull,"P");//,"E3");
+
+         canv->Divide(1,2);
+
+         // plot of the curve and the fit
+         canv->cd(1);
+         gPad->SetLeftMargin(0.15) ; 
+         gPad->SetPad(0.01,0.2,0.99,0.99);
+         frame->GetXaxis()->SetTitleSize(0.04);
+         frame->GetXaxis()->SetTitle("E/E_{true}");
+         frame->GetYaxis()->SetTitleSize(0.04);
+         frame->GetYaxis()->SetTitleOffset(1.1);
+         frame->Draw();
+         label->Draw();
+         label_2->Draw();
+
+         // plot of the residuals
+         canv->cd(2);
+         gPad->SetLeftMargin(0.15); 
+         gPad->SetPad(0.01,0.01,0.99,0.2);
+
+         frame2->GetYaxis()->SetNdivisions(3);
+         frame2->GetYaxis()->SetLabelSize(0.17);
+         frame2->GetYaxis()->SetTitleSize(0.17);
+         frame2->GetYaxis()->SetTitleOffset(0.24);
+         frame2->GetYaxis()->SetRangeUser(-5,5);	
+         frame2->GetYaxis()->SetTitle("Pulls");	
+         frame2->GetXaxis()->SetTitle("");	
+         frame2->GetXaxis()->SetLabelOffset(5);	
+         frame2->Draw();
+
+         TLine *line = new TLine();
+         line->DrawLine(0.,0,2.,0);
+         line->SetLineColor(2);
+         line->DrawLine(0.,-3,2.,-3);
+         line->DrawLine(0.,3,2.,3);
+
+         // create the output directory
+         system(Form("mkdir -p %s", outputdir.c_str()));
+
+         // save output
+         canv->SaveAs(outputdir + fileName + "_EoverEtrue_fit_Et_" + ETranges[i] + "_Eta_" + ETAranges[j] + ".png");
+
+         //delete canv;
+
+         // we retrieve the information necessary for the resolution/scale/efficiency plots
+         map_sigma[ETranges[i]][ETAranges[j]] = sigma->getVal();
+         map_mean[ETranges[i]][ETAranges[j]]  = mean->getVal();
+
+
+      }
+   }
+
+   // we get the resolution, scale and efficiency plots
+   if(do_resolutionPlot){
+      producePlots("resolution", map_sigma, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
+   }
+
+   if(do_scalePlot){
+      producePlots("scale", map_mean, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
+   }
+
+   if(do_efficiencyPlot){
+      produceEfficiencyPlot(inputFile, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
+   }
+
+
+}
+
+
+
+void producePlots(TString what, map<TString, map<TString, Float_t>> map_sigma, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
+
+   // we first produce the plot of the resolution as a function of the energy for different eta ranges
+   TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
+   TLegend* leg1 = new TLegend(0.55, 0.6, 0.75, 0.8);
+
+   for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
+
+      Float_t x, resolution;
+      TGraphErrors* graph = new TGraphErrors(0);
+      if(what=="resolution"){
+         graph->SetTitle("Resolution");
+      }
+      else if(what=="scale"){
+         graph->SetTitle("Scale");
+      }
+
+      for(unsigned int ii(0); ii<ETranges.size(); ++ii){
+         x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
+         resolution = map_sigma[ETranges[ii]][ETAranges[kk]];
+
+         int thisPoint = graph->GetN();
+         graph->SetPoint(thisPoint, x, resolution);
+         graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, 0);
+      }
+
+      if(what=="resolution"){
+         graph->GetYaxis()->SetRangeUser(0, 0.1);
+      }
+      else if(what=="scale"){
+         graph->GetYaxis()->SetRangeUser(0.7, 1.3);
+      }
+      graph->GetYaxis()->SetTitleSize(0.04);
+      graph->GetYaxis()->SetTitleOffset(1.2);
+      graph->GetXaxis()->SetTitle("E_{T} [GeV]");
+      graph->GetXaxis()->SetTitleSize(0.04);
+      graph->GetXaxis()->SetTitleOffset(1.1);
+      graph->SetLineColor(color[kk]);
+      graph->SetMarkerColor(color[kk]);
+      if(kk==0){
+         graph->Draw("A*");
+      }
+      else{
+         graph->Draw("*, same");
+      }
+
+      leg1 -> AddEntry(graph, ETAranges[kk]);
+      leg1 -> SetTextSize(0.04);
+      leg1 -> SetLineColor(0);
+      leg1 -> SetFillColorAlpha(0, 0);
+      leg1 -> SetBorderSize(0);
+      leg1 -> Draw("same");
+
+   }
+
+   TString dir = outputdir.c_str();
+
+   if(what=="resolution"){
+      c1->SaveAs(dir + "resolution_vs_energy.png");
+   }
+   else if(what=="scale"){
+      c1->SaveAs(dir + "scale_vs_energy.png");
+   }
+
+
+   // we then produce the plot of the resolution as a function of eta for different energy ranges
+   TCanvas* c2 = new TCanvas("c2", "c2", 700, 600);
+   TLegend* leg2 = new TLegend(0.55, 0.6, 0.75, 0.8);
+
+
+   for(unsigned int kk(0); kk<ETranges.size(); ++kk){
+
+      Float_t x, resolution; 
+      TGraphErrors* graph = new TGraphErrors(0);
+      if(what=="resolution"){
+         graph->SetTitle("Resolution");
+      }
+      else if(what=="scale"){
+         graph->SetTitle("Scale");
+      }
+
+      for(unsigned int ii(0); ii<ETAranges.size(); ++ii){
+         x = (ETAvalue[ETAranges[ii]].first + ETAvalue[ETAranges[ii]].second)/2;     
+         resolution = map_sigma[ETranges[kk]][ETAranges[ii]];
+
+         int thisPoint = graph->GetN();
+         graph->SetPoint(thisPoint, x, resolution);
+         graph->SetPointError(thisPoint, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, 0);
+      }
+
+      if(what=="resolution"){
+         graph->GetYaxis()->SetRangeUser(0, 0.1);
+      }
+      else if(what=="scale"){
+         graph->GetYaxis()->SetRangeUser(0.7, 1.3);
+      }
+      graph->GetYaxis()->SetTitleSize(0.04);
+      graph->GetYaxis()->SetTitleOffset(1.2);
+      graph->GetXaxis()->SetTitle("#eta");
+      graph->GetXaxis()->SetTitleSize(0.04);
+      graph->GetXaxis()->SetTitleOffset(1.1);
+      graph->SetLineColor(color[kk]);
+      graph->SetMarkerColor(color[kk]);
+      if(kk==0){
+         graph->Draw("A*");
+      }
+      else{
+         graph->Draw("*, same");
+      }
+
+      leg2 -> AddEntry(graph, ETranges[kk]);
+      leg2 -> SetTextSize(0.04);
+      leg2 -> SetLineColor(0);
+      leg2 -> SetFillColorAlpha(0, 0);
+      leg2 -> SetBorderSize(0);
+      leg2 -> Draw("same");
+
+   }
+   if(what=="resolution"){
+      c2->SaveAs(dir + "resolution_vs_eta.png");
+   }
+   else if(what=="scale"){
+      c2->SaveAs(dir + "scale_vs_eta.png");
+   }
+
+   delete c1;
+   delete c2;
+}
+
+
+
+
+void produceEfficiencyPlot(TFile* inputFile, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
+
+   // we first produce the plot of the efficiency as a function of the energy for different eta ranges
+   TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
+   TLegend* leg1 = new TLegend(0.55, 0.6, 0.75, 0.8);
+
+   for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
+
+      Float_t x, efficiency;
+      TGraphErrors* graph = new TGraphErrors(0);
+      graph->SetTitle("Efficiency");
+
+      for(unsigned int ii(0); ii<ETranges.size(); ++ii){
+
+         // we get te necessary histograms
+         TH1D* hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
+
+         TH1D* hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii])->Clone("hist_deno");
+
+         x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
+         efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
+
+         int thisPoint = graph->GetN();
+         graph->SetPoint(thisPoint, x, efficiency);
+         graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, 0);
+      }
+
+      graph->GetYaxis()->SetRangeUser(0.7, 1.3);
+      graph->GetYaxis()->SetTitleSize(0.04);
+      graph->GetYaxis()->SetTitleOffset(1.2);
+      graph->GetXaxis()->SetTitle("E_{T} [GeV]");
+      graph->GetXaxis()->SetTitleSize(0.04);
+      graph->GetXaxis()->SetTitleOffset(1.1);
+      graph->SetLineColor(color[kk]);
+      graph->SetMarkerColor(color[kk]);
+      if(kk==0){
+         graph->Draw("A*");
+      }
+      else{
+         graph->Draw("*, same");
+      }
+
+      leg1 -> AddEntry(graph, ETAranges[kk]);
+      leg1 -> SetTextSize(0.04);
+      leg1 -> SetLineColor(0);
+      leg1 -> SetFillColorAlpha(0, 0);
+      leg1 -> SetBorderSize(0);
+      leg1 -> Draw("same");
+
+   }
+
+   TString dir = outputdir.c_str();
+
+   c1->SaveAs(dir + "efficiency_vs_energy.png");
+
+
+
+   // we then produce the plot of the efficiency as a function of eta for different energy ranges
+   TCanvas* c2 = new TCanvas("c2", "c2", 700, 600);
+   TLegend* leg2 = new TLegend(0.55, 0.6, 0.75, 0.8);
+
+   TH1D* hist_num = 0;
+   TH1D* hist_deno = 0;
+
+   for(unsigned int kk(0); kk<ETranges.size(); ++kk){
+
+      Float_t x, efficiency; 
+      TGraphErrors* graph = new TGraphErrors(0);
+      graph->SetTitle("Efficiency");
+      for(unsigned int ii(0); ii<ETAranges.size(); ++ii){
+         hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
+         hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk])->Clone("hist_deno");
+
+         x = (ETAvalue[ETAranges[ii]].first + ETAvalue[ETAranges[ii]].second)/2;     
+         efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
+
+         int thisPoint = graph->GetN();
+         graph->SetPoint(thisPoint, x, efficiency);
+         graph->SetPointError(thisPoint, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, 0);
+      }
+      graph->GetYaxis()->SetRangeUser(0.7, 1.3);
+      graph->GetYaxis()->SetTitleSize(0.04);
+      graph->GetYaxis()->SetTitleOffset(1.2);
+      graph->GetXaxis()->SetTitle("#eta");
+      graph->GetXaxis()->SetTitleSize(0.04);
+      graph->GetXaxis()->SetTitleOffset(1.1);
+      graph->SetLineColor(color[kk]);
+      graph->SetMarkerColor(color[kk]);
+      if(kk==0){
+         graph->Draw("A*");
+      }
+      else{
+         graph->Draw("*, same");
+      }
+
+      leg2 -> AddEntry(graph, ETranges[kk]);
+      leg2 -> SetTextSize(0.04);
+      leg2 -> SetLineColor(0);
+      leg2 -> SetFillColorAlpha(0, 0);
+      leg2 -> SetBorderSize(0);
+      leg2 -> Draw("same");
+
+   }
+   c2->SaveAs(dir + "efficiency_vs_eta.png");
+
+   delete c1;
+   delete c2;
+}
+
+
+
+
+
+
+
+
+TString getString(Float_t num, int decimal) {
+   // this function allows to convert a float to a string with adjusting the number of decimal
+
+   std::ostringstream streamObj3;
+
+   // Set Fixed-Point Notation
+   streamObj3 << std::fixed;
+
+   // Set precision to your chosen number of digits
+   streamObj3 << std::setprecision(decimal);
+
+   // Add double to stream
+   streamObj3 << num;
+
+   // Get string from output string stream
+   std::string strObj3 = streamObj3.str();
+
+   return strObj3.c_str();
+}
+
+
