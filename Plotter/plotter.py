@@ -1,5 +1,5 @@
 #example of use: 
-# python simplePlotter.py -f histo_singlePhoton_5k_EB --doClusterAnalysis
+# python plotter.py -f histo_singlePhoton_5k_EB --doClusterAnalysis
 
 
 
