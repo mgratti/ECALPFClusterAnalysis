@@ -187,7 +187,6 @@ def beautify1DPlot(outputdir, inputfile, inputdir, histoname, xtitle, ytitle, xr
   c.SaveAs('{}/{}.png'.format(outputdir,histo.GetName()))
   c.SaveAs('{}/{}.pdf'.format(outputdir,histo.GetName()))
   c.SaveAs('{}/{}.C'.format(outputdir,histo.GetName()))
-  c.SaveAs('{}/{}.root'.format(outputdir,histo.GetName()))
   del c
 
 

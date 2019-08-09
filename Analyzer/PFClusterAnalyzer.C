@@ -107,11 +107,15 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    fout->cd("PFCluster_caloMatched");
 
+   int nBins_energy = 220;
+   int rangeMin_energy = -5;
+   int rangeMax_energy = 105;
+
    // initialize histograms
    h_PFClusters_caloMatched_size    = new TH1F("h_PFClusters_caloMatched_size","h_PFClusters_caloMatched_size",50,0.,50.);
    h_PFClusters_caloMatched_nXtals  = new TH1F("h_PFClusters_caloMatched_nXtals","h_PFClusters_caloMatched_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_energy  = new TH1F("h_PFClusters_caloMatched_energy","h_PFClusters_caloMatched_energy",500,0.,100.);
-   h_PFClusters_caloMatched_et      = new TH1F("h_PFClusters_caloMatched_et","h_PFClusters_caloMatched_et",500,0.,100.);
+   h_PFClusters_caloMatched_energy  = new TH1F("h_PFClusters_caloMatched_energy","h_PFClusters_caloMatched_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_PFClusters_caloMatched_et      = new TH1F("h_PFClusters_caloMatched_et","h_PFClusters_caloMatched_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_PFClusters_caloMatched_eta     = new TH1F("h_PFClusters_caloMatched_eta","h_PFClusters_caloMatched_eta",300,-3.,3.);
    h_PFClusters_caloMatched_phi     = new TH1F("h_PFClusters_caloMatched_phi","h_PFClusters_caloMatched_phi",128,-3.2,3.2);
    h_PFClusters_caloMatched_eOverEtrue = new TH1F("h_PFClusters_caloMatched_eOverEtrue","h_PFClusters_caloMatched_eOverEtrue",100,0.,2.);
@@ -124,8 +128,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_PFClusters_caloMatched_EEM_eta     = new TH1F("h_PFClusters_caloMatched_EEM_eta","h_PFClusters_caloMatched_EEM_eta",300,-3.,3.);
    h_PFClusters_caloMatched_EEM_size    = new TH1F("h_PFClusters_caloMatched_EEM_size","h_PFClusters_caloMatched_EEM_size",50,0.,50.);
    h_PFClusters_caloMatched_EEM_nXtals  = new TH1F("h_PFClusters_caloMatched_EEM_nXtals","h_PFClusters_caloMatched_EEM_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EEM_energy  = new TH1F("h_PFClusters_caloMatched_EEM_energy","h_PFClusters_caloMatched_EEM_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EEM_et      = new TH1F("h_PFClusters_caloMatched_EEM_et","h_PFClusters_caloMatched_EEM_et",500,0.,100.);
+   h_PFClusters_caloMatched_EEM_energy  = new TH1F("h_PFClusters_caloMatched_EEM_energy","h_PFClusters_caloMatched_EEM_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_PFClusters_caloMatched_EEM_et      = new TH1F("h_PFClusters_caloMatched_EEM_et","h_PFClusters_caloMatched_EEM_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_PFClusters_caloMatched_EEM_phi     = new TH1F("h_PFClusters_caloMatched_EEM_phi","h_PFClusters_caloMatched_EEM_phi",128,-3.2,3.2);
    h_PFClusters_caloMatched_EEM_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EEM_eOverEtrue","h_PFClusters_caloMatched_EEM_eOverEtrue",100,0.,2.);
 
@@ -135,8 +139,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_PFClusters_caloMatched_EBM_eta     = new TH1F("h_PFClusters_caloMatched_EBM_eta","h_PFClusters_caloMatched_EBM_eta",300,-3.,3.);
    h_PFClusters_caloMatched_EBM_size    = new TH1F("h_PFClusters_caloMatched_EBM_size","h_PFClusters_caloMatched_EBM_size",50,0.,50.);
    h_PFClusters_caloMatched_EBM_nXtals  = new TH1F("h_PFClusters_caloMatched_EBM_nXtals","h_PFClusters_caloMatched_EBM_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EBM_energy  = new TH1F("h_PFClusters_caloMatched_EBM_energy","h_PFClusters_caloMatched_EBM_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EBM_et      = new TH1F("h_PFClusters_caloMatched_EBM_et","h_PFClusters_caloMatched_EBM_et",500,0.,100.);
+   h_PFClusters_caloMatched_EBM_energy  = new TH1F("h_PFClusters_caloMatched_EBM_energy","h_PFClusters_caloMatched_EBM_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_PFClusters_caloMatched_EBM_et      = new TH1F("h_PFClusters_caloMatched_EBM_et","h_PFClusters_caloMatched_EBM_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_PFClusters_caloMatched_EBM_phi     = new TH1F("h_PFClusters_caloMatched_EBM_phi","h_PFClusters_caloMatched_EBM_phi",128,-3.2,3.2);
    h_PFClusters_caloMatched_EBM_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EBM_eOverEtrue","h_PFClusters_caloMatched_EBM_eOverEtrue",100,0.,2.);
 
@@ -145,8 +149,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_PFClusters_caloMatched_EBP_eta     = new TH1F("h_PFClusters_caloMatched_EBP_eta","h_PFClusters_caloMatched_EBP_eta",300,-3.,3.);
    h_PFClusters_caloMatched_EBP_size    = new TH1F("h_PFClusters_caloMatched_EBP_size","h_PFClusters_caloMatched_EBP_size",50,0.,50.);
    h_PFClusters_caloMatched_EBP_nXtals  = new TH1F("h_PFClusters_caloMatched_EBP_nXtals","h_PFClusters_caloMatched_EBP_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EBP_energy  = new TH1F("h_PFClusters_caloMatched_EBP_energy","h_PFClusters_caloMatched_EBP_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EBP_et      = new TH1F("h_PFClusters_caloMatched_EBP_et","h_PFClusters_caloMatched_EBP_et",500,0.,100.);
+   h_PFClusters_caloMatched_EBP_energy  = new TH1F("h_PFClusters_caloMatched_EBP_energy","h_PFClusters_caloMatched_EBP_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_PFClusters_caloMatched_EBP_et      = new TH1F("h_PFClusters_caloMatched_EBP_et","h_PFClusters_caloMatched_EBP_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_PFClusters_caloMatched_EBP_phi     = new TH1F("h_PFClusters_caloMatched_EBP_phi","h_PFClusters_caloMatched_EBP_phi",128,-3.2,3.2);
    h_PFClusters_caloMatched_EBP_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EBP_eOverEtrue","h_PFClusters_caloMatched_EBP_eOverEtrue",100,0.,2.);
 
@@ -155,8 +159,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_PFClusters_caloMatched_EEP_eta     = new TH1F("h_PFClusters_caloMatched_EEP_eta","h_PFClusters_caloMatched_EEP_eta",300,-3.,3.);
    h_PFClusters_caloMatched_EEP_size    = new TH1F("h_PFClusters_caloMatched_EEP_size","h_PFClusters_caloMatched_EEP_size",50,0.,50.);
    h_PFClusters_caloMatched_EEP_nXtals  = new TH1F("h_PFClusters_caloMatched_EEP_nXtals","h_PFClusters_caloMatched_EEP_nXtals",50,0.,50.);
-   h_PFClusters_caloMatched_EEP_energy  = new TH1F("h_PFClusters_caloMatched_EEP_energy","h_PFClusters_caloMatched_EEP_energy",500,0.,100.);
-   h_PFClusters_caloMatched_EEP_et      = new TH1F("h_PFClusters_caloMatched_EEP_et","h_PFClusters_caloMatched_EEP_et",500,0.,100.);
+   h_PFClusters_caloMatched_EEP_energy  = new TH1F("h_PFClusters_caloMatched_EEP_energy","h_PFClusters_caloMatched_EEP_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_PFClusters_caloMatched_EEP_et      = new TH1F("h_PFClusters_caloMatched_EEP_et","h_PFClusters_caloMatched_EEP_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_PFClusters_caloMatched_EEP_phi     = new TH1F("h_PFClusters_caloMatched_EEP_phi","h_PFClusters_caloMatched_EEP_phi",128,-3.2,3.2);
    h_PFClusters_caloMatched_EEP_eOverEtrue = new TH1F("h_PFClusters_caloMatched_EEP_eOverEtrue","h_PFClusters_caloMatched_EEP_eOverEtrue",100,0.,2.);
 
@@ -170,37 +174,37 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    fout->cd("caloParticle");
    h_caloParticle_size       = new TH1F("h_caloParticle_size","h_caloParticle_size",50,0.,50.);
-   h_caloParticle_energy     = new TH1F("h_caloParticle_energy","h_caloParticle_energy",500,-5.,100.);
+   h_caloParticle_energy     = new TH1F("h_caloParticle_energy","h_caloParticle_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_simEnergy  = new TH1F("h_caloParticle_simEnergy","h_caloParticle_simEnergy",500,-5.,100.);
-   h_caloParticle_et      = new TH1F("h_caloParticle_et","h_caloParticle_et",500,0.,100.);
+   h_caloParticle_et      = new TH1F("h_caloParticle_et","h_caloParticle_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_eta     = new TH1F("h_caloParticle_eta","h_caloParticle_eta",300,-3.,3.);
    h_caloParticle_phi     = new TH1F("h_caloParticle_phi","h_caloParticle_phi",128,-3.2,3.2);
 
    h_caloParticle_EEM_size       = new TH1F("h_caloParticle_EEM_size","h_caloParticle_EEM_size",50,0.,50.);
-   h_caloParticle_EEM_energy     = new TH1F("h_caloParticle_EEM_energy","h_caloParticle_EEM_energy",500,-5.,100.);
+   h_caloParticle_EEM_energy     = new TH1F("h_caloParticle_EEM_energy","h_caloParticle_EEM_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEM_simEnergy  = new TH1F("h_caloParticle_EEM_simEnergy","h_caloParticle_EEM_simEnergy",500,-5.,100.);
-   h_caloParticle_EEM_et      = new TH1F("h_caloParticle_EEM_et","h_caloParticle_EEM_et",500,0.,100.);
+   h_caloParticle_EEM_et      = new TH1F("h_caloParticle_EEM_et","h_caloParticle_EEM_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEM_eta     = new TH1F("h_caloParticle_EEM_eta","h_caloParticle_EEM_eta",300,-3.,3.);
    h_caloParticle_EEM_phi     = new TH1F("h_caloParticle_EEM_phi","h_caloParticle_EEM_phi",128,-3.2,3.2);
 
    h_caloParticle_EBM_size       = new TH1F("h_caloParticle_EBM_size","h_caloParticle_EBM_size",50,0.,50.);
-   h_caloParticle_EBM_energy     = new TH1F("h_caloParticle_EBM_energy","h_caloParticle_EBM_energy",500,-5.,100.);
+   h_caloParticle_EBM_energy     = new TH1F("h_caloParticle_EBM_energy","h_caloParticle_EBM_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBM_simEnergy  = new TH1F("h_caloParticle_EBM_simEnergy","h_caloParticle_EBM_simEnergy",500,-5.,100.);
-   h_caloParticle_EBM_et      = new TH1F("h_caloParticle_EBM_et","h_caloParticle_EBM_et",500,0.,100.);
+   h_caloParticle_EBM_et      = new TH1F("h_caloParticle_EBM_et","h_caloParticle_EBM_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBM_eta     = new TH1F("h_caloParticle_EBM_eta","h_caloParticle_EBM_eta",300,-3.,3.);
    h_caloParticle_EBM_phi     = new TH1F("h_caloParticle_EBM_phi","h_caloParticle_EBM_phi",128,-3.2,3.2);
 
    h_caloParticle_EBP_size       = new TH1F("h_caloParticle_EBP_size","h_caloParticle_EBP_size",50,0.,50.);
-   h_caloParticle_EBP_energy     = new TH1F("h_caloParticle_EBP_energy","h_caloParticle_EBP_energy",500,-5.,100.);
+   h_caloParticle_EBP_energy     = new TH1F("h_caloParticle_EBP_energy","h_caloParticle_EBP_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBP_simEnergy  = new TH1F("h_caloParticle_EBP_simEnergy","h_caloParticle_EBP_simEnergy",500,-5.,100.);
-   h_caloParticle_EBP_et      = new TH1F("h_caloParticle_EBP_et","h_caloParticle_EBP_et",500,0.,100.);
+   h_caloParticle_EBP_et      = new TH1F("h_caloParticle_EBP_et","h_caloParticle_EBP_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBP_eta     = new TH1F("h_caloParticle_EBP_eta","h_caloParticle_EBP_eta",300,-3.,3.);
    h_caloParticle_EBP_phi     = new TH1F("h_caloParticle_EBP_phi","h_caloParticle_EBP_phi",128,-3.2,3.2);
 
    h_caloParticle_EEP_size       = new TH1F("h_caloParticle_EEP_size","h_caloParticle_EEP_size",50,0.,50.);
-   h_caloParticle_EEP_energy     = new TH1F("h_caloParticle_EEP_energy","h_caloParticle_EEP_energy",500,-5.,100.);
+   h_caloParticle_EEP_energy     = new TH1F("h_caloParticle_EEP_energy","h_caloParticle_EEP_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEP_simEnergy  = new TH1F("h_caloParticle_EEP_simEnergy","h_caloParticle_EEP_simEnergy",500,-5.,100.);
-   h_caloParticle_EEP_et      = new TH1F("h_caloParticle_EEP_et","h_caloParticle_EEP_et",500,0.,100.);
+   h_caloParticle_EEP_et      = new TH1F("h_caloParticle_EEP_et","h_caloParticle_EEP_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEP_eta     = new TH1F("h_caloParticle_EEP_eta","h_caloParticle_EEP_eta",300,-3.,3.);
    h_caloParticle_EEP_phi     = new TH1F("h_caloParticle_EEP_phi","h_caloParticle_EEP_phi",128,-3.2,3.2);
 
