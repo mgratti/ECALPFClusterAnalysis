@@ -8,8 +8,8 @@
 
 void start_PFClusterAnalyzer(){
 
-  TString inFileName = "/t3home/anlyon/CMSSW_10_6_0/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/dumped_singlePhoton_150k_EB_second.root";
-  TString outFileName = "./outputfiles/histo_singlePhoton_150k_EB_second.root";
+  TString inFileName = "/t3home/anlyon/CMSSW_10_6_0/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/dumped_singlePhoton_150k_EB.root";
+  TString outFileName = "./outputfiles/test_singlePhoton_150k_EB_second.root";
 
   TChain * c = new TChain("recosimdumper/caloTree");
   c->Add(inFileName);
