@@ -81,6 +81,7 @@ class PFClusterAnalyzer : public TSelector {
       std::map<TString, std::pair<Float_t,Float_t>> Eta_edges;
      
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned;
+      std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned;
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency;
       std::map<TString, std::map<TString, TH1F*>> h_caloParticle_size_EtaEtBinned;
 
@@ -92,6 +93,7 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_eta     ;
       TH1F* h_PFClusters_caloMatched_phi     ;
       TH1F* h_PFClusters_caloMatched_eOverEtrue;
+      TH1F* h_PFClusters_caloMatched_eOverEtrue_simEnergy; 
       TH2F* h_PFClusters_caloMatched_nXtals_vs_xtalEnergy;
       TH2F* h_PFClusters_caloMatched_nXtals_vs_energy;
       std::vector<TH2F*> h_PFClusterHit_EB_ietaiphi;

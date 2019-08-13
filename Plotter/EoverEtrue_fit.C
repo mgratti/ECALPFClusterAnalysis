@@ -29,6 +29,7 @@
 #include <iostream>
 #include <iomanip>
 
+
 using namespace RooFit ;
 using namespace std;
 
@@ -44,14 +45,18 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-TString fileName = "test_singlePhoton_150k";
+string fileName = "histo_singlePhoton_150k";
 
 // enter the number of k events
-Int_t kEvents = 50;
+Int_t kEvents = 150;
 
 // choose between endcap and barrel
 Bool_t do_EB = true;
 Bool_t do_EE = false;
+
+// choose which Etrue definition you want to use (choose only one)
+Bool_t use_energy    = false;
+Bool_t use_simEnergy = true;
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 Bool_t do_CBfit       = false; 
@@ -59,12 +64,12 @@ Bool_t do_doubleCBfit = true;
 Bool_t do_BGfit       = false;
 
 // choose between fitting the whole distribution or the peak only
-Bool_t do_fitAll  = false;
-Bool_t do_fitPeak = true;
+Bool_t do_fitAll  = true;
+Bool_t do_fitPeak = false;
 
 // choose which plots to produce
 Bool_t do_resolutionPlot = false;
-Bool_t do_scalePlot      = false;
+Bool_t do_scalePlot      = false;;
 Bool_t do_efficiencyPlot = false;
 
 //////////////////////////////////////////////////////////////////////
@@ -90,11 +95,12 @@ void produceEfficiencyPlot(TFile*, vector<TString>, vector<TString>, map<TString
 // main function
 void EoverEtrue_fit(){
 
+
    // define the different Et and Eta slots
-   vector<TString> ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
+   vector<TString> ETranges = {"20_40", "40_60", "60_80", "80_100"};
    vector<TString> ETAranges;
    if(do_EB){
-      ETAranges = {"0p00_0p50", "0p50_1p00", "1p00_1p48", "1p48_2p00"};
+      ETAranges = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
    }
    else if(do_EE){
       ETAranges = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
@@ -147,14 +153,30 @@ void EoverEtrue_fit(){
    map<TString, map<TString, Float_t>> map_mean;
 
    TFile* inputFile = 0;
+   TString name_tmp = fileName.c_str();
    if(do_EB==true){
-      inputFile = TFile::Open("../Analyzer/outputfiles/" + fileName + "_EB.root");
+      inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EB.root");
    }
    else if(do_EE==true){
-      inputFile = TFile::Open("../Analyzer/outputfiles/" + fileName + "_EE.root");
+      inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EE.root");
    }
 
-   string outputdir = "myPlots/fits/";
+   // define the output directory
+   string outputdir = "myPlots/fits/" + fileName;
+   if(do_CBfit){
+      outputdir += "_CB";
+   }
+   else if(do_doubleCBfit){
+      outputdir += "_doubleCB";
+   }
+   if(do_BGfit){
+      outputdir += "_BG";
+   }
+
+   if(use_simEnergy){
+      outputdir += "_simEnergy";
+   }
+   outputdir += "/";
 
    // ranges of the distribution
    Double_t rangeMin = 0.;
@@ -166,7 +188,13 @@ void EoverEtrue_fit(){
       for(unsigned int j(0); j<ETAranges.size(); ++j){
 
          // we get te necessary files and histograms
-         TH1D* dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
+         TH1D* dmhist = 0;
+         if(use_energy){
+            dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
+         }
+         else if(use_simEnergy){
+            dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
+         }
 
          // we declare dm as a RooRealVar (for the residual) and as a RooDataHist (for the fit):
          RooRealVar* EoverEtrue = new RooRealVar("EoverEtrue","EoverEtrue" ,rangeMin,rangeMax);
@@ -183,8 +211,8 @@ void EoverEtrue_fit(){
          //RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.00115, 0.0, 0.1);
          //RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          //RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
-         RooRealVar *mean   = new RooRealVar("mean","mean",1.,0.5,1.5);
-         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.09, 0.0, 0.3);
+         RooRealVar *mean   = new RooRealVar("mean","mean",1.1,0.9,1.4);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.01, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
 
@@ -192,10 +220,10 @@ void EoverEtrue_fit(){
 
 
          // double crystal ball (same gaussian body but different exponential tails)
-         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 1., 0, 2.);
+         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 1., -5., 5.);
          RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 1., 0., 10.);
-         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 1., 0, 2.);
-         RooRealVar *n_2      = new RooRealVar("n_2", "n_2", 1., 0., 10.);
+         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 1., -5, 5.);
+         RooRealVar *n_2      = new RooRealVar("n_2", "n_2", 1., 0., 50.);
 
          RooCBShape *CBpdf_1 = new RooCBShape("CBpdf_1", "CBpdf_1", *EoverEtrue, *mean, *sigma, *alpha_1, *n_1);
          RooCBShape *CBpdf_2 = new RooCBShape("CBpdf_2", "CBpdf_2", *EoverEtrue, *mean, *sigma, *alpha_2, *n_2);
@@ -228,7 +256,12 @@ void EoverEtrue_fit(){
                result = CBpdf->fitTo(*rdh);
             }
             else if(do_fitPeak){
-               EoverEtrue->setRange("peak",  0.6, 1.1);
+               if(use_energy){
+                  EoverEtrue->setRange("peak",  0.6, 1.1);
+               }
+               else if(use_simEnergy){
+                  EoverEtrue->setRange("peak",  0.9, 1.4);
+               }
                result = CBpdf->fitTo(*rdh, Range("peak"));
             }      
          }

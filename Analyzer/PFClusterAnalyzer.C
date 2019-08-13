@@ -119,7 +119,7 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_PFClusters_caloMatched_eta     = new TH1F("h_PFClusters_caloMatched_eta","h_PFClusters_caloMatched_eta",300,-3.,3.);
    h_PFClusters_caloMatched_phi     = new TH1F("h_PFClusters_caloMatched_phi","h_PFClusters_caloMatched_phi",128,-3.2,3.2);
    h_PFClusters_caloMatched_eOverEtrue = new TH1F("h_PFClusters_caloMatched_eOverEtrue","h_PFClusters_caloMatched_eOverEtrue",100,0.,2.);
-
+   h_PFClusters_caloMatched_eOverEtrue_simEnergy = new TH1F("h_PFClusters_caloMatched_eOverEtrue_simEnergy","h_PFClusters_caloMatched_eOverEtrue_simEnergy",100,0.,2.);
    h_PFClusters_caloMatched_nXtals_vs_xtalEnergy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", "h_PFClusters_caloMatched_nXtals_vs_xtalEnergy", 50, 0., 50., 50., 0., 50.);
    h_PFClusters_caloMatched_nXtals_vs_energy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_energy", "h_PFClusters_caloMatched_nXtals_vs_energy", 50, 0., 50., 100., 0., 100.);
 
@@ -216,6 +216,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
       for (TString Eta_key: Eta_keys){
          TString histo_name            = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_Et" + Et_key;
          h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name,histo_name,100,0.,2.);
+         TString histo_name_simEnergy  = "h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + Eta_key + "_Et" + Et_key;
+         h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_simEnergy,histo_name_simEnergy,100,0.,2.);
          TString histo_name_efficiency = "h_PFclusters_caloMatched_size_Eta" + Eta_key + "_Et" + Et_key + "_forEfficiency";
          h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiency,histo_name_efficiency,100,0.,2.);
          TString histo_name_size       = "h_caloParticle_size_Eta" + Eta_key + "_Et" + Et_key;
@@ -251,7 +253,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   std::cout << "Event information: evt=" << *eventId << std::endl;
+   //std::cout << "Event information: evt=" << *eventId << std::endl;
 
    // loop over genParticles
    //for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
@@ -372,7 +374,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          h_PFClusters_caloMatched_phi->Fill(pfCluster_phi[match_pfC_idx]);
          h_PFClusters_caloMatched_eta->Fill(pfCluster_eta[match_pfC_idx]);
          h_PFClusters_caloMatched_eOverEtrue->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);         
-
+         if(caloParticle_simEnergy[icP]!=-1){
+            h_PFClusters_caloMatched_eOverEtrue_simEnergy->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_simEnergy[icP]);         
+         }
          h_PFClusters_caloMatched_nXtals_vs_energy->Fill(N_pfClH, pfCluster_energy[match_pfC_idx]);
 
          if(caloParticle_eta[icP]<-1.479){
@@ -433,7 +437,11 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
                   && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
                      h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key]->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP]);
-
+                     h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned[Eta_key][Et_key]->Fill(pfCluster_energy[match_pfC_idx] / caloParticle_simEnergy[icP]);
+                     if(caloParticle_simEnergy[icP]==-1){
+                        cout << "Pfcluster_energy / caloParticle_energy / caloParticle_simEnergy "  << endl;
+                        cout << pfCluster_energy[match_pfC_idx] << " / " << caloParticle_energy[icP] << " / " << caloParticle_simEnergy[icP] << endl;
+                     }
                   //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
                   if(pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP] > 0.4 && pfCluster_energy[match_pfC_idx] / caloParticle_energy[icP] < 1.4){
                      h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
