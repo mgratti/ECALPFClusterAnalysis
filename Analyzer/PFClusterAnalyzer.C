@@ -304,7 +304,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       h_caloParticle_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
       h_caloParticle_phi->Fill(caloParticle_phi[icP]);
       h_caloParticle_eta->Fill(caloParticle_eta[icP]);
-/*
+
       if(caloParticle_eta[icP]<-1.479){
          N_Cl_EEM++;
          h_caloParticle_EEM_energy->Fill(caloParticle_energy[icP]);
@@ -515,7 +515,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }
 
 
-*/
+
    } // end loop calo particles
 
    h_PFClusters_caloMatched_size->Fill(N_pfCl);

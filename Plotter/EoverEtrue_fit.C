@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "test_singlePhoton_150k_second";
+string fileName = "test_singlePhoton_5k";
 
 // enter the number of k events
 Int_t kEvents = 150;
