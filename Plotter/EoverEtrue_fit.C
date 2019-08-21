@@ -53,8 +53,8 @@ string fileName = "test_singlePhoton_150k_second";
 Int_t kEvents = 150;
 
 // choose between endcap and barrel
-Bool_t do_EB = true;
-Bool_t do_EE = false;
+Bool_t do_EB = false;
+Bool_t do_EE = true;
 
 // choose which Etrue definition you want to use (choose only one)
 Bool_t use_energy    = true;
@@ -88,8 +88,33 @@ struct Edges{
    Float_t second;
 };
 
+// collects all the flags entered in the user's decision board
+struct FlagList{
+   Bool_t do_EB;
+   Bool_t do_EE;
+   Bool_t use_energy;
+   Bool_t use_simEnergy;
+   Bool_t do_binningEt;
+   Bool_t do_binningEn;
+   Bool_t do_CBfit;
+   Bool_t do_doubleCBfit;
+   Bool_t do_BGfit;
+   Bool_t do_fitAll;
+   Bool_t do_fitPeak;
+};
+
+struct FitParameters{
+   TFile* inputFile;
+   string outputdir;
+   map<TString, map<TString, Float_t>> map_sigma;
+   map<TString, map<TString, vector<Float_t>>> map_sigma_error;
+   map<TString, map<TString, Float_t>> map_mean;
+   map<TString, map<TString, vector<Float_t>>> map_mean_error;
+};
+
 
 // additional functions
+FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flaglist);
 // converts double to string with adjusting the number of decimals
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
@@ -101,6 +126,7 @@ void produceEfficiencyPlot(TFile*, Bool_t, vector<TString>, vector<TString>, map
 // main function
 void EoverEtrue_fit(){
 
+   FlagList flagList = {do_EB, do_EE, use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
    // define the different Et and Eta slots
    vector<TString> ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
@@ -151,7 +177,54 @@ void EoverEtrue_fit(){
    color[3]=kGreen;
    color[4]=kBlack;
 
+   // we perform the fit
+   FitParameters fitParameters = performFit(fileName, kEvents, ETranges, ETAranges, ETvalue, ETAvalue, flagList);
 
+   // we retrieve the parameters of the fit
+   map<TString, map<TString, Float_t>> sigma               = fitParameters.map_sigma;
+   map<TString, map<TString, vector<Float_t>>> sigma_error = fitParameters.map_sigma_error;
+   map<TString, map<TString, Float_t>> mean                = fitParameters.map_mean;
+   map<TString, map<TString, vector<Float_t>>> mean_error  = fitParameters.map_mean_error;
+
+
+   // we get the resolution, scale and efficiency plots
+   if(do_resolutionPlot){
+      producePlots("resolution", sigma, sigma_error, ETranges, ETAranges, ETvalue, ETAvalue, color, fitParameters.outputdir);
+   }
+   
+   if(do_scalePlot){
+      producePlots("scale", mean, mean_error, ETranges, ETAranges, ETvalue, ETAvalue, color, fitParameters.outputdir);
+   }
+
+   if(do_efficiencyPlot){
+      produceEfficiencyPlot(fitParameters.inputFile, flagList.do_binningEt, ETranges, ETAranges, ETvalue, ETAvalue, color, fitParameters.outputdir);
+   }
+
+
+}
+
+
+
+
+FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flagList){
+  
+   // struct of fit parameters that will be filled at the end 
+   FitParameters fitParameters;
+
+   // initialization of the bools
+   Bool_t do_EB = flagList.do_EB;
+   Bool_t do_EE = flagList.do_EE;
+   Bool_t use_energy = flagList.use_energy;
+   Bool_t use_simEnergy = flagList.use_simEnergy;
+   Bool_t do_binningEt = flagList.do_binningEt;
+   Bool_t do_binningEn = flagList.do_binningEn;
+   Bool_t do_CBfit = flagList.do_CBfit;
+   Bool_t do_doubleCBfit = flagList.do_doubleCBfit;
+   Bool_t do_BGfit = flagList.do_BGfit;
+   Bool_t do_fitAll = flagList.do_fitAll;
+   Bool_t do_fitPeak = flagList.do_fitPeak;
+ 
+   
    // for the resolution (sigma of the gaussian)
    map<TString, map<TString, Float_t>> map_sigma;
    map<TString, map<TString, vector<Float_t>>> map_sigma_error;
@@ -169,6 +242,8 @@ void EoverEtrue_fit(){
    else if(do_EE==true){
       inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EE.root");
    }
+
+   fitParameters.inputFile = inputFile;
 
    // define the output directory
    string outputdir = "myPlots/fits/" + fileName;
@@ -192,6 +267,8 @@ void EoverEtrue_fit(){
       outputdir += "_simEnergy";
    }
    outputdir += "/";
+
+   fitParameters.outputdir = outputdir;
 
    // ranges of the distribution
    Double_t rangeMin = 0.;
@@ -225,10 +302,6 @@ void EoverEtrue_fit(){
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         //RooRealVar *mean   = new RooRealVar("mean","mean",1.,0.5,1.5);
-         //RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.00115, 0.0, 0.1);
-         //RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
-         //RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
          RooRealVar *mean   = new RooRealVar("mean","mean",1.1,0.9,1.4);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.01, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
@@ -463,22 +536,26 @@ void EoverEtrue_fit(){
 
       }
    }
+ 
+   fitParameters.map_sigma       = map_sigma;
+   fitParameters.map_sigma_error = map_sigma_error;
+   fitParameters.map_mean        = map_mean;
+   fitParameters.map_mean_error  = map_mean_error;
 
-   // we get the resolution, scale and efficiency plots
-   if(do_resolutionPlot){
-      producePlots("resolution", map_sigma, map_sigma_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
-   }
-   
-   if(do_scalePlot){
-      producePlots("scale", map_mean, map_mean_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
-   }
 
-   if(do_efficiencyPlot){
-      produceEfficiencyPlot(inputFile, do_binningEt, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
-   }
-
+   return fitParameters;
 
 }
+
+
+
+
+
+
+
+
+
+
 
 
 void producePlots(TString what, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
