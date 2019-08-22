@@ -53,7 +53,8 @@ class PFClusterAnalyzer : public TSelector {
       //TTreeReaderArray<vector<int>> simHit_iz = {fReader, "simHit_iz"};
       //TTreeReaderArray<vector<float>> recHit_energy = {fReader, "recHit_energy"};
       //TTreeReaderArray<vector<bool>> pfRecHit_isMatched = {fReader, "pfRecHit_isMatched"};
-      TTreeReaderArray<vector<float>> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
+      //TTreeReaderArray<vector<float>> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
+      TTreeReaderArray<vector<map<int,float>>> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
       TTreeReaderArray<vector<float>> pfClusterHit_eta = {fReader, "pfClusterHit_eta"};
       TTreeReaderArray<vector<float>> pfClusterHit_phi = {fReader, "pfClusterHit_phi"};
       TTreeReaderArray<vector<int>> pfClusterHit_ieta = {fReader, "pfClusterHit_ieta"};
@@ -63,7 +64,8 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<float> pfCluster_eta = {fReader, "pfCluster_eta"};
       TTreeReaderArray<float> pfCluster_phi = {fReader, "pfCluster_phi"};
       //TTreeReaderArray<map<int,int>> map_simHit_pfCluster = {fReader, "map_simHit_pfCluster"};
-      TTreeReaderArray<map<int,int>> map_pfClusterHit_pfCluster = {fReader, "map_pfClusterHit_pfCluster"};
+      //doesn't exist in the new version of the dumper
+      //TTreeReaderArray<map<int,int>> map_pfClusterHit_pfCluster = {fReader, "map_pfClusterHit_pfCluster"};
 
 
       // non reader members 
