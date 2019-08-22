@@ -47,13 +47,13 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "test_singlePhoton_5k";
+string fileName = "test_singlePhoton_1k";
 
 // enter the number of k events
 Int_t kEvents = 150;
 
 // choose between endcap and barrel
-Bool_t do_EB = false;
+Bool_t do_EB = true;
 Bool_t do_EE = true;
 
 // choose which Etrue definition you want to use (choose only one)
@@ -74,8 +74,8 @@ Bool_t do_fitAll  = true;
 Bool_t do_fitPeak = false;
 
 // choose which plots to produce
-Bool_t do_resolutionPlot = true;
-Bool_t do_scalePlot      = true;;
+Bool_t do_resolutionPlot = false;
+Bool_t do_scalePlot      = false;
 Bool_t do_efficiencyPlot = true;
 
 //////////////////////////////////////////////////////////////////////
@@ -90,8 +90,6 @@ struct Edges{
 
 // collects all the flags entered in the user's decision board
 struct FlagList{
-   Bool_t do_EB;
-   Bool_t do_EE;
    Bool_t use_energy;
    Bool_t use_simEnergy;
    Bool_t do_binningEt;
@@ -104,7 +102,7 @@ struct FlagList{
 };
 
 struct FitParameters{
-   TFile* inputFile;
+   TString inputFile;
    string outputdir;
    map<TString, map<TString, Float_t>> map_sigma;
    map<TString, map<TString, vector<Float_t>>> map_sigma_error;
@@ -114,29 +112,24 @@ struct FitParameters{
 
 
 // additional functions
-FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flaglist);
+FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flaglist, string);
 // converts double to string with adjusting the number of decimals
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
-void producePlots(TString, map<TString, map<TString, Float_t>>, map<TString, map<TString, vector<Float_t>>>, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor>,string);
+void producePlots(TString, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor>,string);
 // produce the efficiency plots
-void produceEfficiencyPlot(TFile*, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string);
+void produceEfficiencyPlot(vector<TString>, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string);
 
 
 // main function
 void EoverEtrue_fit(){
 
-   FlagList flagList = {do_EB, do_EE, use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
+   FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
    // define the different Et and Eta slots
    vector<TString> ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
-   vector<TString> ETAranges;
-   if(do_EB){
-      ETAranges = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
-   }
-   else if(do_EE){
-      ETAranges = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
-   }
+   vector<TString> ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
+   vector<TString> ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
 
 
    map<TString, Edges> ETvalue;
@@ -172,32 +165,85 @@ void EoverEtrue_fit(){
    //color for the resolution, scale and efficiency plots
    map<int, EColor> color;
    color[0]=kRed;
-   color[1]=kOrange;
-   color[2]=kBlue;
+   color[1]=kMagenta;
+   color[2]=kOrange;
    color[3]=kGreen;
-   color[4]=kBlack;
+   color[4]=kBlue;
+   color[5]=kBlack;
 
    // we perform the fit
-   FitParameters fitParameters = performFit(fileName, kEvents, ETranges, ETAranges, ETvalue, ETAvalue, flagList);
+   FitParameters fitParameters_EB;
+   FitParameters fitParameters_EE;
+   if(do_EB){
+      fitParameters_EB = performFit(fileName, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
+   }
+   if(do_EE){
+      fitParameters_EE = performFit(fileName, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
+   }
 
    // we retrieve the parameters of the fit
-   map<TString, map<TString, Float_t>> sigma               = fitParameters.map_sigma;
-   map<TString, map<TString, vector<Float_t>>> sigma_error = fitParameters.map_sigma_error;
-   map<TString, map<TString, Float_t>> mean                = fitParameters.map_mean;
-   map<TString, map<TString, vector<Float_t>>> mean_error  = fitParameters.map_mean_error;
+   vector<map<TString, map<TString, Float_t>>> sigma;
+   vector<map<TString, map<TString, vector<Float_t>>>> sigma_error;
+   vector<map<TString, map<TString, Float_t>>> mean;
+   vector<map<TString, map<TString, vector<Float_t>>>> mean_error;
 
+   if(do_EB){
+      sigma.push_back(fitParameters_EB.map_sigma);
+      sigma_error.push_back(fitParameters_EB.map_sigma_error);
+      mean.push_back(fitParameters_EB.map_mean);
+      mean_error.push_back(fitParameters_EB.map_mean_error);
+
+      if(do_EE){
+         sigma.push_back(fitParameters_EE.map_sigma);
+         sigma_error.push_back(fitParameters_EE.map_sigma_error);
+         mean.push_back(fitParameters_EE.map_mean);
+         mean_error.push_back(fitParameters_EE.map_mean_error);
+      }
+   }
+   else{
+      sigma.push_back(fitParameters_EE.map_sigma);
+      sigma_error.push_back(fitParameters_EE.map_sigma_error);
+      mean.push_back(fitParameters_EE.map_mean);
+      mean_error.push_back(fitParameters_EE.map_mean_error);
+   }
+
+   // we get the other elements needed to produce the resolution/scale/efficiency plots
+   vector<TString> input;
+   string outputdir;
+   if(do_EB){
+      input.push_back(fitParameters_EB.inputFile);
+      outputdir = fitParameters_EB.outputdir;
+      if(do_EE){
+         input.push_back(fitParameters_EE.inputFile);
+      }
+   }
+   else{
+      input.push_back(fitParameters_EE.inputFile);
+      outputdir = fitParameters_EE.outputdir;
+   }
+
+   vector<TString> ETAranges;
+   if(do_EB){
+      ETAranges = ETAranges_EB;
+      if(do_EE){
+         ETAranges.insert(ETAranges.end(), ETAranges_EE.begin(), ETAranges_EE.end());
+      }
+   }
+   else{
+      ETAranges = ETAranges_EE;
+   }
 
    // we get the resolution, scale and efficiency plots
    if(do_resolutionPlot){
-      producePlots("resolution", sigma, sigma_error, ETranges, ETAranges, ETvalue, ETAvalue, color, fitParameters.outputdir);
+      producePlots("resolution", sigma, sigma_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
    }
-   
+
    if(do_scalePlot){
-      producePlots("scale", mean, mean_error, ETranges, ETAranges, ETvalue, ETAvalue, color, fitParameters.outputdir);
+      producePlots("scale", mean, mean_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
    }
 
    if(do_efficiencyPlot){
-      produceEfficiencyPlot(fitParameters.inputFile, flagList.do_binningEt, ETranges, ETAranges, ETvalue, ETAvalue, color, fitParameters.outputdir);
+      produceEfficiencyPlot(input, flagList.do_binningEt, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
    }
 
 
@@ -206,14 +252,24 @@ void EoverEtrue_fit(){
 
 
 
-FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flagList){
-  
+FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flagList, string do_where){
+
+   Bool_t do_EB = false;
+   Bool_t do_EE = false;
+
+   if(do_where=="EB"){
+      do_EB = true;
+      do_EE = false;
+   }
+   else if(do_where=="EE"){
+      do_EB = false;
+      do_EE = true;
+   }
+
    // struct of fit parameters that will be filled at the end 
    FitParameters fitParameters;
 
    // initialization of the bools
-   Bool_t do_EB = flagList.do_EB;
-   Bool_t do_EE = flagList.do_EE;
    Bool_t use_energy = flagList.use_energy;
    Bool_t use_simEnergy = flagList.use_simEnergy;
    Bool_t do_binningEt = flagList.do_binningEt;
@@ -223,8 +279,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
    Bool_t do_BGfit = flagList.do_BGfit;
    Bool_t do_fitAll = flagList.do_fitAll;
    Bool_t do_fitPeak = flagList.do_fitPeak;
- 
-   
+
    // for the resolution (sigma of the gaussian)
    map<TString, map<TString, Float_t>> map_sigma;
    map<TString, map<TString, vector<Float_t>>> map_sigma_error;
@@ -243,7 +298,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
       inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EE.root");
    }
 
-   fitParameters.inputFile = inputFile;
+   fitParameters.inputFile = inputFile->GetName();
 
    // define the output directory
    string outputdir = "myPlots/fits/" + fileName;
@@ -278,7 +333,6 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
    // we loop on the different ET and ETA ranges
    for(unsigned int i(0); i<ETranges.size(); ++i){
       for(unsigned int j(0); j<ETAranges.size(); ++j){
-
          // we get te necessary files and histograms
          TH1D* dmhist = 0;
          if(use_energy && do_binningEt){
@@ -290,7 +344,6 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
          else if(use_simEnergy){
             dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
          }
-
          // we declare dm as a RooRealVar (for the residual) and as a RooDataHist (for the fit):
          RooRealVar* EoverEtrue = new RooRealVar("EoverEtrue","EoverEtrue" ,rangeMin,rangeMax);
          EoverEtrue ->setBins(150);
@@ -533,14 +586,18 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
          map_mean_error[ETranges[i]][ETAranges[j]].push_back(mean->getAsymErrorHi());
          map_mean_error[ETranges[i]][ETAranges[j]].push_back(mean->getAsymErrorLo());
 
+         delete dmhist;
 
       }
    }
- 
+
    fitParameters.map_sigma       = map_sigma;
    fitParameters.map_sigma_error = map_sigma_error;
    fitParameters.map_mean        = map_mean;
    fitParameters.map_mean_error  = map_mean_error;
+
+   inputFile->Close();
+   delete inputFile;
 
 
    return fitParameters;
@@ -554,18 +611,13 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
 
 
-
-
-
-
-void producePlots(TString what, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
+void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
 
    // we first produce the plot of the resolution as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
    TLegend* leg1 = new TLegend(0.55, 0.6, 0.75, 0.8);
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
-
       Float_t x, resolution, error_hi, error_lo;
       TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
       if(what=="resolution"){
@@ -575,14 +627,16 @@ void producePlots(TString what, map<TString, map<TString, Float_t>> map_sigma, m
          graph->SetTitle("Scale");
       }
       for(unsigned int ii(0); ii<ETranges.size(); ++ii){
-         x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
-         resolution = map_sigma[ETranges[ii]][ETAranges[kk]];
-         error_hi = map_sigma_error[ETranges[ii]][ETAranges[kk]][0];
-         error_lo = map_sigma_error[ETranges[ii]][ETAranges[kk]][1];
-      
-         int thisPoint = graph->GetN();
-         graph->SetPoint(thisPoint, x, resolution);
-         graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, error_hi, error_hi);
+         for(unsigned int iSigma(0); iSigma<map_sigma.size(); ++iSigma){
+            x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
+            resolution = map_sigma[iSigma][ETranges[ii]][ETAranges[kk]];
+            error_hi = map_sigma_error[iSigma][ETranges[ii]][ETAranges[kk]][0];
+            if(resolution!=0){
+               int thisPoint = graph->GetN();
+               graph->SetPoint(thisPoint, x, resolution);
+               graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, error_hi, error_hi);
+            }
+         }
       }
 
       if(what=="resolution"){
@@ -630,7 +684,6 @@ void producePlots(TString what, map<TString, map<TString, Float_t>> map_sigma, m
 
 
    for(unsigned int kk(0); kk<ETranges.size(); ++kk){
-
       Float_t x, resolution, error_hi, error_lo;
       TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
       if(what=="resolution"){
@@ -639,20 +692,19 @@ void producePlots(TString what, map<TString, map<TString, Float_t>> map_sigma, m
       else if(what=="scale"){
          graph->SetTitle("Scale");
       }
-
       for(unsigned int ii(0); ii<ETAranges.size(); ++ii){
-         x = (ETAvalue[ETAranges[ii]].first + ETAvalue[ETAranges[ii]].second)/2;     
-         resolution = map_sigma[ETranges[kk]][ETAranges[ii]];
-         error_hi = map_sigma_error[ETranges[kk]][ETAranges[ii]][0];
-         error_lo = map_sigma_error[ETranges[kk]][ETAranges[ii]][1];
-         
+         for(unsigned int iSigma(0); iSigma<map_sigma.size(); ++iSigma){
+            x = (ETAvalue[ETAranges[ii]].first + ETAvalue[ETAranges[ii]].second)/2;     
+            resolution = map_sigma[iSigma][ETranges[kk]][ETAranges[ii]];
+            error_hi = map_sigma_error[iSigma][ETranges[kk]][ETAranges[ii]][0];
 
-         int thisPoint = graph->GetN();
-         graph->SetPoint(thisPoint, x, resolution);
-         graph->SetPointError(thisPoint, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2 ,error_hi, error_hi);
-
+            if(resolution!=0){
+               int thisPoint = graph->GetN();
+               graph->SetPoint(thisPoint, x, resolution);
+               graph->SetPointError(thisPoint, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2 ,error_hi, error_hi);
+            }
+         }
       }
-
       if(what=="resolution"){
          graph->GetYaxis()->SetRangeUser(0, 0.1);
       }
@@ -695,43 +747,43 @@ void producePlots(TString what, map<TString, map<TString, Float_t>> map_sigma, m
 
 
 
-void produceEfficiencyPlot(TFile* inputFile, Bool_t do_binningEt, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
+void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
    TLegend* leg1 = new TLegend(0.55, 0.6, 0.75, 0.8);
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
-
       Float_t x, efficiency, error;
       TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
       graph->SetTitle("Efficiency");
 
       for(unsigned int ii(0); ii<ETranges.size(); ++ii){
+         for(unsigned int iFile(0); iFile<input.size(); ++iFile){
+            TFile* inputFile = TFile::Open(input[iFile]);
+            if(input[iFile].Contains("EB") && ETAvalue[ETAranges[kk]].first>1.4) continue;
+            if(input[iFile].Contains("EE") && ETAvalue[ETAranges[kk]].first<1.4) continue;
 
-         // we get te necessary histograms
-          
-         TH1D* hist_num  = 0;
-         TH1D* hist_deno = 0;
-         if(do_binningEt){
-            hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
+            TH1D* hist_num  = 0;
+            TH1D* hist_deno = 0;
+            if(do_binningEt){
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
 
-            hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii])->Clone("hist_deno");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii])->Clone("hist_deno");
+            }
+            else{
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii])->Clone("hist_deno");
+            }
+
+            x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
+            efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
+            error = efficiency*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
+            int thisPoint = graph->GetN();
+            graph->SetPoint(thisPoint, x, efficiency);
+            graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, error/2, error/2);
          }
-         else{
-            hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
-            hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii])->Clone("hist_deno");
-         }
-
-         x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
-         efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
-         error = efficiency*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
-
-         int thisPoint = graph->GetN();
-         graph->SetPoint(thisPoint, x, efficiency);
-         graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, error/2, error/2);
       }
-
       graph->GetYaxis()->SetRangeUser(0.7, 1.3);
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
@@ -761,6 +813,7 @@ void produceEfficiencyPlot(TFile* inputFile, Bool_t do_binningEt, vector<TString
 
    }
 
+
    TString dir = outputdir.c_str();
 
    c1->SaveAs(dir + "efficiency_vs_energy.png");
@@ -780,23 +833,29 @@ void produceEfficiencyPlot(TFile* inputFile, Bool_t do_binningEt, vector<TString
       TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
       graph->SetTitle("Efficiency");
       for(unsigned int ii(0); ii<ETAranges.size(); ++ii){
-         if(do_binningEt){
-            hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
-            hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk])->Clone("hist_deno");
+         for(unsigned int iFile(0); iFile<input.size(); ++iFile){
+            TFile* inputFile = TFile::Open(input[iFile]);
+            if(input[iFile].Contains("EB") && ETAvalue[ETAranges[ii]].first>1.4) continue;
+            if(input[iFile].Contains("EE") && ETAvalue[ETAranges[ii]].first<1.4) continue;
+
+            if(do_binningEt){
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk])->Clone("hist_deno");
+            }
+            else{
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk])->Clone("hist_deno");
+            } 
+
+            x = (ETAvalue[ETAranges[ii]].first + ETAvalue[ETAranges[ii]].second)/2;     
+            efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
+            error = efficiency*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
+
+            int thisPoint = graph->GetN();
+            graph->SetPoint(thisPoint, x, efficiency);
+            graph->SetPointError(thisPoint, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, error/2, error/2);
+
          }
-         else{
-            hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
-            hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk])->Clone("hist_deno");
-         } 
-
-         x = (ETAvalue[ETAranges[ii]].first + ETAvalue[ETAranges[ii]].second)/2;     
-         efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
-         error = efficiency*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
-
-         int thisPoint = graph->GetN();
-         graph->SetPoint(thisPoint, x, efficiency);
-         graph->SetPointError(thisPoint, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, (ETAvalue[ETAranges[ii]].second - ETAvalue[ETAranges[ii]].first)/2, error/2, error/2);
-
       }
       graph->GetYaxis()->SetRangeUser(0.7, 1.3);
       graph->GetYaxis()->SetTitleSize(0.04);
@@ -826,9 +885,6 @@ void produceEfficiencyPlot(TFile* inputFile, Bool_t do_binningEt, vector<TString
    delete c1;
    delete c2;
 }
-
-
-
 
 
 
