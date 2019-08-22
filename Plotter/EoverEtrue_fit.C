@@ -47,12 +47,12 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "test_singlePhoton_1k";
+string fileName = "histo_singlePhoton_150k";
 
 // enter the number of k events
 Int_t kEvents = 150;
 
-// choose between endcap and barrel
+// choose between endcap and/or barrel
 Bool_t do_EB = true;
 Bool_t do_EE = true;
 
@@ -76,7 +76,7 @@ Bool_t do_fitPeak = false;
 // choose which plots to produce
 Bool_t do_resolutionPlot = false;
 Bool_t do_scalePlot      = false;
-Bool_t do_efficiencyPlot = true;
+Bool_t do_efficiencyPlot = false;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -355,8 +355,8 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",1.1,0.9,1.4);
-         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.01, 0.0, 0.3);
+         RooRealVar *mean   = new RooRealVar("mean","mean",0.9,0.8,1.4);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.07, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
 
@@ -364,9 +364,9 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
 
          // double crystal ball (same gaussian body but different exponential tails)
-         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 1., -5., 5.);
+         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 0.5, -5., 5.);
          RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 1., 0., 10.);
-         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 1., -5, 5.);
+         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 1.0, -5, 5.);
          RooRealVar *n_2      = new RooRealVar("n_2", "n_2", 1., 0., 50.);
 
          RooCBShape *CBpdf_1 = new RooCBShape("CBpdf_1", "CBpdf_1", *EoverEtrue, *mean, *sigma, *alpha_1, *n_1);
@@ -586,7 +586,6 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
          map_mean_error[ETranges[i]][ETAranges[j]].push_back(mean->getAsymErrorHi());
          map_mean_error[ETranges[i]][ETAranges[j]].push_back(mean->getAsymErrorLo());
 
-         delete dmhist;
 
       }
    }
@@ -595,10 +594,6 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
    fitParameters.map_sigma_error = map_sigma_error;
    fitParameters.map_mean        = map_mean;
    fitParameters.map_mean_error  = map_mean_error;
-
-   inputFile->Close();
-   delete inputFile;
-
 
    return fitParameters;
 
