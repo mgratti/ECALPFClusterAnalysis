@@ -176,35 +176,35 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    fout->cd("caloParticle");
    h_caloParticle_size       = new TH1F("h_caloParticle_size","h_caloParticle_size",50,0.,50.);
    h_caloParticle_energy     = new TH1F("h_caloParticle_energy","h_caloParticle_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_caloParticle_simEnergy  = new TH1F("h_caloParticle_simEnergy","h_caloParticle_simEnergy",500,-5.,100.);
+   h_caloParticle_simEnergy  = new TH1F("h_caloParticle_simEnergy","h_caloParticle_simEnergy", nBins_energy, rangeMin_energy, rangeMax_energy);
    h_caloParticle_et      = new TH1F("h_caloParticle_et","h_caloParticle_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_eta     = new TH1F("h_caloParticle_eta","h_caloParticle_eta",300,-3.,3.);
    h_caloParticle_phi     = new TH1F("h_caloParticle_phi","h_caloParticle_phi",128,-3.2,3.2);
 
    h_caloParticle_EEM_size       = new TH1F("h_caloParticle_EEM_size","h_caloParticle_EEM_size",50,0.,50.);
    h_caloParticle_EEM_energy     = new TH1F("h_caloParticle_EEM_energy","h_caloParticle_EEM_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_caloParticle_EEM_simEnergy  = new TH1F("h_caloParticle_EEM_simEnergy","h_caloParticle_EEM_simEnergy",500,-5.,100.);
+   h_caloParticle_EEM_simEnergy  = new TH1F("h_caloParticle_EEM_simEnergy","h_caloParticle_EEM_simEnergy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEM_et      = new TH1F("h_caloParticle_EEM_et","h_caloParticle_EEM_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEM_eta     = new TH1F("h_caloParticle_EEM_eta","h_caloParticle_EEM_eta",300,-3.,3.);
    h_caloParticle_EEM_phi     = new TH1F("h_caloParticle_EEM_phi","h_caloParticle_EEM_phi",128,-3.2,3.2);
 
    h_caloParticle_EBM_size       = new TH1F("h_caloParticle_EBM_size","h_caloParticle_EBM_size",50,0.,50.);
    h_caloParticle_EBM_energy     = new TH1F("h_caloParticle_EBM_energy","h_caloParticle_EBM_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_caloParticle_EBM_simEnergy  = new TH1F("h_caloParticle_EBM_simEnergy","h_caloParticle_EBM_simEnergy",500,-5.,100.);
+   h_caloParticle_EBM_simEnergy  = new TH1F("h_caloParticle_EBM_simEnergy","h_caloParticle_EBM_simEnergy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBM_et      = new TH1F("h_caloParticle_EBM_et","h_caloParticle_EBM_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBM_eta     = new TH1F("h_caloParticle_EBM_eta","h_caloParticle_EBM_eta",300,-3.,3.);
    h_caloParticle_EBM_phi     = new TH1F("h_caloParticle_EBM_phi","h_caloParticle_EBM_phi",128,-3.2,3.2);
 
    h_caloParticle_EBP_size       = new TH1F("h_caloParticle_EBP_size","h_caloParticle_EBP_size",50,0.,50.);
    h_caloParticle_EBP_energy     = new TH1F("h_caloParticle_EBP_energy","h_caloParticle_EBP_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_caloParticle_EBP_simEnergy  = new TH1F("h_caloParticle_EBP_simEnergy","h_caloParticle_EBP_simEnergy",500,-5.,100.);
+   h_caloParticle_EBP_simEnergy  = new TH1F("h_caloParticle_EBP_simEnergy","h_caloParticle_EBP_simEnergy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBP_et      = new TH1F("h_caloParticle_EBP_et","h_caloParticle_EBP_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EBP_eta     = new TH1F("h_caloParticle_EBP_eta","h_caloParticle_EBP_eta",300,-3.,3.);
    h_caloParticle_EBP_phi     = new TH1F("h_caloParticle_EBP_phi","h_caloParticle_EBP_phi",128,-3.2,3.2);
 
    h_caloParticle_EEP_size       = new TH1F("h_caloParticle_EEP_size","h_caloParticle_EEP_size",50,0.,50.);
    h_caloParticle_EEP_energy     = new TH1F("h_caloParticle_EEP_energy","h_caloParticle_EEP_energy",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_caloParticle_EEP_simEnergy  = new TH1F("h_caloParticle_EEP_simEnergy","h_caloParticle_EEP_simEnergy",500,-5.,100.);
+   h_caloParticle_EEP_simEnergy  = new TH1F("h_caloParticle_EEP_simEnergy","h_caloParticle_EEP_simEnergy",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEP_et      = new TH1F("h_caloParticle_EEP_et","h_caloParticle_EEP_et",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_caloParticle_EEP_eta     = new TH1F("h_caloParticle_EEP_eta","h_caloParticle_EEP_eta",300,-3.,3.);
    h_caloParticle_EEP_phi     = new TH1F("h_caloParticle_EEP_phi","h_caloParticle_EEP_phi",128,-3.2,3.2);

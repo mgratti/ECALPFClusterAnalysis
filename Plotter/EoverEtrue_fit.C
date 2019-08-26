@@ -74,9 +74,9 @@ Bool_t do_fitAll  = true;
 Bool_t do_fitPeak = false;
 
 // choose which plots to produce
-Bool_t do_resolutionPlot = false;
-Bool_t do_scalePlot      = false;
-Bool_t do_efficiencyPlot = false;
+Bool_t do_resolutionPlot = true;
+Bool_t do_scalePlot      = true;
+Bool_t do_efficiencyPlot = true;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -642,7 +642,7 @@ void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_
       }
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
-      graph->GetXaxis()->SetTitle("E_{T} [GeV]");
+      graph->GetXaxis()->SetTitle("E [GeV]");
       graph->GetXaxis()->SetTitleSize(0.04);
       graph->GetXaxis()->SetTitleOffset(1.1);
       graph->SetLineColor(color[kk]);
@@ -773,13 +773,14 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, vector<TS
 
             x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
             efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
+            cout << "efficiency: " << efficiency << endl;
             error = efficiency*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
             int thisPoint = graph->GetN();
             graph->SetPoint(thisPoint, x, efficiency);
             graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, error/2, error/2);
          }
       }
-      graph->GetYaxis()->SetRangeUser(0.7, 1.3);
+      graph->GetYaxis()->SetRangeUser(0.4, 1.5);
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
       if(do_binningEt){
@@ -852,7 +853,7 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, vector<TS
 
          }
       }
-      graph->GetYaxis()->SetRangeUser(0.7, 1.3);
+      graph->GetYaxis()->SetRangeUser(0.4, 1.5);
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
       graph->GetXaxis()->SetTitle("#eta");
