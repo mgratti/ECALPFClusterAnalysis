@@ -47,22 +47,26 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_singlePhoton_150k";
+string fileName = "histo_singlePhoton_withTracker_pT0to100GeV_2k";
 
 // enter the number of k events
 Int_t kEvents = 150;
 
+// choose which energy range you are using (choose only one)
+Bool_t do_0to20GeV  = true;
+Bool_t do_0to100GeV = false;
+
 // choose between endcap and/or barrel
 Bool_t do_EB = true;
-Bool_t do_EE = true;
+Bool_t do_EE = false;
 
 // choose which Etrue definition you want to use (choose only one)
 Bool_t use_energy    = true;
 Bool_t use_simEnergy = false;
 
 // choose whether you want to bin in ET or energy
-Bool_t do_binningEt = false;
-Bool_t do_binningEn = true;
+Bool_t do_binningEt = true;
+Bool_t do_binningEn = false;
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 Bool_t do_CBfit       = false; 
@@ -118,7 +122,7 @@ TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
 void producePlots(TString, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor>,string);
 // produce the efficiency plots
-void produceEfficiencyPlot(vector<TString>, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string);
+void produceEfficiencyPlot(vector<TString>, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string);
 
 
 // main function
@@ -127,7 +131,13 @@ void EoverEtrue_fit(){
    FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
    // define the different Et and Eta slots
-   vector<TString> ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
+   vector<TString> ETranges;
+   if(do_0to20GeV){
+      ETranges = {"0_5", "5_10", "10_15", "15_20"};
+   }
+   else if(do_0to100GeV){
+      ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
+   }
    vector<TString> ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
    vector<TString> ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
 
@@ -136,6 +146,14 @@ void EoverEtrue_fit(){
    map<TString, Edges> ETAvalue;
 
    // and adjust the boundaries
+   ETvalue["0_5"].first = 0.;
+   ETvalue["0_5"].second = 5.;
+   ETvalue["5_10"].first = 5.;
+   ETvalue["5_10"].second = 10.;
+   ETvalue["10_15"].first = 10.;
+   ETvalue["10_15"].second = 15.;
+   ETvalue["15_20"].first = 15.;
+   ETvalue["15_20"].second = 20.;
    ETvalue["1_20"].first  = 1;
    ETvalue["1_20"].second = 20; 
    ETvalue["20_40"].first  = 20;
@@ -243,7 +261,7 @@ void EoverEtrue_fit(){
    }
 
    if(do_efficiencyPlot){
-      produceEfficiencyPlot(input, flagList.do_binningEt, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
+      produceEfficiencyPlot(input, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
    }
 
 
@@ -341,8 +359,11 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
          else if(use_energy && do_binningEn){
             dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_En" + ETranges[i])->Clone("dmhist");
          }
-         else if(use_simEnergy){
+         else if(use_simEnergy && do_binningEt){
             dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
+         }
+         else if(use_simEnergy && do_binningEn){
+            dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_En" + ETranges[i])->Clone("dmhist");
          }
          // we declare dm as a RooRealVar (for the residual) and as a RooDataHist (for the fit):
          RooRealVar* EoverEtrue = new RooRealVar("EoverEtrue","EoverEtrue" ,rangeMin,rangeMax);
@@ -356,7 +377,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
          RooRealVar *mean   = new RooRealVar("mean","mean",0.9,0.8,1.4);
-         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.07, 0.0, 0.3);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.04, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
 
@@ -742,7 +763,7 @@ void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_
 
 
 
-void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
+void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
@@ -761,15 +782,24 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, vector<TS
 
             TH1D* hist_num  = 0;
             TH1D* hist_deno = 0;
-            if(do_binningEt){
+            if(do_binningEt && !use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
 
                hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii])->Clone("hist_deno");
             }
-            else{
+            else if(!do_binningEt && !use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
                hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii])->Clone("hist_deno");
             }
+            if(do_binningEt && use_simEnergy){
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[kk] + "_Et" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii])->Clone("hist_deno");
+            }
+            else if(!do_binningEt && use_simEnergy){
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[kk] + "_En" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii])->Clone("hist_deno");
+            }
+
 
             x = (ETvalue[ETranges[ii]].first + ETvalue[ETranges[ii]].second)/2;     
             efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
@@ -834,14 +864,23 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, vector<TS
             if(input[iFile].Contains("EB") && ETAvalue[ETAranges[ii]].first>1.4) continue;
             if(input[iFile].Contains("EE") && ETAvalue[ETAranges[ii]].first<1.4) continue;
 
-            if(do_binningEt){
+            if(do_binningEt && !use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
                hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk])->Clone("hist_deno");
             }
-            else{
+            else if(!do_binningEt && !use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
                hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk])->Clone("hist_deno");
             } 
+            if(do_binningEt && use_simEnergy){
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[ii] + "_Et" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk])->Clone("hist_deno");
+            }
+            else if(!do_binningEt && use_simEnergy){
+               hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[ii] + "_En" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk])->Clone("hist_deno");
+            } 
+
 
             x = (ETAvalue[ETAranges[ii]].first + ETAvalue[ETAranges[ii]].second)/2;     
             efficiency = hist_num->GetEntries()/hist_deno->GetEntries();

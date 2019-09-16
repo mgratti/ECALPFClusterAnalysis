@@ -67,6 +67,9 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_size', xtitle='PFClusters_caloMatched_size', ytitle='Entries', xrange=(0.,10.))
 
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nRecHit', xtitle='PFClusters_caloMatched_nRecHit', ytitle='Entries', xrange=(0.,40.))
+
+
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nXtals', xtitle='PFClusters_caloMatched_nXtals', ytitle='Entries', xrange=(0.,45.))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_et', xtitle='PFClusters_caloMatched_ET [GeV]', ytitle='Entries', xrange=None)
@@ -76,6 +79,8 @@ if options.doClusterAnalysis:
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_phi', xtitle='PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eOverEtrue', xtitle='E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+ 
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eOverEtrue_simEnergy', xtitle='E/Etrue', ytitle='Entries', xrange=(0.,1.5))
        
 
 
