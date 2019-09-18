@@ -70,7 +70,7 @@ if options.doClusterAnalysis:
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nRecHit', xtitle='PFClusters_caloMatched_nRecHit', ytitle='Entries', xrange=(0.,40.))
 
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nXtals', xtitle='PFClusters_caloMatched_nXtals', ytitle='Entries', xrange=(0.,45.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nXtals', xtitle='PFClusters_caloMatched_total_nXtals', ytitle='Entries', xrange=(0.,45.))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_et', xtitle='PFClusters_caloMatched_ET [GeV]', ytitle='Entries', xrange=None)
         
