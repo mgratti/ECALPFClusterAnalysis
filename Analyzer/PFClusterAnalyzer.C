@@ -141,6 +141,7 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_PFClusters_caloMatched_nXtals_vs_energy = new TH2F("h_PFClusters_caloMatched_nXtals_vs_energy", "h_PFClusters_caloMatched_nXtals_vs_energy", 50, 0., 50., 100., 0., 100.);
    h_PFClusters_caloMatched_nRecHit_vs_energy = new TH2F("h_PFClusters_caloMatched_nRecHit_vs_energy", "h_PFClusters_caloMatched_nRecHit_vs_energy", 30, 0., 30., nBins_energy, rangeMin_energy, rangeMax_energy);
    h_PFClusters_caloMatched_nPFClusters_vs_energy = new TH2F("h_PFClusters_caloMatched_nPFClusters_vs_energy", "h_PFClusters_caloMatched_nPFCLusters_vs_energy", 8, 0., 8., nBins_energy, rangeMin_energy, rangeMax_energy);
+   h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy = new TH2F("h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy", "h_PFClusters_caloMatched_nPFCLusters_vs_caloEnergy", 8, 0., 8., nBins_energy, rangeMin_energy, rangeMax_energy);
    h_PFClusters_caloMatched_nPFClusters_vs_eta = new TH2F("h_PFClusters_caloMatched_nPFClusters_vs_eta", "h_PFClusters_caloMatched_nPFCLusters_vs_eta", 270, -3., 3., 8, 0., 8.);
 
 
@@ -470,9 +471,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       double filling_phi=0;
       double filling_eta=0;
 
-      Bool_t saveOneCluster = false;
-      Bool_t saveAllClusters = true;
-
       for(unsigned int iMatched(0); iMatched<vector_matched_indices_single.size(); ++iMatched){
          int matched_index = vector_matched_indices_single[iMatched];
          int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[iMatched]);
@@ -604,7 +602,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                }
             }
          }
-
       }
 
       // reloop over pfCluserHits 
@@ -617,9 +614,11 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
       //plot number of recHit related to energy and eta
       h_PFClusters_caloMatched_nPFClusters_vs_energy->Fill(N_pfCl, filling_energy);
+      //h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]);
+      h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
       h_PFClusters_caloMatched_nPFClusters_vs_eta->Fill(filling_eta, N_pfCl);
 
-
+                  
       } // end loop calo particles
 
       h_PFClusters_caloMatched_size->Fill(N_pfCl);

@@ -113,6 +113,7 @@ class PFClusterAnalyzer : public TSelector {
       std::vector<TH2F*> h_PFClusterHit_EB_ietaiphi;
       TH2F* h_PFClusters_caloMatched_nRecHit_vs_energy;
       TH2F* h_PFClusters_caloMatched_nPFClusters_vs_energy;
+      TH2F* h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy;
       TH2F* h_PFClusters_caloMatched_nPFClusters_vs_eta;
 
 
