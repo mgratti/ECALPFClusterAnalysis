@@ -67,6 +67,7 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    fout->mkdir("PFCluster_caloMatched");
    fout->mkdir("caloParticle");
    fout->mkdir("EtEta_binned");
+   fout->mkdir("SuperCluster");
 
    Et_keys.push_back("0_5");
    Et_keys.push_back("5_10");
@@ -230,6 +231,11 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_caloParticle_EEP_phi     = new TH1F("h_caloParticle_EEP_phi","h_caloParticle_EEP_phi",128,-3.2,3.2);
 
 
+   fout->cd("SuperCluster");
+   h_superCluster_energy_EB  = new TH1F("h_superCluster_energy_EB","h_superCluster_energy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_energy_EE  = new TH1F("h_superCluster_energy_EE","h_superCluster_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_R9_EB      = new TH1F("h_superCluster_R9_EB","h_superCluster_R9_EB",500, 0, 1.2);
+   h_superCluster_R9_EE      = new TH1F("h_superCluster_R9_EE","h_superCluster_R9_EE",500, 0, 1.2);
 
 
    fout->cd("EtEta_binned");
@@ -406,6 +412,20 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }
 
 
+
+
+      //SuperCluster
+      //if(abs(caloParticle_eta[icP])<=1.479){
+      // h_superCluster_energy_EB->Fill(superCluster_energy[icP]);
+      // h_superCluster_R9_EB->Fill(superCluster_R9[icP]);
+      //}
+      //else if(abs(caloParticle_eta[icP])>1.479){
+      // h_superCluster_energy_EE->Fill(superCluster_energy[icP]);
+      // h_superCluster_R9_EE->Fill(superCluster_R9[icP]);
+      // }
+
+
+
       //---PFClusters_caloMatched---
       // loop over pfClusterHits associated to calo particle
       for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
@@ -455,16 +475,16 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       //cout << endl;
 
       //uncomment the next lines in one want to save only one cluster per hit
-      /*
+
       //in case a pfClusterHit is associated to more than one pfCluster, we keep the index of the pfCluster having the more hits
-      int matched_index = vector_matched_indices_single[0];
-      for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
-      if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
-      matched_index = vector_matched_indices_single[i];
-      }
-      }
-      cout << "selected index: " << matched_index << endl;
-      */    
+      //int matched_index = vector_matched_indices_single[0];
+      //for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
+      //if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
+      //matched_index = vector_matched_indices_single[i];
+      //}
+      //}
+      //cout << "selected index: " << matched_index << endl;
+
 
       //we loop on all the PFClusters associated to the same PFClusterHit and sum the energy, eta, phi
       double filling_energy=0;
@@ -474,7 +494,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       for(unsigned int iMatched(0); iMatched<vector_matched_indices_single.size(); ++iMatched){
          int matched_index = vector_matched_indices_single[iMatched];
          int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[iMatched]);
-         //if(matched_index!=-1 && nOccurrences!=1){
+         //if(matched_index!=-1 && nOccurrences!=1)
          if(matched_index!=-1){
             filling_energy = pfCluster_energy[matched_index];
             filling_phi    = pfCluster_phi[matched_index];
@@ -601,58 +621,57 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                   }
                }
             }
-         }
-      }
 
-      // reloop over pfCluserHits 
-      //      for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
-      //         if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
-      //            h_PFClusters_caloMatched_nXtals_vs_xtalEnergy->Fill(N_pfClH,pfClusterHit_energy[icP][ipfClH]);
-      //         }
-      //      }
+            // reloop over pfCluserHits 
+            //      for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+            //         if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
+            //            h_PFClusters_caloMatched_nXtals_vs_xtalEnergy->Fill(N_pfClH,pfClusterHit_energy[icP][ipfClH]);
+            //         }
+            //      }
 
 
-      //plot number of recHit related to energy and eta
-      h_PFClusters_caloMatched_nPFClusters_vs_energy->Fill(N_pfCl, filling_energy);
-      //h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]);
-      h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
-      h_PFClusters_caloMatched_nPFClusters_vs_eta->Fill(filling_eta, N_pfCl);
+            //plot number of recHit related to energy and eta
+            h_PFClusters_caloMatched_nPFClusters_vs_energy->Fill(N_pfCl, filling_energy);
+            //h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]);
+            h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
+            h_PFClusters_caloMatched_nPFClusters_vs_eta->Fill(filling_eta, N_pfCl);
 
-                  
-      } // end loop calo particles
+         } //end of matched index
+      }// end of loop on matched indices            
+   } // end loop calo particles
 
-      h_PFClusters_caloMatched_size->Fill(N_pfCl);
-      h_PFClusters_caloMatched_EEM_size->Fill(N_pfCl_EEM);
-      h_PFClusters_caloMatched_EBM_size->Fill(N_pfCl_EBM);
-      h_PFClusters_caloMatched_EBP_size->Fill(N_pfCl_EBP);
-      h_PFClusters_caloMatched_EEP_size->Fill(N_plCl_EEP);
+   h_PFClusters_caloMatched_size->Fill(N_pfCl);
+   h_PFClusters_caloMatched_EEM_size->Fill(N_pfCl_EEM);
+   h_PFClusters_caloMatched_EBM_size->Fill(N_pfCl_EBM);
+   h_PFClusters_caloMatched_EBP_size->Fill(N_pfCl_EBP);
+   h_PFClusters_caloMatched_EEP_size->Fill(N_plCl_EEP);
 
 
 
-      return kTRUE;
-   }
+   return kTRUE;
+}
 
-   void PFClusterAnalyzer::SlaveTerminate()
-   {
-      // The SlaveTerminate() function is called after all entries or objects
-      // have been processed. When running with PROOF SlaveTerminate() is called
-      // on each slave server.
+void PFClusterAnalyzer::SlaveTerminate()
+{
+   // The SlaveTerminate() function is called after all entries or objects
+   // have been processed. When running with PROOF SlaveTerminate() is called
+   // on each slave server.
 
-      // Write histograms to outputfile
-      //h_PFClusters_caloMatched_energy->Write();
+   // Write histograms to outputfile
+   //h_PFClusters_caloMatched_energy->Write();
 
-      // write and close 
-      fout->Write();
-      fout->Close();
+   // write and close 
+   fout->Write();
+   fout->Close();
 
-      Info("SlaveTerminate", "Wrote and closed output file");
+   Info("SlaveTerminate", "Wrote and closed output file");
 
-   }
+}
 
-   void PFClusterAnalyzer::Terminate()
-   {
-      // The Terminate() function is the last function to be called during
-      // a query. It always runs on the client, it can be used to present
-      // the results graphically or save the results to file.
+void PFClusterAnalyzer::Terminate()
+{
+   // The Terminate() function is the last function to be called during
+   // a query. It always runs on the client, it can be used to present
+   // the results graphically or save the results to file.
 
-   }
+}

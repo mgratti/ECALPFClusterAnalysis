@@ -67,6 +67,10 @@ class PFClusterAnalyzer : public TSelector {
       //doesn't exist in the new version of the dumper
       //TTreeReaderArray<map<int,int>> map_pfClusterHit_pfCluster = {fReader, "map_pfClusterHit_pfCluster"};
 
+      //shape variables
+      TTreeReaderArray<float> superCluster_energy = {fReader, "superCluster_energy"};
+      TTreeReaderArray<float> superCluster_R9 = {fReader, "superCluster_R9"};
+ 
 
       // non reader members 
       // -- non root members
@@ -188,6 +192,11 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_caloParticle_EEP_phi;
     
 
+      //superCluster
+      TH1F* h_superCluster_energy_EB;
+      TH1F* h_superCluster_energy_EE;
+      TH1F* h_superCluster_R9_EB;
+      TH1F* h_superCluster_R9_EE;
       
       // functions
       PFClusterAnalyzer(TTree * /*tree*/ =0) { }
