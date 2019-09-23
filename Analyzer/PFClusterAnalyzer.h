@@ -69,6 +69,9 @@ class PFClusterAnalyzer : public TSelector {
 
       //shape variables
       TTreeReaderArray<float> superCluster_energy = {fReader, "superCluster_energy"};
+      TTreeReaderArray<float> superCluster_e3x3 = {fReader, "superCluster_e3x3"};
+      TTreeReaderArray<float> superCluster_eta = {fReader, "superCluster_eta"};
+      TTreeReaderArray<float> superCluster_phi = {fReader, "superCluster_phi"};
       TTreeReaderArray<float> superCluster_R9 = {fReader, "superCluster_R9"};
  
 
@@ -195,6 +198,12 @@ class PFClusterAnalyzer : public TSelector {
       //superCluster
       TH1F* h_superCluster_energy_EB;
       TH1F* h_superCluster_energy_EE;
+      TH1F* h_superCluster_e3x3_EB;
+      TH1F* h_superCluster_e3x3_EE;
+      TH1F* h_superCluster_eta_EB;
+      TH1F* h_superCluster_eta_EE;
+      TH1F* h_superCluster_phi_EB;
+      TH1F* h_superCluster_phi_EE;
       TH1F* h_superCluster_R9_EB;
       TH1F* h_superCluster_R9_EE;
       

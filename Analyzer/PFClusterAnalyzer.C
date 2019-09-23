@@ -232,10 +232,16 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
 
    fout->cd("SuperCluster");
-   h_superCluster_energy_EB  = new TH1F("h_superCluster_energy_EB","h_superCluster_energy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_superCluster_energy_EE  = new TH1F("h_superCluster_energy_EE","h_superCluster_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_superCluster_R9_EB      = new TH1F("h_superCluster_R9_EB","h_superCluster_R9_EB",500, 0, 1.2);
-   h_superCluster_R9_EE      = new TH1F("h_superCluster_R9_EE","h_superCluster_R9_EE",500, 0, 1.2);
+   h_superCluster_energy_EB = new TH1F("h_superCluster_energy_EB","h_superCluster_energy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_energy_EE = new TH1F("h_superCluster_energy_EE","h_superCluster_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_e3x3_EB   = new TH1F("h_superCluster_e3x3_EB","h_superCluster_e3x3_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_e3x3_EE   = new TH1F("h_superCluster_e3x3_EE","h_superCluster_e3x3_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_eta_EB    = new TH1F("h_superCluster_eta_EB","h_superCluster_eta_EB", 300,-3, 3);
+   h_superCluster_eta_EE    = new TH1F("h_superCluster_eta_EE","h_superCluster_eta_EE", 300, -3, 3);
+   h_superCluster_phi_EB    = new TH1F("h_superCluster_phi_EB","h_superCluster_phi_EB", 128, -3.2, 3.2);
+   h_superCluster_phi_EE    = new TH1F("h_superCluster_phi_EE","h_superCluster_phi_EE", 128, -3.2, 3.2);
+   h_superCluster_R9_EB     = new TH1F("h_superCluster_R9_EB","h_superCluster_R9_EB",500, 0, 1.2);
+   h_superCluster_R9_EE     = new TH1F("h_superCluster_R9_EE","h_superCluster_R9_EE",500, 0, 1.2);
 
 
    fout->cd("EtEta_binned");
@@ -306,6 +312,24 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    //std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
    //}
 
+
+   //we loop on the superCluster
+   for(unsigned int iSC(0); iSC<superCluster_energy.GetSize(); ++iSC){
+      if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
+         h_superCluster_energy_EB->Fill(superCluster_energy[iSC]);
+         h_superCluster_e3x3_EB->Fill(superCluster_e3x3[iSC]);
+         h_superCluster_eta_EB->Fill(superCluster_eta[iSC]);
+         h_superCluster_phi_EB->Fill(superCluster_phi[iSC]);
+         h_superCluster_R9_EB->Fill(superCluster_R9[iSC]);
+      }
+       if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
+         h_superCluster_energy_EE->Fill(superCluster_energy[iSC]);
+         h_superCluster_e3x3_EE->Fill(superCluster_e3x3[iSC]);
+         h_superCluster_eta_EE->Fill(superCluster_eta[iSC]);
+         h_superCluster_phi_EE->Fill(superCluster_phi[iSC]);
+         h_superCluster_R9_EE->Fill(superCluster_R9[iSC]);
+      }
+   }
 
    //count indices needed to retrieve the size
    int N_pfCl = 0;
