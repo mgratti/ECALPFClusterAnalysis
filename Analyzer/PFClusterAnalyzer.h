@@ -217,8 +217,14 @@ class PFClusterAnalyzer : public TSelector {
 
       // per Event maps
       std::vector<TH2F*> h_caloParticle_EB_ietaiphi;
+      std::vector<TH2F*> h_caloParticle_EEP_ixiy;
+      std::vector<TH2F*> h_caloParticle_EEM_ixiy;
       std::vector<TH2F*> h_PFClusterHits_caloMatched_EB_ietaiphi;
+      std::vector<TH2F*> h_PFClusterHits_caloMatched_EEP_ixiy;
+      std::vector<TH2F*> h_PFClusterHits_caloMatched_EEM_ixiy;
       std::vector<TH2F*> h_PFClusterHits_all_EB_ietaiphi;
+      std::vector<TH2F*> h_PFClusterHits_all_EEP_ixiy;
+      std::vector<TH2F*> h_PFClusterHits_all_EEM_ixiy;
 
       // functions
       PFClusterAnalyzer(TTree * /*tree*/ =0) { }

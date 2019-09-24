@@ -276,10 +276,22 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    for (int i=1; i<N_perEvent_plots+1; i++){
       TString histo_name = "h_caloParticle_EB_ietaiphi_" + TString::Format("%d", i);
       h_caloParticle_EB_ietaiphi.push_back(new TH2F(histo_name, histo_name, 172,-86.,86.,360,1.,361.));
+      histo_name = "h_caloParticle_EEP_ixiy_" + TString::Format("%d", i);
+      h_caloParticle_EEP_ixiy.push_back(new TH2F(histo_name, histo_name, 100,0.,100.,100,0.,100.));
+      histo_name = "h_caloParticle_EEM_ixiy_" + TString::Format("%d", i);
+      h_caloParticle_EEM_ixiy.push_back(new TH2F(histo_name, histo_name, 100,0.,100.,100,0.,100.));
       histo_name = "h_PFClusterHits_caloMatched_EB_ietaiphi_" + TString::Format("%d", i);
       h_PFClusterHits_caloMatched_EB_ietaiphi.push_back(new TH2F(histo_name, histo_name, 172,-86.,86.,360,1.,361.));
+      histo_name = "h_PFClusterHits_caloMatched_EEP_ixiy_" + TString::Format("%d", i);
+      h_PFClusterHits_caloMatched_EEP_ixiy.push_back(new TH2F(histo_name, histo_name, 100,0.,100.,100,0.,100.));
+      histo_name = "h_PFClusterHits_caloMatched_EEM_ixiy_" + TString::Format("%d", i);
+      h_PFClusterHits_caloMatched_EEM_ixiy.push_back(new TH2F(histo_name, histo_name, 100,0.,100.,100,0.,100.));
       histo_name = "h_PFClusterHits_all_EB_ietaiphi_" + TString::Format("%d", i);
       h_PFClusterHits_all_EB_ietaiphi.push_back(new TH2F(histo_name, histo_name, 172,-86.,86.,360,1.,361.));
+      histo_name = "h_PFClusterHits_all_EEP_ixiy_" + TString::Format("%d", i);
+      h_PFClusterHits_all_EEP_ixiy.push_back(new TH2F(histo_name, histo_name, 100,0.,100.,100,0.,100.));
+      histo_name = "h_PFClusterHits_all_EEM_ixiy_" + TString::Format("%d", i);
+      h_PFClusterHits_all_EEM_ixiy.push_back(new TH2F(histo_name, histo_name, 100,0.,100.,100,0.,100.));
    }
 
 
@@ -307,7 +319,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    // The return value is currently not used.
 
    fReader.SetLocalEntry(entry); // read the event 
-
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
    //std::cout << "Event information: evt=" << *eventId << std::endl;
@@ -439,13 +450,16 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             }
          }
       }
-
       // per-event 2D maps
       if(entry<N_perEvent_plots){
          if(fabs(caloParticle_eta[icP])<1.479){
-            h_caloParticle_EB_ietaiphi.at((Int_t)entry+1)->Fill(caloParticle_ieta[icP],caloParticle_iphi[icP],caloParticle_energy[icP]);
-         } else {
-            // do nothing for the moment
+            h_caloParticle_EB_ietaiphi.at((Int_t)entry)->Fill(caloParticle_ieta[icP],caloParticle_iphi[icP],caloParticle_energy[icP]);
+         } else { // end-cap
+            if(caloParticle_eta[icP]>0){ 
+               h_caloParticle_EEP_ixiy.at((Int_t)entry)->Fill(caloParticle_ieta[icP],caloParticle_iphi[icP],caloParticle_energy[icP]);
+            } else {
+               h_caloParticle_EEM_ixiy.at((Int_t)entry)->Fill(caloParticle_ieta[icP],caloParticle_iphi[icP],caloParticle_energy[icP]);
+            }
          }
       }
       
@@ -470,7 +484,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          //A given hit can belong to more than one pfCluster, in case of an overlap
          map<int, float>  map_pfClusters = pfClusterHit_energy[icP][ipfClH];
 
-         //Sum pfClusterHit energies shared across clusters
+         //variable to sum energies shared across several clusters
          float pfClH_filling_energy = 0;
 
          //if the hit is not matched to a PFCluster, the size of the map is 0
@@ -494,10 +508,16 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
          if(entry<N_perEvent_plots){
             if(fabs(pfClusterHit_eta[icP][ipfClH])<1.479){
-               h_PFClusterHits_caloMatched_EB_ietaiphi.at((Int_t)entry+1)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
-               h_PFClusterHits_all_EB_ietaiphi.at((Int_t)entry+1)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+               h_PFClusterHits_caloMatched_EB_ietaiphi.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+               h_PFClusterHits_all_EB_ietaiphi.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
             } else {
-               // do nothing for the moment
+               if(pfClusterHit_eta[icP][ipfClH]>0){
+                  h_PFClusterHits_caloMatched_EEP_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+                  h_PFClusterHits_all_EEP_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+               } else { 
+                  h_PFClusterHits_caloMatched_EEM_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+                  h_PFClusterHits_all_EEM_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+               }
             }
          }
 
@@ -695,10 +715,18 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    if(entry<N_perEvent_plots){
       for (unsigned int iPFCl=0; iPFCl<pfCluster_energy.GetSize(); iPFCl++){
          for (unsigned int iPFClH=0; iPFClH<pfClusterHit_noCaloPart_energy[iPFCl].size(); iPFClH++){
-            h_PFClusterHits_all_EB_ietaiphi.at((Int_t)entry+1)->Fill(pfClusterHit_noCaloPart_ieta[iPFCl][iPFClH],pfClusterHit_noCaloPart_iphi[iPFCl][iPFClH],pfClusterHit_noCaloPart_energy[iPFCl][iPFClH]);
+            if(fabs(pfClusterHit_noCaloPart_eta[iPFCl][iPFClH])<1.479){
+               h_PFClusterHits_all_EB_ietaiphi.at((Int_t)entry)->Fill(pfClusterHit_noCaloPart_ieta[iPFCl][iPFClH],pfClusterHit_noCaloPart_iphi[iPFCl][iPFClH],pfClusterHit_noCaloPart_energy[iPFCl][iPFClH]);
+            } else {
+               if(pfClusterHit_noCaloPart_eta[iPFCl][iPFCl]>0){
+                  h_PFClusterHits_all_EEP_ixiy.at((Int_t)entry)->Fill(pfClusterHit_noCaloPart_ieta[iPFCl][iPFClH],pfClusterHit_noCaloPart_iphi[iPFCl][iPFClH],pfClusterHit_noCaloPart_energy[iPFCl][iPFClH]);
+               } else { 
+                  h_PFClusterHits_all_EEM_ixiy.at((Int_t)entry)->Fill(pfClusterHit_noCaloPart_ieta[iPFCl][iPFClH],pfClusterHit_noCaloPart_iphi[iPFCl][iPFClH],pfClusterHit_noCaloPart_energy[iPFCl][iPFClH]);
+               }
+            }
          }
       }
-   }
+   } // end N_perEvent_plots
 
    return kTRUE;
 }
