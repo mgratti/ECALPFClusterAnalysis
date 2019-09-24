@@ -65,12 +65,6 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    //Turn to true this flag in case you want to save only one PFCluster per caloParticle
    flag_keepOnlyOnePFCluster = true;
 
-   //Choose which histograms you want to produce
-   flag_doCaloParticle            = true;
-   flag_doPFCluster               = true;
-   flag_doSuperCluster            = true;
-   flag_doCaloMatchedSuperCluster = true;
-
 
    //------------------------------------------------//
 
@@ -341,7 +335,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    //std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
    //}
 
-   if(flag_doSuperCluster){
       //we loop on the (reco) superCluster
       for(unsigned int iSC(0); iSC<superCluster_energy.GetSize(); ++iSC){
          if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
@@ -359,7 +352,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             h_superCluster_R9_EE->Fill(superCluster_R9[iSC]);
          }
       }
-   }
 
    //count indices needed to retrieve the size
    int N_pfCl = 0;
@@ -397,7 +389,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
 
       //---caloParticle---
-      if(flag_doCaloParticle){
          h_caloParticle_energy->Fill(caloParticle_energy[icP]);
          h_caloParticle_simEnergy->Fill(caloParticle_simEnergy[icP]);
          h_caloParticle_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
@@ -466,10 +457,8 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                }
             }
          }
-      }
 
       // caloMatched superCluster
-      if(flag_doCaloMatchedSuperCluster){
          // Step 1: we get the indices of the superCluster associated to a caloParticle
          for(unsigned int ispCl=0; ispCl<superClusterHit_energy[icP].size(); ispCl++){
 
@@ -515,12 +504,10 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                }
             }
          }
-      }
       // end of caloMatched superCluster
 
 
       //---PFClusters_caloMatched---
-      if(flag_doSuperCluster){
          // Step1: we get the indices of the caloMatched PFClusters
 
          // loop over pfClusterHits associated to calo particle
@@ -723,7 +710,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       h_PFClusters_caloMatched_EBP_size->Fill(N_pfCl_EBP);
       h_PFClusters_caloMatched_EEP_size->Fill(N_plCl_EEP);
 
-   }
 
    return kTRUE;
 }
