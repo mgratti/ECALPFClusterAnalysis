@@ -61,7 +61,7 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
 
    //----------- USER'S DECISION BOARD --------------//
-   
+
    //Turn to true this flag in case you want to save only one PFCluster per caloParticle
    flag_keepOnlyOnePFCluster = true;
 
@@ -377,11 +377,11 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       //counts the number of superClusterHit per caloParticle
       int N_spClH=0;
 
-      //this vector will contain wht indices of the PFClusters that match with a given PFClusterHit.
-      //Most of the time a PFClusterHit is associated to only one PFCluster, but this is not always the case
+      //this vector will contain the indices of the PFClusters that match with a given PFClusterHit.
       vector<int> vector_matched_indices{-1};
       vector<int> vector_matched_indices_single{-1};
 
+      //same than above but for superCluster - superClusterHits
       vector<int> vector_spCl_matched_indices{-1};
       vector<int> vector_spCl_matched_indices_single{-1};
 
@@ -460,14 +460,15 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
 
       // caloMatched superCluster
+
+      // Step 1: we get the indices of the superCluster associated to a caloParticle
       for(unsigned int ispCl=0; ispCl<superClusterHit_energy[icP].size(); ispCl++){
 
          //for each superClusterHit, we save a map that lists all the superClusters to which the hit is associated and the energy deposited in the crystal
          map<int, float>  map_superClusters = superClusterHit_energy[icP][ispCl];
 
-         //if the hit is not matched to a PFCluster, the size of the map is 0
+         //if the hit is not matched to a superCluster, the size of the map is 0
          if(map_superClusters.size()!=0){
-            //cout << "got it! " << ispCl << endl;
             //we get the pfCluster index out of the map and store the all the indices (with repetition)
             for (auto itr = map_superClusters.begin(); itr != map_superClusters.end(); ++itr) { 
                vector_spCl_matched_indices.push_back(itr->first);
@@ -480,24 +481,29 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                }
             }
          }//end match superClusterHit - superCluster
-      }
+      }//end of loop on superClusterHits
 
+      // Step 2: we fill the histograms with the selected superClusters
       //it has been checked that at most one SuperCluster was matched with the caloParticle
-      if(vector_spCl_matched_indices_single.size()>1){
-         if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<=1.479){
-            h_superCluster_caloMatched_energy_EB->Fill(superCluster_energy[0]); 
-            h_superCluster_caloMatched_e3x3_EB->Fill(superCluster_e3x3[0]); 
-            h_superCluster_caloMatched_eta_EB->Fill(superCluster_eta[0]); 
-            h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[0]); 
-            h_superCluster_caloMatched_R9_EB->Fill(superCluster_R9[0]); 
-         }
-         if(caloParticle_eta[icP]<-1.479 || caloParticle_eta[icP]>1.479){
-            h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[0]); 
-            h_superCluster_caloMatched_e3x3_EE->Fill(superCluster_e3x3[0]); 
-            h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[0]); 
-            h_superCluster_caloMatched_phi_EE->Fill(superCluster_phi[0]); 
-            h_superCluster_caloMatched_R9_EE->Fill(superCluster_R9[0]); 
+      for(unsigned int iSC(0); iSC < vector_spCl_matched_indices_single.size(); ++iSC){
+         int matched_index;
+         if(vector_spCl_matched_indices_single[iSC] != -1){
+            matched_index = vector_spCl_matched_indices_single[iSC];
+            if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<=1.479){
+               h_superCluster_caloMatched_energy_EB->Fill(superCluster_energy[matched_index]); 
+               h_superCluster_caloMatched_e3x3_EB->Fill(superCluster_e3x3[matched_index]); 
+               h_superCluster_caloMatched_eta_EB->Fill(superCluster_eta[matched_index]); 
+               h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[matched_index]); 
+               h_superCluster_caloMatched_R9_EB->Fill(superCluster_R9[matched_index]); 
+            }
+            if(caloParticle_eta[icP]<-1.479 || caloParticle_eta[icP]>1.479){
+               h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[matched_index]); 
+               h_superCluster_caloMatched_e3x3_EE->Fill(superCluster_e3x3[matched_index]); 
+               h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[matched_index]); 
+               h_superCluster_caloMatched_phi_EE->Fill(superCluster_phi[matched_index]); 
+               h_superCluster_caloMatched_R9_EE->Fill(superCluster_R9[matched_index]); 
 
+            }
          }
       }
 
@@ -506,7 +512,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
 
       //---PFClusters_caloMatched---
-      
+
       // Step1: we get the indices of the caloMatched PFClusters
 
       // loop over pfClusterHits associated to calo particle
@@ -543,14 +549,14 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       //in case we want to save only one PFCluster per PFClusterHit, we keep the index of the PFCluster having the more hits
       //Bool_t flag_keepOnlyOnePFCluster = true;
       if(flag_keepOnlyOnePFCluster){
-      int matched_index = vector_matched_indices_single[0];
-      for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
-         if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
-            matched_index = vector_matched_indices_single[i];
+         int matched_index = vector_matched_indices_single[0];
+         for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
+            if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
+               matched_index = vector_matched_indices_single[i];
+            }
          }
-      }
-      vector_matched_indices_single.clear();
-      vector_matched_indices_single.push_back(matched_index);
+         vector_matched_indices_single.clear();
+         vector_matched_indices_single.push_back(matched_index);
       }
 
 
