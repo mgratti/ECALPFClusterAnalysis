@@ -318,8 +318,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //std::cout << "Event information: evt=" << *eventId << std::endl;
-
    // loop over genParticles
    //for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
    //std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
@@ -360,20 +358,12 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
    // loop over caloParticles
    for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
-      // if(caloParticle_energy[icP]>=0. && caloParticle_energy[icP]<5. && std::abs(caloParticle_eta[icP])>=2.5 && std::abs(caloParticle_eta[icP])<3.0){
-      //           cout << "here"  << endl;
-      //      }
-
-
-      //std::cout << "icP=" << icP << " energy=" << caloParticle_energy[icP] << " eta=" << caloParticle_eta[icP] << " phi=" << caloParticle_phi[icP] << std::endl;
 
       //counts the number of crystals per caloParticle
       int N_pfClH=0;
 
       //counts the number of superClusterHit per caloParticle
       int N_spClH=0;
-
-      int match_pfC_idx=-1;
 
       //this vector will contain wht indices of the PFClusters that match with a given PFClusterHit.
       //Most of the time a PFClusterHit is associated to only one PFCluster, but this is not always the case
@@ -489,7 +479,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[0]); 
             h_superCluster_caloMatched_R9_EB->Fill(superCluster_R9[0]); 
          }
-         if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
+         if(caloParticle_eta[icP]<-1.479 || caloParticle_eta[icP]>1.479){
             h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[0]); 
             h_superCluster_caloMatched_e3x3_EE->Fill(superCluster_e3x3[0]); 
             h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[0]); 
