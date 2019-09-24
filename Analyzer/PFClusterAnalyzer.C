@@ -59,6 +59,18 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    // here you could handle more complicated options
    TString foutName = option;
 
+
+   //----------- USER'S DECISION BOARD --------------//
+
+   //Turn to true this flag in case you want to save only one PFCluster per caloParticle
+   flag_keepOnlyOnePFCluster = true;
+
+
+   //------------------------------------------------//
+
+
+
+
    // output
    fout = new TFile(foutName, "RECREATE"); 
    if(!fout->IsOpen()) throw std::runtime_error("Output file could not be created");
@@ -243,6 +255,19 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_superCluster_R9_EB     = new TH1F("h_superCluster_R9_EB","h_superCluster_R9_EB",500, 0, 1.2);
    h_superCluster_R9_EE     = new TH1F("h_superCluster_R9_EE","h_superCluster_R9_EE",500, 0, 1.2);
 
+   h_superCluster_caloMatched_energy_EB = new TH1F("h_superCluster_caloMatched_energy_EB","h_superCluster_caloMatched_energy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_energy_EE = new TH1F("h_superCluster_caloMatched_energy_EE","h_superCluster_caloMatched_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_e3x3_EB   = new TH1F("h_superCluster_caloMatched_e3x3_EB","h_superCluster_caloMatched_e3x3_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_e3x3_EE   = new TH1F("h_superCluster_caloMatched_e3x3_EE","h_superCluster_caloMatched_e3x3_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_eta_EB    = new TH1F("h_superCluster_caloMatched_eta_EB","h_superCluster_caloMatched_eta_EB", 300,-3, 3);
+   h_superCluster_caloMatched_eta_EE    = new TH1F("h_superCluster_caloMatched_eta_EE","h_superCluster_caloMatched_eta_EE", 300, -3, 3);
+   h_superCluster_caloMatched_phi_EB    = new TH1F("h_superCluster_caloMatched_phi_EB","h_superCluster_caloMatched_phi_EB", 128, -3.2, 3.2);
+   h_superCluster_caloMatched_phi_EE    = new TH1F("h_superCluster_caloMatched_phi_EE","h_superCluster_caloMatched_phi_EE", 128, -3.2, 3.2);
+   h_superCluster_caloMatched_R9_EB     = new TH1F("h_superCluster_caloMatched_R9_EB","h_superCluster_caloMatched_R9_EB",500, 0, 1.2);
+   h_superCluster_caloMatched_R9_EE     = new TH1F("h_superCluster_caloMatched_R9_EE","h_superCluster_caloMatched_R9_EE",500, 0, 1.2);
+
+
+
 
    fout->cd("EtEta_binned");
    for (TString Et_key : Et_keys){
@@ -305,31 +330,28 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //std::cout << "Event information: evt=" << *eventId << std::endl;
-
    // loop over genParticles
    //for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
    //std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
    //}
 
-
-   //we loop on the superCluster
-   for(unsigned int iSC(0); iSC<superCluster_energy.GetSize(); ++iSC){
-      if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
-         h_superCluster_energy_EB->Fill(superCluster_energy[iSC]);
-         h_superCluster_e3x3_EB->Fill(superCluster_e3x3[iSC]);
-         h_superCluster_eta_EB->Fill(superCluster_eta[iSC]);
-         h_superCluster_phi_EB->Fill(superCluster_phi[iSC]);
-         h_superCluster_R9_EB->Fill(superCluster_R9[iSC]);
+      //we loop on the (reco) superCluster
+      for(unsigned int iSC(0); iSC<superCluster_energy.GetSize(); ++iSC){
+         if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
+            h_superCluster_energy_EB->Fill(superCluster_energy[iSC]);
+            h_superCluster_e3x3_EB->Fill(superCluster_e3x3[iSC]);
+            h_superCluster_eta_EB->Fill(superCluster_eta[iSC]);
+            h_superCluster_phi_EB->Fill(superCluster_phi[iSC]);
+            h_superCluster_R9_EB->Fill(superCluster_R9[iSC]);
+         }
+         if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
+            h_superCluster_energy_EE->Fill(superCluster_energy[iSC]);
+            h_superCluster_e3x3_EE->Fill(superCluster_e3x3[iSC]);
+            h_superCluster_eta_EE->Fill(superCluster_eta[iSC]);
+            h_superCluster_phi_EE->Fill(superCluster_phi[iSC]);
+            h_superCluster_R9_EE->Fill(superCluster_R9[iSC]);
+         }
       }
-       if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
-         h_superCluster_energy_EE->Fill(superCluster_energy[iSC]);
-         h_superCluster_e3x3_EE->Fill(superCluster_e3x3[iSC]);
-         h_superCluster_eta_EE->Fill(superCluster_eta[iSC]);
-         h_superCluster_phi_EE->Fill(superCluster_phi[iSC]);
-         h_superCluster_R9_EE->Fill(superCluster_R9[iSC]);
-      }
-   }
 
    //count indices needed to retrieve the size
    int N_pfCl = 0;
@@ -347,329 +369,346 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
    // loop over caloParticles
    for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
-      // if(caloParticle_energy[icP]>=0. && caloParticle_energy[icP]<5. && std::abs(caloParticle_eta[icP])>=2.5 && std::abs(caloParticle_eta[icP])<3.0){
-      //           cout << "here"  << endl;
-      //      }
 
-
-      //std::cout << "icP=" << icP << " energy=" << caloParticle_energy[icP] << " eta=" << caloParticle_eta[icP] << " phi=" << caloParticle_phi[icP] << std::endl;
-
+      //counts the number of crystals per caloParticle
       int N_pfClH=0;
-      int match_pfC_idx=-1;
 
-      //this vector will contain wht indices of the PFClusters that match with a given PFClusterHit.
-      //Most of the time a PFClusterHit is associated to only one PFCluster, but this is not always the case
+      //counts the number of superClusterHit per caloParticle
+      int N_spClH=0;
+
+      //this vector will contain the indices of the PFClusters that match with a given PFClusterHit.
       vector<int> vector_matched_indices{-1};
       vector<int> vector_matched_indices_single{-1};
+
+      //same than above but for superCluster - superClusterHits
+      vector<int> vector_spCl_matched_indices{-1};
+      vector<int> vector_spCl_matched_indices_single{-1};
 
 
       N_Cl++;
 
+
       //---caloParticle---
-      h_caloParticle_energy->Fill(caloParticle_energy[icP]);
-      h_caloParticle_simEnergy->Fill(caloParticle_simEnergy[icP]);
-      h_caloParticle_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
-      h_caloParticle_phi->Fill(caloParticle_phi[icP]);
-      h_caloParticle_eta->Fill(caloParticle_eta[icP]);
+         h_caloParticle_energy->Fill(caloParticle_energy[icP]);
+         h_caloParticle_simEnergy->Fill(caloParticle_simEnergy[icP]);
+         h_caloParticle_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
+         h_caloParticle_phi->Fill(caloParticle_phi[icP]);
+         h_caloParticle_eta->Fill(caloParticle_eta[icP]);
 
-      if(caloParticle_eta[icP]<-1.479){
-         N_Cl_EEM++;
-         h_caloParticle_EEM_energy->Fill(caloParticle_energy[icP]);
-         h_caloParticle_EEM_simEnergy->Fill(caloParticle_simEnergy[icP]);
-         h_caloParticle_EEM_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
-         h_caloParticle_EEM_phi->Fill(caloParticle_phi[icP]);
-         h_caloParticle_EEM_eta->Fill(caloParticle_eta[icP]);
-      }
+         if(caloParticle_eta[icP]<-1.479){
+            N_Cl_EEM++;
+            h_caloParticle_EEM_energy->Fill(caloParticle_energy[icP]);
+            h_caloParticle_EEM_simEnergy->Fill(caloParticle_simEnergy[icP]);
+            h_caloParticle_EEM_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
+            h_caloParticle_EEM_phi->Fill(caloParticle_phi[icP]);
+            h_caloParticle_EEM_eta->Fill(caloParticle_eta[icP]);
+         }
 
-      if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<0){
-         N_Cl_EBM++;
-         h_caloParticle_EBM_energy->Fill(caloParticle_energy[icP]);
-         h_caloParticle_EBM_simEnergy->Fill(caloParticle_simEnergy[icP]);
-         h_caloParticle_EBM_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
-         h_caloParticle_EBM_phi->Fill(caloParticle_phi[icP]);
-         h_caloParticle_EBM_eta->Fill(caloParticle_eta[icP]);
-      }
+         if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<0){
+            N_Cl_EBM++;
+            h_caloParticle_EBM_energy->Fill(caloParticle_energy[icP]);
+            h_caloParticle_EBM_simEnergy->Fill(caloParticle_simEnergy[icP]);
+            h_caloParticle_EBM_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
+            h_caloParticle_EBM_phi->Fill(caloParticle_phi[icP]);
+            h_caloParticle_EBM_eta->Fill(caloParticle_eta[icP]);
+         }
 
-      if(caloParticle_eta[icP]>=0 && caloParticle_eta[icP]<1.479){
-         N_Cl_EBP++;
-         h_caloParticle_EBP_energy->Fill(caloParticle_energy[icP]);
-         h_caloParticle_EBP_simEnergy->Fill(caloParticle_simEnergy[icP]);
-         h_caloParticle_EBP_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
-         h_caloParticle_EBP_phi->Fill(caloParticle_phi[icP]);
-         h_caloParticle_EBP_eta->Fill(caloParticle_eta[icP]);
-      }
+         if(caloParticle_eta[icP]>=0 && caloParticle_eta[icP]<1.479){
+            N_Cl_EBP++;
+            h_caloParticle_EBP_energy->Fill(caloParticle_energy[icP]);
+            h_caloParticle_EBP_simEnergy->Fill(caloParticle_simEnergy[icP]);
+            h_caloParticle_EBP_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
+            h_caloParticle_EBP_phi->Fill(caloParticle_phi[icP]);
+            h_caloParticle_EBP_eta->Fill(caloParticle_eta[icP]);
+         }
 
-      if(caloParticle_eta[icP]>=1.479){
-         N_Cl_EEP++;
-         h_caloParticle_EEP_energy->Fill(caloParticle_energy[icP]);
-         h_caloParticle_EEP_simEnergy->Fill(caloParticle_simEnergy[icP]);
-         h_caloParticle_EEP_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
-         h_caloParticle_EEP_phi->Fill(caloParticle_phi[icP]);
-         h_caloParticle_EEP_eta->Fill(caloParticle_eta[icP]);
-      }
+         if(caloParticle_eta[icP]>=1.479){
+            N_Cl_EEP++;
+            h_caloParticle_EEP_energy->Fill(caloParticle_energy[icP]);
+            h_caloParticle_EEP_simEnergy->Fill(caloParticle_simEnergy[icP]);
+            h_caloParticle_EEP_et->Fill(caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
+            h_caloParticle_EEP_phi->Fill(caloParticle_phi[icP]);
+            h_caloParticle_EEP_eta->Fill(caloParticle_eta[icP]);
+         }
 
-      h_caloParticle_size->Fill(N_Cl);
-      h_caloParticle_EEM_size->Fill(N_Cl_EEM); 
-      h_caloParticle_EBM_size->Fill(N_Cl_EBM);
-      h_caloParticle_EBP_size->Fill(N_Cl_EBP);
-      h_caloParticle_EEP_size->Fill(N_Cl_EEP);
+         h_caloParticle_size->Fill(N_Cl);
+         h_caloParticle_EEM_size->Fill(N_Cl_EEM); 
+         h_caloParticle_EBM_size->Fill(N_Cl_EBM);
+         h_caloParticle_EBP_size->Fill(N_Cl_EBP);
+         h_caloParticle_EEP_size->Fill(N_Cl_EEP);
 
-      //eta ET binned quantity that stores the number of events (equal to the number of entries of the histogram)
-      for(TString Eta_key: Eta_keys){
-         for(TString Et_key: Et_keys){
-            double caloParticle_et = caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])));
-            if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
-                  && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
-               h_caloParticle_size_EtaEtBinned[Eta_key][Et_key]->Fill(1.);
+         //eta ET binned quantity that stores the number of events (equal to the number of entries of the histogram)
+         for(TString Eta_key: Eta_keys){
+            for(TString Et_key: Et_keys){
+               double caloParticle_et = caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])));
+               if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
+                     && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
+                  h_caloParticle_size_EtaEtBinned[Eta_key][Et_key]->Fill(1.);
+               }
             }
          }
-      }
 
-      //eta energy binned quantity that stores the number of events (equal to the number of entries of the histogram)
-      for(TString Eta_key: Eta_keys){
-         for(TString Et_key: Et_keys){
-            if(caloParticle_energy[icP]>=Et_edges[Et_key].first && caloParticle_energy[icP]<Et_edges[Et_key].second 
-                  && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
-               h_caloParticle_size_EtaEnBinned[Eta_key][Et_key]->Fill(1.);
+         //eta energy binned quantity that stores the number of events (equal to the number of entries of the histogram)
+         for(TString Eta_key: Eta_keys){
+            for(TString Et_key: Et_keys){
+               if(caloParticle_energy[icP]>=Et_edges[Et_key].first && caloParticle_energy[icP]<Et_edges[Et_key].second 
+                     && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
+                  h_caloParticle_size_EtaEnBinned[Eta_key][Et_key]->Fill(1.);
+               }
             }
          }
-      }
 
+      // caloMatched superCluster
+         // Step 1: we get the indices of the superCluster associated to a caloParticle
+         for(unsigned int ispCl=0; ispCl<superClusterHit_energy[icP].size(); ispCl++){
 
+            //for each superClusterHit, we save a map that lists all the superClusters to which the hit is associated and the energy deposited in the crystal
+            map<int, float>  map_superClusters = superClusterHit_energy[icP][ispCl];
 
+            //if the hit is not matched to a superCluster, the size of the map is 0
+            if(map_superClusters.size()!=0){
+               //we get the pfCluster index out of the map and store the all the indices (with repetition)
+               for (auto itr = map_superClusters.begin(); itr != map_superClusters.end(); ++itr) { 
+                  vector_spCl_matched_indices.push_back(itr->first);
+               }
 
-      //SuperCluster
-      //if(abs(caloParticle_eta[icP])<=1.479){
-      // h_superCluster_energy_EB->Fill(superCluster_energy[icP]);
-      // h_superCluster_R9_EB->Fill(superCluster_R9[icP]);
-      //}
-      //else if(abs(caloParticle_eta[icP])>1.479){
-      // h_superCluster_energy_EE->Fill(superCluster_energy[icP]);
-      // h_superCluster_R9_EE->Fill(superCluster_R9[icP]);
-      // }
+               //same as above, but this time the index is saved only once
+               for (auto itr = map_superClusters.begin(); itr != map_superClusters.end(); ++itr) { 
+                  if(std::find(vector_spCl_matched_indices_single.begin(), vector_spCl_matched_indices_single.end(), itr->first)==vector_spCl_matched_indices_single.end()){
+                     vector_spCl_matched_indices_single.push_back(itr->first);
+                  }
+               }
+            }//end match superClusterHit - superCluster
+         }//end of loop on superClusterHits
 
+         // Step 2: we fill the histograms with the selected superClusters
+         //it has been checked that at most one SuperCluster was matched with the caloParticle
+         for(unsigned int iSC(0); iSC < vector_spCl_matched_indices_single.size(); ++iSC){
+            int matched_index;
+            if(vector_spCl_matched_indices_single[iSC] != -1){
+               matched_index = vector_spCl_matched_indices_single[iSC];
+               if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<=1.479){
+                  h_superCluster_caloMatched_energy_EB->Fill(superCluster_energy[matched_index]); 
+                  h_superCluster_caloMatched_e3x3_EB->Fill(superCluster_e3x3[matched_index]); 
+                  h_superCluster_caloMatched_eta_EB->Fill(superCluster_eta[matched_index]); 
+                  h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[matched_index]); 
+                  h_superCluster_caloMatched_R9_EB->Fill(superCluster_R9[matched_index]); 
+               }
+               if(caloParticle_eta[icP]<-1.479 || caloParticle_eta[icP]>1.479){
+                  h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[matched_index]); 
+                  h_superCluster_caloMatched_e3x3_EE->Fill(superCluster_e3x3[matched_index]); 
+                  h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[matched_index]); 
+                  h_superCluster_caloMatched_phi_EE->Fill(superCluster_phi[matched_index]); 
+                  h_superCluster_caloMatched_R9_EE->Fill(superCluster_R9[matched_index]); 
+
+               }
+            }
+         }
+      // end of caloMatched superCluster
 
 
       //---PFClusters_caloMatched---
-      // loop over pfClusterHits associated to calo particle
-      for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+         // Step1: we get the indices of the caloMatched PFClusters
 
-         //for each pfClusterHit, we save a map that lists all the pfClusters to which the hit is associated and the energy deposited in the crystal
-         //A given hit can belong to more than one pfCluster, in case of an overlap
+         // loop over pfClusterHits associated to calo particle
+         for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
 
-         map<int, float>  map_pfClusters = pfClusterHit_energy[icP][ipfClH];
+            //for each pfClusterHit, we save a map that lists all the pfClusters to which the hit is associated and the energy deposited in the crystal
+            //A given hit can belong to more than one pfCluster, in case of an overlap
 
-         //if the hit is not matched to a PFCluster, the size of the map is 0
-         if(map_pfClusters.size()!=0){
-            N_pfClH++;
+            map<int, float>  map_pfClusters = pfClusterHit_energy[icP][ipfClH];
 
-            //we get the pfCluster index out of the map and store the all the indices (with repetition)
-            for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
-               vector_matched_indices.push_back(itr->first);
-            }
+            //if the hit is not matched to a PFCluster, the size of the map is 0
+            if(map_pfClusters.size()!=0){
+               N_pfClH++;
 
-            //same as above, but this time the index is saved only once
-            for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
-               if(std::find(vector_matched_indices_single.begin(), vector_matched_indices_single.end(), itr->first)==vector_matched_indices_single.end()){
-                  vector_matched_indices_single.push_back(itr->first);
+               //we get the pfCluster index out of the map and store the all the indices (with repetition)
+               for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
+                  vector_matched_indices.push_back(itr->first);
+               }
+
+               //same as above, but this time the index is saved only once
+               for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
+                  if(std::find(vector_matched_indices_single.begin(), vector_matched_indices_single.end(), itr->first)==vector_matched_indices_single.end()){
+                     vector_matched_indices_single.push_back(itr->first);
+                  }
+               }
+            }//end match pfClusterHit - pfCluster
+
+            //if(entry<N_perEvent_plots){
+            //   h_PFClusterHit_EB_ietaiphi.at(entry)->Fill(pfClusterHit_ieta[icP][ipfClH], pfClusterHit_iphi[icP][ipfClH], pfClusterHit_energy[icP][ipfClH]);
+            // }
+         } // end loop pfClusterHits
+
+
+         //in case we want to save only one PFCluster per PFClusterHit, we keep the index of the PFCluster having the more hits
+         //Bool_t flag_keepOnlyOnePFCluster = true;
+         if(flag_keepOnlyOnePFCluster){
+            int matched_index = vector_matched_indices_single[0];
+            for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
+               if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
+                  matched_index = vector_matched_indices_single[i];
                }
             }
-         }//end match pfClusterHit - pfCluster
-
-         //if(entry<N_perEvent_plots){
-         //   h_PFClusterHit_EB_ietaiphi.at(entry)->Fill(pfClusterHit_ieta[icP][ipfClH], pfClusterHit_iphi[icP][ipfClH], pfClusterHit_energy[icP][ipfClH]);
-         // }
-
-      } // end loop pfClusterHits
+            vector_matched_indices_single.clear();
+            vector_matched_indices_single.push_back(matched_index);
+         }
 
 
-      //cout << "vector of indices: " << endl;
-      //for(unsigned int i(0); i<vector_matched_indices.size(); ++i){
-      //   cout << vector_matched_indices[i] << endl;
-      //}
-      //cout << "reduced vector: " << endl;
-      //for(unsigned int i(0); i<vector_matched_indices_single.size(); ++i){
-      //   cout << vector_matched_indices_single[i] << endl;
-      //}
+         // Step 2: we fill the histograms with the selected PFClusters
 
-      //for(unsigned int i(0); i<vector_matched_indices_single.size(); ++i){
-      //   int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i]);
-      //   cout << vector_matched_indices_single[i] << " appears " << nOccurrences << endl;
-      //}
-      //cout << endl;
+         //we loop on all the PFClusters associated to the same PFClusterHit and sum the energy, eta, phi
+         double filling_energy=0;
+         double filling_phi=0;
+         double filling_eta=0;
 
-      //uncomment the next lines in one want to save only one cluster per hit
+         for(unsigned int iMatched(0); iMatched<vector_matched_indices_single.size(); ++iMatched){
+            int matched_index = vector_matched_indices_single[iMatched];
+            int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[iMatched]);
+            //if(matched_index!=-1 && nOccurrences!=1)
+            if(matched_index!=-1){
+               filling_energy = pfCluster_energy[matched_index];
+               filling_phi    = pfCluster_phi[matched_index];
+               filling_eta    = pfCluster_eta[matched_index];
 
-      //in case a pfClusterHit is associated to more than one pfCluster, we keep the index of the pfCluster having the more hits
-      //int matched_index = vector_matched_indices_single[0];
-      //for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
-      //if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
-      //matched_index = vector_matched_indices_single[i];
-      //}
-      //}
-      //cout << "selected index: " << matched_index << endl;
+               //number of recHit per PFCluster
+               h_PFClusters_caloMatched_nRecHit->Fill(nOccurrences);
 
+               //number of recHit and energy
+               h_PFClusters_caloMatched_nRecHit_vs_energy->Fill(nOccurrences, filling_energy);
 
-      //we loop on all the PFClusters associated to the same PFClusterHit and sum the energy, eta, phi
-      double filling_energy=0;
-      double filling_phi=0;
-      double filling_eta=0;
+               N_pfCl++;
+               h_PFClusters_caloMatched_nXtals->Fill(N_pfClH);
+               h_PFClusters_caloMatched_energy->Fill(filling_energy);
+               h_PFClusters_caloMatched_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
+               h_PFClusters_caloMatched_phi->Fill(filling_phi);
+               h_PFClusters_caloMatched_eta->Fill(filling_eta);
+               h_PFClusters_caloMatched_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
+               if(caloParticle_simEnergy[icP]!=-1){
+                  h_PFClusters_caloMatched_eOverEtrue_simEnergy->Fill(filling_energy / caloParticle_simEnergy[icP]);         
+               }
+               h_PFClusters_caloMatched_nXtals_vs_energy->Fill(N_pfClH, filling_energy);
 
-      for(unsigned int iMatched(0); iMatched<vector_matched_indices_single.size(); ++iMatched){
-         int matched_index = vector_matched_indices_single[iMatched];
-         int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[iMatched]);
-         //if(matched_index!=-1 && nOccurrences!=1)
-         if(matched_index!=-1){
-            filling_energy = pfCluster_energy[matched_index];
-            filling_phi    = pfCluster_phi[matched_index];
-            filling_eta    = pfCluster_eta[matched_index];
+               if(caloParticle_eta[icP]<-1.479){
+                  N_pfCl_EEM++;
 
-            //number of recHit per PFCluster
-            h_PFClusters_caloMatched_nRecHit->Fill(nOccurrences);
+                  h_PFClusters_caloMatched_EEM_eta->Fill(filling_eta);
+                  h_PFClusters_caloMatched_EEM_nXtals->Fill(N_pfClH);
+                  h_PFClusters_caloMatched_EEM_energy->Fill(filling_energy);
+                  h_PFClusters_caloMatched_EEM_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
+                  h_PFClusters_caloMatched_EEM_phi->Fill(filling_phi);
+                  h_PFClusters_caloMatched_EEM_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
 
-            //number of recHit and energy
-            h_PFClusters_caloMatched_nRecHit_vs_energy->Fill(nOccurrences, filling_energy);
+               }
 
-            N_pfCl++;
-            h_PFClusters_caloMatched_nXtals->Fill(N_pfClH);
-            h_PFClusters_caloMatched_energy->Fill(filling_energy);
-            h_PFClusters_caloMatched_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
-            h_PFClusters_caloMatched_phi->Fill(filling_phi);
-            h_PFClusters_caloMatched_eta->Fill(filling_eta);
-            h_PFClusters_caloMatched_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
-            if(caloParticle_simEnergy[icP]!=-1){
-               h_PFClusters_caloMatched_eOverEtrue_simEnergy->Fill(filling_energy / caloParticle_simEnergy[icP]);         
-            }
-            h_PFClusters_caloMatched_nXtals_vs_energy->Fill(N_pfClH, filling_energy);
+               if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<0){
+                  N_pfCl_EBM++;
 
-            if(caloParticle_eta[icP]<-1.479){
-               N_pfCl_EEM++;
-
-               h_PFClusters_caloMatched_EEM_eta->Fill(filling_eta);
-               h_PFClusters_caloMatched_EEM_nXtals->Fill(N_pfClH);
-               h_PFClusters_caloMatched_EEM_energy->Fill(filling_energy);
-               h_PFClusters_caloMatched_EEM_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
-               h_PFClusters_caloMatched_EEM_phi->Fill(filling_phi);
-               h_PFClusters_caloMatched_EEM_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
-
-            }
-
-            if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<0){
-               N_pfCl_EBM++;
-
-               h_PFClusters_caloMatched_EBM_eta->Fill(filling_eta);
-               h_PFClusters_caloMatched_EBM_nXtals->Fill(N_pfClH);
-               h_PFClusters_caloMatched_EBM_energy->Fill(filling_energy);
-               h_PFClusters_caloMatched_EBM_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
-               h_PFClusters_caloMatched_EBM_phi->Fill(filling_phi);
-               h_PFClusters_caloMatched_EBM_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
+                  h_PFClusters_caloMatched_EBM_eta->Fill(filling_eta);
+                  h_PFClusters_caloMatched_EBM_nXtals->Fill(N_pfClH);
+                  h_PFClusters_caloMatched_EBM_energy->Fill(filling_energy);
+                  h_PFClusters_caloMatched_EBM_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
+                  h_PFClusters_caloMatched_EBM_phi->Fill(filling_phi);
+                  h_PFClusters_caloMatched_EBM_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
 
 
-            }
+               }
 
-            if(caloParticle_eta[icP]>=0 && caloParticle_eta[icP]<1.479){
-               N_pfCl_EBP++;
+               if(caloParticle_eta[icP]>=0 && caloParticle_eta[icP]<1.479){
+                  N_pfCl_EBP++;
 
-               h_PFClusters_caloMatched_EBP_eta->Fill(filling_eta);
-               h_PFClusters_caloMatched_EBP_nXtals->Fill(N_pfClH);
-               h_PFClusters_caloMatched_EBP_energy->Fill(filling_energy);
-               h_PFClusters_caloMatched_EBP_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
-               h_PFClusters_caloMatched_EBP_phi->Fill(filling_phi);
-               h_PFClusters_caloMatched_EBP_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
-
-
-            }
-
-            if(caloParticle_eta[icP]>=1.479){
-               N_plCl_EEP++;
-
-               h_PFClusters_caloMatched_EEP_eta->Fill(filling_eta);
-               h_PFClusters_caloMatched_EEP_nXtals->Fill(N_pfClH);
-               h_PFClusters_caloMatched_EEP_energy->Fill(filling_energy);
-               h_PFClusters_caloMatched_EEP_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
-               h_PFClusters_caloMatched_EEP_phi->Fill(filling_phi);
-               h_PFClusters_caloMatched_EEP_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
+                  h_PFClusters_caloMatched_EBP_eta->Fill(filling_eta);
+                  h_PFClusters_caloMatched_EBP_nXtals->Fill(N_pfClH);
+                  h_PFClusters_caloMatched_EBP_energy->Fill(filling_energy);
+                  h_PFClusters_caloMatched_EBP_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
+                  h_PFClusters_caloMatched_EBP_phi->Fill(filling_phi);
+                  h_PFClusters_caloMatched_EBP_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
 
 
-            }
+               }
 
-            //we fill the caloMatched histograms binned in eta and ET
-            for(TString Eta_key: Eta_keys){
-               for(TString Et_key: Et_keys){
-                  double caloParticle_et = caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])));
-                  if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
-                        && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
-                     h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_energy[icP]);
-                     h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_simEnergy[icP]);
+               if(caloParticle_eta[icP]>=1.479){
+                  N_plCl_EEP++;
+
+                  h_PFClusters_caloMatched_EEP_eta->Fill(filling_eta);
+                  h_PFClusters_caloMatched_EEP_nXtals->Fill(N_pfClH);
+                  h_PFClusters_caloMatched_EEP_energy->Fill(filling_energy);
+                  h_PFClusters_caloMatched_EEP_et->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
+                  h_PFClusters_caloMatched_EEP_phi->Fill(filling_phi);
+                  h_PFClusters_caloMatched_EEP_eOverEtrue->Fill(filling_energy / caloParticle_energy[icP]);         
 
 
-                     //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
-                     if(filling_energy / caloParticle_energy[icP] > 0.4 && filling_energy / caloParticle_energy[icP] < 1.4){
-                        h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
+               }
 
+               //we fill the caloMatched histograms binned in eta and ET
+               for(TString Eta_key: Eta_keys){
+                  for(TString Et_key: Et_keys){
+                     double caloParticle_et = caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP])));
+                     if(caloParticle_et>=Et_edges[Et_key].first && caloParticle_et<Et_edges[Et_key].second 
+                           && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
+                        h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_energy[icP]);
+                        h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_simEnergy[icP]);
+
+
+                        //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
+                        if(filling_energy / caloParticle_energy[icP] > 0.4 && filling_energy / caloParticle_energy[icP] < 1.4){
+                           h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
+
+                        }
                      }
                   }
                }
-            }
 
 
-            //we fill the caloMatched histograms binned in eta and energy
-            for(TString Eta_key: Eta_keys){
-               for(TString Et_key: Et_keys){
-                  if(caloParticle_energy[icP]>=Et_edges[Et_key].first && caloParticle_energy[icP]<Et_edges[Et_key].second 
-                        && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
+               //we fill the caloMatched histograms binned in eta and energy
+               for(TString Eta_key: Eta_keys){
+                  for(TString Et_key: Et_keys){
+                     if(caloParticle_energy[icP]>=Et_edges[Et_key].first && caloParticle_energy[icP]<Et_edges[Et_key].second 
+                           && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
 
 
-                     h_PFclusters_caloMatched_eOverEtrue_EtaEnBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_energy[icP]);
+                        h_PFclusters_caloMatched_eOverEtrue_EtaEnBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_energy[icP]);
 
-                     //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
-                     if(filling_energy / caloParticle_energy[icP] > 0.4 && filling_energy / caloParticle_energy[icP] < 1.4){
-                        h_PFclusters_caloMatched_size_EtaEnBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
-                        h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
+                        //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
+                        if(filling_energy / caloParticle_energy[icP] > 0.4 && filling_energy / caloParticle_energy[icP] < 1.4){
+                           h_PFclusters_caloMatched_size_EtaEnBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
+                           h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key]->Fill(1.);
 
+                        }
                      }
-                  }
-                  if(caloParticle_simEnergy[icP]>=Et_edges[Et_key].first && caloParticle_simEnergy[icP]<Et_edges[Et_key].second 
-                        && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
+                     if(caloParticle_simEnergy[icP]>=Et_edges[Et_key].first && caloParticle_simEnergy[icP]<Et_edges[Et_key].second 
+                           && std::abs(caloParticle_eta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_eta[icP])<Eta_edges[Eta_key].second){
 
 
-                     h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEnBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_simEnergy[icP]);
+                        h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEnBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_simEnergy[icP]);
 
-                     //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
-                     if(filling_energy / caloParticle_simEnergy[icP] > 0.4 && filling_energy / caloParticle_simEnergy[icP] < 1.4){
-                        h_PFclusters_caloMatched_size_EtaEnBinned_simEnergy_forEfficiency[Eta_key][Et_key]->Fill(1.);
-                        h_PFclusters_caloMatched_size_EtaEtBinned_simEnergy_forEfficiency[Eta_key][Et_key]->Fill(1.);
+                        //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
+                        if(filling_energy / caloParticle_simEnergy[icP] > 0.4 && filling_energy / caloParticle_simEnergy[icP] < 1.4){
+                           h_PFclusters_caloMatched_size_EtaEnBinned_simEnergy_forEfficiency[Eta_key][Et_key]->Fill(1.);
+                           h_PFclusters_caloMatched_size_EtaEtBinned_simEnergy_forEfficiency[Eta_key][Et_key]->Fill(1.);
 
 
+                        }
                      }
                   }
                }
-            }
-
-            // reloop over pfCluserHits 
-            //      for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
-            //         if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
-            //            h_PFClusters_caloMatched_nXtals_vs_xtalEnergy->Fill(N_pfClH,pfClusterHit_energy[icP][ipfClH]);
-            //         }
-            //      }
 
 
-            //plot number of recHit related to energy and eta
-            h_PFClusters_caloMatched_nPFClusters_vs_energy->Fill(N_pfCl, filling_energy);
-            //h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]);
-            h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
-            h_PFClusters_caloMatched_nPFClusters_vs_eta->Fill(filling_eta, N_pfCl);
+               //plot number of recHit related to energy and eta
+               h_PFClusters_caloMatched_nPFClusters_vs_energy->Fill(N_pfCl, filling_energy);
+               //h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]);
+               h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
+               h_PFClusters_caloMatched_nPFClusters_vs_eta->Fill(filling_eta, N_pfCl);
 
-         } //end of matched index
-      }// end of loop on matched indices            
-   } // end loop calo particles
+            } //end of matched index
+         }// end of loop on matched indices            
+      } // end loop calo particles
 
-   h_PFClusters_caloMatched_size->Fill(N_pfCl);
-   h_PFClusters_caloMatched_EEM_size->Fill(N_pfCl_EEM);
-   h_PFClusters_caloMatched_EBM_size->Fill(N_pfCl_EBM);
-   h_PFClusters_caloMatched_EBP_size->Fill(N_pfCl_EBP);
-   h_PFClusters_caloMatched_EEP_size->Fill(N_plCl_EEP);
-
+      h_PFClusters_caloMatched_size->Fill(N_pfCl);
+      h_PFClusters_caloMatched_EEM_size->Fill(N_pfCl_EEM);
+      h_PFClusters_caloMatched_EBM_size->Fill(N_pfCl_EBM);
+      h_PFClusters_caloMatched_EBP_size->Fill(N_pfCl_EBP);
+      h_PFClusters_caloMatched_EEP_size->Fill(N_plCl_EEP);
 
 
    return kTRUE;
