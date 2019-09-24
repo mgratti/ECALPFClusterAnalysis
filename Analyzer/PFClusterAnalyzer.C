@@ -243,6 +243,19 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_superCluster_R9_EB     = new TH1F("h_superCluster_R9_EB","h_superCluster_R9_EB",500, 0, 1.2);
    h_superCluster_R9_EE     = new TH1F("h_superCluster_R9_EE","h_superCluster_R9_EE",500, 0, 1.2);
 
+   h_superCluster_caloMatched_energy_EB = new TH1F("h_superCluster_caloMatched_energy_EB","h_superCluster_caloMatched_energy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_energy_EE = new TH1F("h_superCluster_caloMatched_energy_EE","h_superCluster_caloMatched_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_e3x3_EB   = new TH1F("h_superCluster_caloMatched_e3x3_EB","h_superCluster_caloMatched_e3x3_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_e3x3_EE   = new TH1F("h_superCluster_caloMatched_e3x3_EE","h_superCluster_caloMatched_e3x3_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+   h_superCluster_caloMatched_eta_EB    = new TH1F("h_superCluster_caloMatched_eta_EB","h_superCluster_caloMatched_eta_EB", 300,-3, 3);
+   h_superCluster_caloMatched_eta_EE    = new TH1F("h_superCluster_caloMatched_eta_EE","h_superCluster_caloMatched_eta_EE", 300, -3, 3);
+   h_superCluster_caloMatched_phi_EB    = new TH1F("h_superCluster_caloMatched_phi_EB","h_superCluster_caloMatched_phi_EB", 128, -3.2, 3.2);
+   h_superCluster_caloMatched_phi_EE    = new TH1F("h_superCluster_caloMatched_phi_EE","h_superCluster_caloMatched_phi_EE", 128, -3.2, 3.2);
+   h_superCluster_caloMatched_R9_EB     = new TH1F("h_superCluster_caloMatched_R9_EB","h_superCluster_caloMatched_R9_EB",500, 0, 1.2);
+   h_superCluster_caloMatched_R9_EE     = new TH1F("h_superCluster_caloMatched_R9_EE","h_superCluster_caloMatched_R9_EE",500, 0, 1.2);
+
+
+
 
    fout->cd("EtEta_binned");
    for (TString Et_key : Et_keys){
@@ -313,7 +326,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    //}
 
 
-   //we loop on the superCluster
+   //we loop on the (reco) superCluster
    for(unsigned int iSC(0); iSC<superCluster_energy.GetSize(); ++iSC){
       if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
          h_superCluster_energy_EB->Fill(superCluster_energy[iSC]);
@@ -322,7 +335,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          h_superCluster_phi_EB->Fill(superCluster_phi[iSC]);
          h_superCluster_R9_EB->Fill(superCluster_R9[iSC]);
       }
-       if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
+      if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
          h_superCluster_energy_EE->Fill(superCluster_energy[iSC]);
          h_superCluster_e3x3_EE->Fill(superCluster_e3x3[iSC]);
          h_superCluster_eta_EE->Fill(superCluster_eta[iSC]);
@@ -354,13 +367,21 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
       //std::cout << "icP=" << icP << " energy=" << caloParticle_energy[icP] << " eta=" << caloParticle_eta[icP] << " phi=" << caloParticle_phi[icP] << std::endl;
 
+      //counts the number of crystals per caloParticle
       int N_pfClH=0;
+
+      //counts the number of superClusterHit per caloParticle
+      int N_spClH=0;
+
       int match_pfC_idx=-1;
 
       //this vector will contain wht indices of the PFClusters that match with a given PFClusterHit.
       //Most of the time a PFClusterHit is associated to only one PFCluster, but this is not always the case
       vector<int> vector_matched_indices{-1};
       vector<int> vector_matched_indices_single{-1};
+
+      vector<int> vector_spCl_matched_indices{-1};
+      vector<int> vector_spCl_matched_indices_single{-1};
 
 
       N_Cl++;
@@ -436,18 +457,50 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }
 
 
+      // caloMatched superCluster
+      for(unsigned int ispCl=0; ispCl<superClusterHit_energy[icP].size(); ispCl++){
+
+         //for each superClusterHit, we save a map that lists all the superClusters to which the hit is associated and the energy deposited in the crystal
+         map<int, float>  map_superClusters = superClusterHit_energy[icP][ispCl];
+
+         //if the hit is not matched to a PFCluster, the size of the map is 0
+         if(map_superClusters.size()!=0){
+            //cout << "got it! " << ispCl << endl;
+            //we get the pfCluster index out of the map and store the all the indices (with repetition)
+            for (auto itr = map_superClusters.begin(); itr != map_superClusters.end(); ++itr) { 
+               vector_spCl_matched_indices.push_back(itr->first);
+            }
+
+            //same as above, but this time the index is saved only once
+            for (auto itr = map_superClusters.begin(); itr != map_superClusters.end(); ++itr) { 
+               if(std::find(vector_spCl_matched_indices_single.begin(), vector_spCl_matched_indices_single.end(), itr->first)==vector_spCl_matched_indices_single.end()){
+                  vector_spCl_matched_indices_single.push_back(itr->first);
+               }
+            }
+         }//end match superClusterHit - superCluster
+      }
+
+      //it has been checked that at most one SuperCluster was matched with the caloParticle
+      if(vector_spCl_matched_indices_single.size()>1){
+         if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<=1.479){
+            h_superCluster_caloMatched_energy_EB->Fill(superCluster_energy[0]); 
+            h_superCluster_caloMatched_e3x3_EB->Fill(superCluster_e3x3[0]); 
+            h_superCluster_caloMatched_eta_EB->Fill(superCluster_eta[0]); 
+            h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[0]); 
+            h_superCluster_caloMatched_R9_EB->Fill(superCluster_R9[0]); 
+         }
+         if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
+            h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[0]); 
+            h_superCluster_caloMatched_e3x3_EE->Fill(superCluster_e3x3[0]); 
+            h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[0]); 
+            h_superCluster_caloMatched_phi_EE->Fill(superCluster_phi[0]); 
+            h_superCluster_caloMatched_R9_EE->Fill(superCluster_R9[0]); 
+
+         }
+      }
 
 
-      //SuperCluster
-      //if(abs(caloParticle_eta[icP])<=1.479){
-      // h_superCluster_energy_EB->Fill(superCluster_energy[icP]);
-      // h_superCluster_R9_EB->Fill(superCluster_R9[icP]);
-      //}
-      //else if(abs(caloParticle_eta[icP])>1.479){
-      // h_superCluster_energy_EE->Fill(superCluster_energy[icP]);
-      // h_superCluster_R9_EE->Fill(superCluster_R9[icP]);
-      // }
-
+      // end of caloMatched superCluster
 
 
       //---PFClusters_caloMatched---
@@ -673,29 +726,29 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
 
    return kTRUE;
-}
+   }
 
-void PFClusterAnalyzer::SlaveTerminate()
-{
-   // The SlaveTerminate() function is called after all entries or objects
-   // have been processed. When running with PROOF SlaveTerminate() is called
-   // on each slave server.
+   void PFClusterAnalyzer::SlaveTerminate()
+   {
+      // The SlaveTerminate() function is called after all entries or objects
+      // have been processed. When running with PROOF SlaveTerminate() is called
+      // on each slave server.
 
-   // Write histograms to outputfile
-   //h_PFClusters_caloMatched_energy->Write();
+      // Write histograms to outputfile
+      //h_PFClusters_caloMatched_energy->Write();
 
-   // write and close 
-   fout->Write();
-   fout->Close();
+      // write and close 
+      fout->Write();
+      fout->Close();
 
-   Info("SlaveTerminate", "Wrote and closed output file");
+      Info("SlaveTerminate", "Wrote and closed output file");
 
-}
+   }
 
-void PFClusterAnalyzer::Terminate()
-{
-   // The Terminate() function is the last function to be called during
-   // a query. It always runs on the client, it can be used to present
-   // the results graphically or save the results to file.
+   void PFClusterAnalyzer::Terminate()
+   {
+      // The Terminate() function is the last function to be called during
+      // a query. It always runs on the client, it can be used to present
+      // the results graphically or save the results to file.
 
-}
+   }
