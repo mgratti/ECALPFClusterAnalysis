@@ -88,6 +88,12 @@ class PFClusterAnalyzer : public TSelector {
       //Turn to true this flag in case you want to save only one PFCluster per caloParticle
       Bool_t flag_keepOnlyOnePFCluster;
 
+      Bool_t   flag_doCaloParticle;
+      Bool_t   flag_doPFCluster;              
+      Bool_t   flag_doSuperCluster;           
+      Bool_t   flag_doCaloMatchedSuperCluster;
+
+
       //needed to define the different eta and ET bins
       std::vector<TString> Et_keys;
       std::map<TString, std::pair<Float_t,Float_t>> Et_edges;
