@@ -59,6 +59,18 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    // here you could handle more complicated options
    TString foutName = option;
 
+
+   //----------- USER'S DECISION BOARD --------------//
+   
+   //Turn to true this flag in case you want to save only one PFCluster per caloParticle
+   flag_keepOnlyOnePFCluster = true;
+
+
+   //------------------------------------------------//
+
+
+
+
    // output
    fout = new TFile(foutName, "RECREATE"); 
    if(!fout->IsOpen()) throw std::runtime_error("Output file could not be created");
@@ -494,6 +506,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
 
       //---PFClusters_caloMatched---
+      
+      // Step1: we get the indices of the caloMatched PFClusters
+
       // loop over pfClusterHits associated to calo particle
       for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
 
@@ -522,36 +537,24 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          //if(entry<N_perEvent_plots){
          //   h_PFClusterHit_EB_ietaiphi.at(entry)->Fill(pfClusterHit_ieta[icP][ipfClH], pfClusterHit_iphi[icP][ipfClH], pfClusterHit_energy[icP][ipfClH]);
          // }
-
       } // end loop pfClusterHits
 
 
-      //cout << "vector of indices: " << endl;
-      //for(unsigned int i(0); i<vector_matched_indices.size(); ++i){
-      //   cout << vector_matched_indices[i] << endl;
-      //}
-      //cout << "reduced vector: " << endl;
-      //for(unsigned int i(0); i<vector_matched_indices_single.size(); ++i){
-      //   cout << vector_matched_indices_single[i] << endl;
-      //}
+      //in case we want to save only one PFCluster per PFClusterHit, we keep the index of the PFCluster having the more hits
+      //Bool_t flag_keepOnlyOnePFCluster = true;
+      if(flag_keepOnlyOnePFCluster){
+      int matched_index = vector_matched_indices_single[0];
+      for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
+         if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
+            matched_index = vector_matched_indices_single[i];
+         }
+      }
+      vector_matched_indices_single.clear();
+      vector_matched_indices_single.push_back(matched_index);
+      }
 
-      //for(unsigned int i(0); i<vector_matched_indices_single.size(); ++i){
-      //   int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i]);
-      //   cout << vector_matched_indices_single[i] << " appears " << nOccurrences << endl;
-      //}
-      //cout << endl;
 
-      //uncomment the next lines in one want to save only one cluster per hit
-
-      //in case a pfClusterHit is associated to more than one pfCluster, we keep the index of the pfCluster having the more hits
-      //int matched_index = vector_matched_indices_single[0];
-      //for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
-      //if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
-      //matched_index = vector_matched_indices_single[i];
-      //}
-      //}
-      //cout << "selected index: " << matched_index << endl;
-
+      // Step 2: we fill the histograms with the selected PFClusters
 
       //we loop on all the PFClusters associated to the same PFClusterHit and sum the energy, eta, phi
       double filling_energy=0;
@@ -689,13 +692,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                }
             }
 
-            // reloop over pfCluserHits 
-            //      for (unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
-            //         if (map_pfClusterHit_pfCluster[icP][ipfClH] != -1){
-            //            h_PFClusters_caloMatched_nXtals_vs_xtalEnergy->Fill(N_pfClH,pfClusterHit_energy[icP][ipfClH]);
-            //         }
-            //      }
-
 
             //plot number of recHit related to energy and eta
             h_PFClusters_caloMatched_nPFClusters_vs_energy->Fill(N_pfCl, filling_energy);
@@ -716,29 +712,29 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
 
    return kTRUE;
-   }
+}
 
-   void PFClusterAnalyzer::SlaveTerminate()
-   {
-      // The SlaveTerminate() function is called after all entries or objects
-      // have been processed. When running with PROOF SlaveTerminate() is called
-      // on each slave server.
+void PFClusterAnalyzer::SlaveTerminate()
+{
+   // The SlaveTerminate() function is called after all entries or objects
+   // have been processed. When running with PROOF SlaveTerminate() is called
+   // on each slave server.
 
-      // Write histograms to outputfile
-      //h_PFClusters_caloMatched_energy->Write();
+   // Write histograms to outputfile
+   //h_PFClusters_caloMatched_energy->Write();
 
-      // write and close 
-      fout->Write();
-      fout->Close();
+   // write and close 
+   fout->Write();
+   fout->Close();
 
-      Info("SlaveTerminate", "Wrote and closed output file");
+   Info("SlaveTerminate", "Wrote and closed output file");
 
-   }
+}
 
-   void PFClusterAnalyzer::Terminate()
-   {
-      // The Terminate() function is the last function to be called during
-      // a query. It always runs on the client, it can be used to present
-      // the results graphically or save the results to file.
+void PFClusterAnalyzer::Terminate()
+{
+   // The Terminate() function is the last function to be called during
+   // a query. It always runs on the client, it can be used to present
+   // the results graphically or save the results to file.
 
-   }
+}
