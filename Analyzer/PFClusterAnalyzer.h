@@ -83,7 +83,7 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<int> superCluster_iphi = {fReader, "superCluster_iphi"};
       TTreeReaderArray<int> superCluster_iz = {fReader, "superCluster_iz"};
       TTreeReaderArray<float> superCluster_R9 = {fReader, "superCluster_R9"};
-      TTreeReaderArray<vector<map<int,float>>> superClusterHit_energy = {fReader, "superClusterHit_energy"};
+      TTreeReaderArray<float> superCluster_e3x3 = {fReader, "superCluster_e3x3"};
 
       // non reader members 
       // -- non root members
