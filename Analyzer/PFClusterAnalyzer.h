@@ -82,7 +82,9 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<int> superCluster_ieta = {fReader, "superCluster_ieta"};
       TTreeReaderArray<int> superCluster_iphi = {fReader, "superCluster_iphi"};
       TTreeReaderArray<int> superCluster_iz = {fReader, "superCluster_iz"};
- 
+      TTreeReaderArray<float> superCluster_R9 = {fReader, "superCluster_R9"};
+      TTreeReaderArray<vector<map<int,float>>> superClusterHit_energy = {fReader, "superClusterHit_energy"};
+
       // non reader members 
       // -- non root members
       float min_pfClusterHit_energy=0.08; // 80 MeV
@@ -90,37 +92,42 @@ class PFClusterAnalyzer : public TSelector {
 
       // -- root members
       TFile *fout;
-  
+
+      //Flags
+      //Turn to true this flag in case you want to save only one PFCluster per caloParticle
+      Bool_t flag_keepOnlyOnePFCluster;
+
+
       //needed to define the different eta and ET bins
       std::vector<TString> Et_keys;
       std::map<TString, std::pair<Float_t,Float_t>> Et_edges;
       std::vector<TString> Eta_keys;
       std::map<TString, std::pair<Float_t,Float_t>> Eta_edges;
-     
+
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned;
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_EtaEnBinned;
-      
+
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEnBinned;
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned;
-      
+
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency;
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_size_EtaEnBinned_forEfficiency;
-      
+
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_size_EtaEnBinned_simEnergy_forEfficiency;
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_size_EtaEtBinned_simEnergy_forEfficiency;
- 
+
       std::map<TString, std::map<TString, TH1F*>> h_caloParticle_size_EtaEtBinned;
       std::map<TString, std::map<TString, TH1F*>> h_caloParticle_size_EtaEnBinned;
 
 
-
-      TH1F* h_PFClusters_caloMatched_size    ;
-      TH1F* h_PFClusters_caloMatched_nRecHit ;
-      TH1F* h_PFClusters_caloMatched_nXtals  ;
-      TH1F* h_PFClusters_caloMatched_energy  ;
-      TH1F* h_PFClusters_caloMatched_et      ;
-      TH1F* h_PFClusters_caloMatched_eta     ;
-      TH1F* h_PFClusters_caloMatched_phi     ;
+      // PFClusters 
+      TH1F* h_PFClusters_caloMatched_size;
+      TH1F* h_PFClusters_caloMatched_nRecHit;
+      TH1F* h_PFClusters_caloMatched_nXtals;
+      TH1F* h_PFClusters_caloMatched_energy;
+      TH1F* h_PFClusters_caloMatched_et;
+      TH1F* h_PFClusters_caloMatched_eta;
+      TH1F* h_PFClusters_caloMatched_phi;
       TH1F* h_PFClusters_caloMatched_eOverEtrue;
       TH1F* h_PFClusters_caloMatched_eOverEtrue_simEnergy; 
       TH2F* h_PFClusters_caloMatched_nXtals_vs_xtalEnergy;
@@ -164,44 +171,42 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_EEP_phi;
       TH1F* h_PFClusters_caloMatched_EEP_eOverEtrue;
 
-
-
-
+      // calo particles
       TH1F* h_caloParticle_size;
       TH1F* h_caloParticle_energy;
       TH1F* h_caloParticle_simEnergy;
       TH1F* h_caloParticle_et;
       TH1F* h_caloParticle_eta;
       TH1F* h_caloParticle_phi;
-     
+
       TH1F* h_caloParticle_EEM_size;
       TH1F* h_caloParticle_EEM_energy;
       TH1F* h_caloParticle_EEM_simEnergy;
       TH1F* h_caloParticle_EEM_et;
       TH1F* h_caloParticle_EEM_eta;
       TH1F* h_caloParticle_EEM_phi;
-     
+
       TH1F* h_caloParticle_EBM_size;
       TH1F* h_caloParticle_EBM_energy;
       TH1F* h_caloParticle_EBM_simEnergy;
       TH1F* h_caloParticle_EBM_et;
       TH1F* h_caloParticle_EBM_eta;
       TH1F* h_caloParticle_EBM_phi;
-     
+
       TH1F* h_caloParticle_EBP_size;
       TH1F* h_caloParticle_EBP_energy;
       TH1F* h_caloParticle_EBP_simEnergy;
       TH1F* h_caloParticle_EBP_et;
       TH1F* h_caloParticle_EBP_eta;
       TH1F* h_caloParticle_EBP_phi;
-     
+
       TH1F* h_caloParticle_EEP_size;
       TH1F* h_caloParticle_EEP_energy;
       TH1F* h_caloParticle_EEP_simEnergy;
       TH1F* h_caloParticle_EEP_et;
       TH1F* h_caloParticle_EEP_eta;
       TH1F* h_caloParticle_EEP_phi;
-    
+
 
       //superCluster
       TH1F* h_superCluster_energy_EB;
@@ -214,6 +219,17 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_superCluster_phi_EE;
       TH1F* h_superCluster_R9_EB;
       TH1F* h_superCluster_R9_EE;
+
+      TH1F* h_superCluster_caloMatched_energy_EB;
+      TH1F* h_superCluster_caloMatched_energy_EE;
+      TH1F* h_superCluster_caloMatched_e3x3_EB;
+      TH1F* h_superCluster_caloMatched_e3x3_EE;
+      TH1F* h_superCluster_caloMatched_eta_EB;
+      TH1F* h_superCluster_caloMatched_eta_EE;
+      TH1F* h_superCluster_caloMatched_phi_EB;
+      TH1F* h_superCluster_caloMatched_phi_EE;
+      TH1F* h_superCluster_caloMatched_R9_EB;
+      TH1F* h_superCluster_caloMatched_R9_EE;
 
       // per Event maps
       std::vector<TH2F*> h_caloParticle_EB_ietaiphi;
