@@ -222,28 +222,52 @@ if options.doClusterAnalysis:
 
        
         #superCluster
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_energy', xtitle='EB caloMatched superCluster energy [GeV]', ytitle='Entries', xrange=None)    
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_energy_EB', xtitle='superCluster energy EB [GeV]', ytitle='Entries', xrange=None)    
         
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_eta', xtitle='EB_caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_e3x3_EB', xtitle='superCluster energy3x3 EB [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_phi', xtitle='EB_caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_eta_EB', xtitle='superCluster eta EB', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_eOverEtrue', xtitle='EB E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_phi_EB', xtitle='superCluster phi EB', ytitle='Entries', xrange=(-3.2,3.2))
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_R9_EB', xtitle='superCluster R9 EB', ytitle='Entries', xrange=(0.,1.5))
        
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_eOverEtrue', xtitle='EB E/Etrue', ytitle='Entries', xrange=(0.,1.5))
  
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_energy', xtitle='EE_caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_energy_EE', xtitle='superCluster energy EE [GeV]', ytitle='Entries', xrange=None)    
+        
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_e3x3_EE', xtitle='superCluster energy3x3 EE [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_eta', xtitle='EE_caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_eta_EE', xtitle='superCluster eta EE', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_phi', xtitle='EE_caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_phi_EE', xtitle='superCluster phi EE', ytitle='Entries', xrange=(-3.2,3.2))
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_eOverEtrue', xtitle='EE E/Etrue', ytitle='Entries', xrange=(0.,1.5))
-       
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_eOverEtrue', xtitle='EE E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_R9_EE', xtitle='superCluster R9 EE', ytitle='Entries', xrange=(0.,1.5))
  
 
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_energy_EB', xtitle='caloMatched superCluster energy EB [GeV]', ytitle='Entries', xrange=None)    
+        
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_e3x3_EB', xtitle='caloMatched superCluster energy3x3 EB [GeV]', ytitle='Entries', xrange=None)    
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_eta_EB', xtitle='caloMatched superCluster eta EB', ytitle='Entries', xrange=(-4.,4.))
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_phi_EB', xtitle='caloMatched superCluster phi EB', ytitle='Entries', xrange=(-3.2,3.2))
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_R9_EB', xtitle='caloMatched superCluster R9 EB', ytitle='Entries', xrange=(0.,1.5))
+       
+ 
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_energy_EE', xtitle='caloMatched superCluster energy EE [GeV]', ytitle='Entries', xrange=None)    
+        
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_e3x3_EE', xtitle='caloMatched superCluster energy3x3 EE [GeV]', ytitle='Entries', xrange=None)    
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_eta_EE', xtitle='caloMatched superCluster eta EE', ytitle='Entries', xrange=(-4.,4.))
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_phi_EE', xtitle='caloMatched superCluster phi EE', ytitle='Entries', xrange=(-3.2,3.2))
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_R9_EE', xtitle='caloMatched superCluster R9 EE', ytitle='Entries', xrange=(0.,1.5))
+ 
 
 
 
