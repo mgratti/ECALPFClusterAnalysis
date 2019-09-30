@@ -78,9 +78,9 @@ Bool_t do_fitAll  = true;
 Bool_t do_fitPeak = false;
 
 // choose which plots to produce
-Bool_t do_resolutionPlot = false;
-Bool_t do_scalePlot      = false;
-Bool_t do_efficiencyPlot = false;
+Bool_t do_resolutionPlot = true;
+Bool_t do_scalePlot      = true;
+Bool_t do_efficiencyPlot = true;
 
 //////////////////////////////////////////////////////////////////////
 

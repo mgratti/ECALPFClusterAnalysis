@@ -11,10 +11,10 @@ import sys
 import os
 sys.path.append('utils')
 sys.path.append('./')
-from spares import *
-import graphUtils as gU
+#from spares import *
+#import graphUtils as gU
 from array import *
-from analyzeRecHits import beautify2DPlot, beautify1DPlot
+from analyzeRecHits import beautify1DPlot
 
 
 colors = [   kOrange+1, kRed, kMagenta+2, kViolet+8, kAzure-8, kAzure+6 ,
