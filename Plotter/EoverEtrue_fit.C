@@ -78,9 +78,9 @@ Bool_t do_fitAll  = true;
 Bool_t do_fitPeak = false;
 
 // choose which plots to produce
-Bool_t do_resolutionPlot = true;
-Bool_t do_scalePlot      = true;
-Bool_t do_efficiencyPlot = true;
+Bool_t do_resolutionPlot = false;
+Bool_t do_scalePlot      = false;
+Bool_t do_efficiencyPlot = false;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -376,7 +376,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",0.8,0.7,1.4);
+         RooRealVar *mean   = new RooRealVar("mean","mean",0.87,0.6,1.4);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.04, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
@@ -385,16 +385,16 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
 
          // double crystal ball (same gaussian body but different exponential tails)
-         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 0.5, -5., 5.);
-         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 1., 0., 10.);
-         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 1.0, -5, 5.);
+         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 3.0, -5, 5.);
+         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 5., 0., 10.);
+         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 4.0, -5, 5.);
          RooRealVar *n_2      = new RooRealVar("n_2", "n_2", 1., 0., 50.);
 
          RooCBShape *CBpdf_1 = new RooCBShape("CBpdf_1", "CBpdf_1", *EoverEtrue, *mean, *sigma, *alpha_1, *n_1);
          RooCBShape *CBpdf_2 = new RooCBShape("CBpdf_2", "CBpdf_2", *EoverEtrue, *mean, *sigma, *alpha_2, *n_2);
 
          // defines the relative importance of the fit
-         RooRealVar *sigfrac  = new RooRealVar("sigfrac","sigfrac",0.0 ,1.0);
+         RooRealVar *sigfrac  = new RooRealVar("sigfrac","sigfrac", 0.0 ,1.0);
 
          // we add the two CB pdfs together
          RooAddPdf *doubleCBpdf   = new RooAddPdf("doubleCBpdf", "doubleCBpdf", *CBpdf_1, *CBpdf_2, *sigfrac); 
