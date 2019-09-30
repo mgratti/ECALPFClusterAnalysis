@@ -47,22 +47,22 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_singlePhoton_withTracker_pT0to100GeV_2k";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_noPU_pfrh1_seed3_V01_v01_n15000";
 
 // enter the number of k events
 Int_t kEvents = 150;
 
 // choose which energy range you are using (choose only one)
-Bool_t do_0to20GeV  = true;
-Bool_t do_0to100GeV = false;
+Bool_t do_0to20GeV  = false;
+Bool_t do_0to100GeV = true;
 
 // choose between endcap and/or barrel
 Bool_t do_EB = true;
 Bool_t do_EE = false;
 
 // choose which Etrue definition you want to use (choose only one)
-Bool_t use_energy    = true;
-Bool_t use_simEnergy = false;
+Bool_t use_energy    = false;
+Bool_t use_simEnergy = true;
 
 // choose whether you want to bin in ET or energy
 Bool_t do_binningEt = true;
@@ -663,7 +663,12 @@ void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_
       }
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
-      graph->GetXaxis()->SetTitle("E [GeV]");
+      if(do_binningEt){
+        graph->GetXaxis()->SetTitle("E_{T} [GeV]");
+      }
+      else{
+        graph->GetXaxis()->SetTitle("E [GeV]");
+      }
       graph->GetXaxis()->SetTitleSize(0.04);
       graph->GetXaxis()->SetTitleOffset(1.1);
       graph->SetLineColor(color[kk]);
