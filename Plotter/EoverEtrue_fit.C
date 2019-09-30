@@ -376,7 +376,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",0.9,0.8,1.4);
+         RooRealVar *mean   = new RooRealVar("mean","mean",0.8,0.7,1.4);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.04, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
