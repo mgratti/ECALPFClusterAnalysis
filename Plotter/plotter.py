@@ -66,7 +66,7 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_energy', xtitle='caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_size', xtitle='number of caloMatched PFClusters per caloParticle', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_size', xtitle='number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nRecHit', xtitle='number of crystals per caloMatched PFCluster', ytitle='Entries', xrange=(0.,40.))
 
@@ -86,7 +86,7 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_energy', xtitle='EEM caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_size', xtitle='EEM number of caloMatched PFClusters per caloParticle', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_size', xtitle='EEM number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_nXtals', xtitle='EEM number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
 
@@ -102,7 +102,7 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_energy', xtitle='EBM caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_size', xtitle='EBM number of caloMatched PFClusters per caloParticle', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_size', xtitle='EBM number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_nXtals', xtitle='EBM number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
 
@@ -117,7 +117,7 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_energy', xtitle='EBP caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_size', xtitle='EBP number of caloMatched PFClusters per caloParticle', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_size', xtitle='EBP number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_nXtals', xtitle='EBP number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
 
@@ -133,7 +133,7 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_energy', xtitle='EEP caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_size', xtitle='EEP number of caloMatched PFClusters per caloParticle', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_size', xtitle='EEP number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
 
         beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_nXtals', xtitle='EEP number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
 

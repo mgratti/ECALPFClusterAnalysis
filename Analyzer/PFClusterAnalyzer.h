@@ -82,9 +82,15 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<int> superCluster_ieta = {fReader, "superCluster_ieta"};
       TTreeReaderArray<int> superCluster_iphi = {fReader, "superCluster_iphi"};
       TTreeReaderArray<int> superCluster_iz = {fReader, "superCluster_iz"};
-      TTreeReaderArray<float> superCluster_R9 = {fReader, "superCluster_R9"};
-      TTreeReaderArray<float> superCluster_e3x3 = {fReader, "superCluster_e3x3"};
-
+      TTreeReaderArray<float> superCluster_r9 = {fReader, "superCluster_r9"};
+      TTreeReaderArray<float> superCluster_sigmaIetaIeta = {fReader, "superCluster_sigmaIetaIeta"};
+      TTreeReaderArray<float> superCluster_sigmaIetaIphi = {fReader, "superCluster_sigmaIetaIphi"};
+      TTreeReaderArray<float> superCluster_sigmaIphiIphi = {fReader, "superCluster_sigmaIphiIphi"};
+      TTreeReaderArray<float> superCluster_full5x5_r9 = {fReader, "superCluster_full5x5_r9"};
+      TTreeReaderArray<float> superCluster_full5x5_sigmaIetaIeta = {fReader, "superCluster_full5x5_sigmaIetaIeta"};
+      TTreeReaderArray<float> superCluster_full5x5_sigmaIetaIphi = {fReader, "superCluster_full5x5_sigmaIetaIphi"};
+      TTreeReaderArray<float> superCluster_full5x5_sigmaIphiIphi = {fReader, "superCluster_full5x5_sigmaIphiIphi"};
+ 
       // non reader members 
       // -- non root members
       float min_pfClusterHit_energy=0.08; // 80 MeV
@@ -211,25 +217,52 @@ class PFClusterAnalyzer : public TSelector {
       //superCluster
       TH1F* h_superCluster_energy_EB;
       TH1F* h_superCluster_energy_EE;
-      TH1F* h_superCluster_e3x3_EB;
-      TH1F* h_superCluster_e3x3_EE;
       TH1F* h_superCluster_eta_EB;
       TH1F* h_superCluster_eta_EE;
       TH1F* h_superCluster_phi_EB;
       TH1F* h_superCluster_phi_EE;
-      TH1F* h_superCluster_R9_EB;
-      TH1F* h_superCluster_R9_EE;
+      TH1F* h_superCluster_r9_EB;
+      TH1F* h_superCluster_r9_EE;
+      TH1F* h_superCluster_sigmaIetaIeta_EB;
+      TH1F* h_superCluster_sigmaIetaIeta_EE;
+      TH1F* h_superCluster_sigmaIetaIphi_EB;
+      TH1F* h_superCluster_sigmaIetaIphi_EE;
+      TH1F* h_superCluster_sigmaIphiIphi_EB;
+      TH1F* h_superCluster_sigmaIphiIphi_EE;
+      TH1F* h_superCluster_full5x5_r9_EB;
+      TH1F* h_superCluster_full5x5_r9_EE;
+      TH1F* h_superCluster_full5x5_sigmaIetaIeta_EB;
+      TH1F* h_superCluster_full5x5_sigmaIetaIeta_EE;
+      TH1F* h_superCluster_full5x5_sigmaIetaIphi_EB;
+      TH1F* h_superCluster_full5x5_sigmaIetaIphi_EE;
+      TH1F* h_superCluster_full5x5_sigmaIphiIphi_EB;
+      TH1F* h_superCluster_full5x5_sigmaIphiIphi_EE;
+
 
       TH1F* h_superCluster_caloMatched_energy_EB;
       TH1F* h_superCluster_caloMatched_energy_EE;
-      TH1F* h_superCluster_caloMatched_e3x3_EB;
-      TH1F* h_superCluster_caloMatched_e3x3_EE;
       TH1F* h_superCluster_caloMatched_eta_EB;
       TH1F* h_superCluster_caloMatched_eta_EE;
       TH1F* h_superCluster_caloMatched_phi_EB;
       TH1F* h_superCluster_caloMatched_phi_EE;
-      TH1F* h_superCluster_caloMatched_R9_EB;
-      TH1F* h_superCluster_caloMatched_R9_EE;
+      TH1F* h_superCluster_caloMatched_r9_EB;
+      TH1F* h_superCluster_caloMatched_r9_EE;
+      TH1F* h_superCluster_caloMatched_sigmaIetaIeta_EB;
+      TH1F* h_superCluster_caloMatched_sigmaIetaIeta_EE;
+      TH1F* h_superCluster_caloMatched_sigmaIetaIphi_EB;
+      TH1F* h_superCluster_caloMatched_sigmaIetaIphi_EE;
+      TH1F* h_superCluster_caloMatched_sigmaIphiIphi_EB;
+      TH1F* h_superCluster_caloMatched_sigmaIphiIphi_EE;
+      TH1F* h_superCluster_caloMatched_full5x5_r9_EB;
+      TH1F* h_superCluster_caloMatched_full5x5_r9_EE;
+      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB;
+      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE;
+      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB;
+      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE;
+      TH1F* h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB;
+      TH1F* h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE;
+
+
 
       // per Event maps
       std::vector<TH2F*> h_caloParticle_EB_ietaiphi;

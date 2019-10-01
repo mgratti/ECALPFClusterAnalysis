@@ -137,9 +137,9 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    fout->cd("PFCluster_caloMatched");
 
-   int nBins_energy = 200;
+   int nBins_energy = 240;
    int rangeMin_energy = -5;
-   int rangeMax_energy = 105;
+   int rangeMax_energy = 115;
 
    // initialize histograms
    h_PFClusters_caloMatched_size    = new TH1F("h_PFClusters_caloMatched_size","h_PFClusters_caloMatched_size",50,0.,50.);
@@ -240,25 +240,55 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    fout->cd("SuperCluster");
    h_superCluster_energy_EB = new TH1F("h_superCluster_energy_EB","h_superCluster_energy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_superCluster_energy_EE = new TH1F("h_superCluster_energy_EE","h_superCluster_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_superCluster_e3x3_EB   = new TH1F("h_superCluster_e3x3_EB","h_superCluster_e3x3_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_superCluster_e3x3_EE   = new TH1F("h_superCluster_e3x3_EE","h_superCluster_e3x3_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_superCluster_eta_EB    = new TH1F("h_superCluster_eta_EB","h_superCluster_eta_EB", 300,-3, 3);
    h_superCluster_eta_EE    = new TH1F("h_superCluster_eta_EE","h_superCluster_eta_EE", 300, -3, 3);
    h_superCluster_phi_EB    = new TH1F("h_superCluster_phi_EB","h_superCluster_phi_EB", 128, -3.2, 3.2);
    h_superCluster_phi_EE    = new TH1F("h_superCluster_phi_EE","h_superCluster_phi_EE", 128, -3.2, 3.2);
-   h_superCluster_R9_EB     = new TH1F("h_superCluster_R9_EB","h_superCluster_R9_EB",500, 0, 1.2);
-   h_superCluster_R9_EE     = new TH1F("h_superCluster_R9_EE","h_superCluster_R9_EE",500, 0, 1.2);
+   h_superCluster_r9_EB     = new TH1F("h_superCluster_r9_EB","h_superCluster_r9_EB",500, 0, 1.2);
+   h_superCluster_r9_EE     = new TH1F("h_superCluster_r9_EE","h_superCluster_r9_EE",500, 0, 1.2);
+   h_superCluster_sigmaIetaIeta_EB     = new TH1F("h_superCluster_sigmaIetaIeta_EB","h_superCluster_sigmaIetaIeta_EB",40, 0, 0.04);
+   h_superCluster_sigmaIetaIeta_EE     = new TH1F("h_superCluster_sigmaIetaIeta_EE","h_superCluster_sigmaIetaIeta_EE",40, 0, 0.04);
+   h_superCluster_sigmaIetaIphi_EB     = new TH1F("h_superCluster_sigmaIetaIphi_EB","h_superCluster_sigmaIetaIphi_EB",50, -0.005, 0.005);
+   h_superCluster_sigmaIetaIphi_EE     = new TH1F("h_superCluster_sigmaIetaIphi_EE","h_superCluster_sigmaIetaIphi_EE",50, -0.005, 0.005);
+   h_superCluster_sigmaIphiIphi_EB     = new TH1F("h_superCluster_sigmaIphiIphi_EB","h_superCluster_sigmaIphiIphi_EB",40, 0, 0.04);
+   h_superCluster_sigmaIphiIphi_EE     = new TH1F("h_superCluster_sigmaIphiIphi_EE","h_superCluster_sigmaIphiIphi_EE",40, 0, 0.04);
+   h_superCluster_full5x5_r9_EB     = new TH1F("h_superCluster_full5x5_r9_EB","h_superCluster_full5x5_r9_EB",500, 0, 1.2);
+   h_superCluster_full5x5_r9_EE     = new TH1F("h_superCluster_full5x5_r9_EE","h_superCluster_full5x5_r9_EE",500, 0, 1.2);
+   h_superCluster_full5x5_sigmaIetaIeta_EB     = new TH1F("h_superCluster_full5x5_sigmaIetaIeta_EB","h_superCluster_full5x5_sigmaIetaIeta_EB",40, 0, 0.04);
+   h_superCluster_full5x5_sigmaIetaIeta_EE     = new TH1F("h_superCluster_full5x5_sigmaIetaIeta_EE","h_superCluster_full5x5_sigmaIetaIeta_EE",40, 0, 0.04);
+   h_superCluster_full5x5_sigmaIetaIphi_EB     = new TH1F("h_superCluster_full5x5_sigmaIetaIphi_EB","h_superCluster_full5x5_sigmaIetaIphi_EB",50, -0.005, 0.005);
+   h_superCluster_full5x5_sigmaIetaIphi_EE     = new TH1F("h_superCluster_full5x5_sigmaIetaIphi_EE","h_superCluster_full5x5_sigmaIetaIphi_EE",50, -0.005, 0.005);
+   h_superCluster_full5x5_sigmaIphiIphi_EB     = new TH1F("h_superCluster_full5x5_sigmaIphiIphi_EB","h_superCluster_full5x5_sigmaIphiIphi_EB",40, 0, 0.04);
+   h_superCluster_full5x5_sigmaIphiIphi_EE     = new TH1F("h_superCluster_full5x5_sigmaIphiIphi_EE","h_superCluster_full5x5_sigmaIphiIphi_EE",40, 0, 0.04);
+
+
+
+
 
    h_superCluster_caloMatched_energy_EB = new TH1F("h_superCluster_caloMatched_energy_EB","h_superCluster_caloMatched_energy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_superCluster_caloMatched_energy_EE = new TH1F("h_superCluster_caloMatched_energy_EE","h_superCluster_caloMatched_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_superCluster_caloMatched_e3x3_EB   = new TH1F("h_superCluster_caloMatched_e3x3_EB","h_superCluster_caloMatched_e3x3_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
-   h_superCluster_caloMatched_e3x3_EE   = new TH1F("h_superCluster_caloMatched_e3x3_EE","h_superCluster_caloMatched_e3x3_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
    h_superCluster_caloMatched_eta_EB    = new TH1F("h_superCluster_caloMatched_eta_EB","h_superCluster_caloMatched_eta_EB", 300,-3, 3);
    h_superCluster_caloMatched_eta_EE    = new TH1F("h_superCluster_caloMatched_eta_EE","h_superCluster_caloMatched_eta_EE", 300, -3, 3);
    h_superCluster_caloMatched_phi_EB    = new TH1F("h_superCluster_caloMatched_phi_EB","h_superCluster_caloMatched_phi_EB", 128, -3.2, 3.2);
    h_superCluster_caloMatched_phi_EE    = new TH1F("h_superCluster_caloMatched_phi_EE","h_superCluster_caloMatched_phi_EE", 128, -3.2, 3.2);
-   h_superCluster_caloMatched_R9_EB     = new TH1F("h_superCluster_caloMatched_R9_EB","h_superCluster_caloMatched_R9_EB",500, 0, 1.2);
-   h_superCluster_caloMatched_R9_EE     = new TH1F("h_superCluster_caloMatched_R9_EE","h_superCluster_caloMatched_R9_EE",500, 0, 1.2);
+   h_superCluster_caloMatched_r9_EB     = new TH1F("h_superCluster_caloMatched_r9_EB","h_superCluster_caloMatched_r9_EB",500, 0, 1.2);
+   h_superCluster_caloMatched_r9_EE     = new TH1F("h_superCluster_caloMatched_r9_EE","h_superCluster_caloMatched_r9_EE",500, 0, 1.2);
+   h_superCluster_caloMatched_sigmaIetaIeta_EB     = new TH1F("h_superCluster_caloMatched_sigmaIetaIeta_EB","h_superCluster_caloMatched_sigmaIetaIeta_EB",40, 0, 0.04);
+   h_superCluster_caloMatched_sigmaIetaIeta_EE     = new TH1F("h_superCluster_caloMatched_sigmaIetaIeta_EE","h_superCluster_caloMatched_sigmaIetaIeta_EE",40, 0, 0.04);
+   h_superCluster_caloMatched_sigmaIetaIphi_EB     = new TH1F("h_superCluster_caloMatched_sigmaIetaIphi_EB","h_superCluster_caloMatched_sigmaIetaIphi_EB",50, -0.005, 0.005);
+   h_superCluster_caloMatched_sigmaIetaIphi_EE     = new TH1F("h_superCluster_caloMatched_sigmaIetaIphi_EE","h_superCluster_caloMatched_sigmaIetaIphi_EE",50, -0.005, 0.005);
+   h_superCluster_caloMatched_sigmaIphiIphi_EB     = new TH1F("h_superCluster_caloMatched_sigmaIphiIphi_EB","h_superCluster_caloMatched_sigmaIphiIphi_EB",40, 0, 0.04);
+   h_superCluster_caloMatched_sigmaIphiIphi_EE     = new TH1F("h_superCluster_caloMatched_sigmaIphiIphi_EE","h_superCluster_caloMatched_sigmaIphiIphi_EE",40, 0, 0.04);
+   h_superCluster_caloMatched_full5x5_r9_EB     = new TH1F("h_superCluster_caloMatched_full5x5_r9_EB","h_superCluster_caloMatched_full5x5_r9_EB",500, 0, 1.2);
+   h_superCluster_caloMatched_full5x5_r9_EE     = new TH1F("h_superCluster_caloMatched_full5x5_r9_EE","h_superCluster_caloMatched_full5x5_r9_EE",500, 0, 1.2);
+   h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB     = new TH1F("h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB","h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB",40, 0, 0.04);
+   h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE     = new TH1F("h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE","h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE",40, 0, 0.04);
+   h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB     = new TH1F("h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB","h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB",50, -0.005, 0.005);
+   h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE     = new TH1F("h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE","h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE",50, -0.005, 0.005);
+   h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB     = new TH1F("h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB","h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB",40, 0, 0.04);
+   h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE     = new TH1F("h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE","h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE",40, 0, 0.04);
+
+
 
 
 
@@ -355,17 +385,29 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    for(unsigned int iSC(0); iSC<superCluster_energy.GetSize(); ++iSC){
       if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
          h_superCluster_energy_EB->Fill(superCluster_energy[iSC]);
-         h_superCluster_e3x3_EB->Fill(superCluster_e3x3[iSC]);
          h_superCluster_eta_EB->Fill(superCluster_eta[iSC]);
          h_superCluster_phi_EB->Fill(superCluster_phi[iSC]);
-         h_superCluster_R9_EB->Fill(superCluster_R9[iSC]);
+         h_superCluster_r9_EB->Fill(superCluster_r9[iSC]);
+         h_superCluster_sigmaIetaIeta_EB->Fill(superCluster_sigmaIetaIeta[iSC]);
+         h_superCluster_sigmaIetaIphi_EB->Fill(superCluster_sigmaIetaIphi[iSC]);
+         h_superCluster_sigmaIphiIphi_EB->Fill(superCluster_sigmaIphiIphi[iSC]);
+         h_superCluster_full5x5_r9_EB->Fill(superCluster_full5x5_r9[iSC]);
+         h_superCluster_full5x5_sigmaIetaIeta_EB->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+         h_superCluster_full5x5_sigmaIetaIphi_EB->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+         h_superCluster_full5x5_sigmaIphiIphi_EB->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
       }
       if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
          h_superCluster_energy_EE->Fill(superCluster_energy[iSC]);
-         h_superCluster_e3x3_EE->Fill(superCluster_e3x3[iSC]);
          h_superCluster_eta_EE->Fill(superCluster_eta[iSC]);
          h_superCluster_phi_EE->Fill(superCluster_phi[iSC]);
-         h_superCluster_R9_EE->Fill(superCluster_R9[iSC]);
+         h_superCluster_r9_EE->Fill(superCluster_r9[iSC]);
+         h_superCluster_sigmaIetaIeta_EE->Fill(superCluster_sigmaIetaIeta[iSC]);
+         h_superCluster_sigmaIetaIphi_EE->Fill(superCluster_sigmaIetaIphi[iSC]);
+         h_superCluster_sigmaIphiIphi_EE->Fill(superCluster_sigmaIphiIphi[iSC]);
+         h_superCluster_full5x5_r9_EE->Fill(superCluster_full5x5_r9[iSC]);
+         h_superCluster_full5x5_sigmaIetaIeta_EE->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+         h_superCluster_full5x5_sigmaIetaIphi_EE->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+         h_superCluster_full5x5_sigmaIphiIphi_EE->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
       }
    }
 
@@ -447,7 +489,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          h_caloParticle_EEP_eta->Fill(caloParticle_eta[icP]);
       }
 
-      h_caloParticle_size->Fill(N_Cl);
+      //h_caloParticle_size->Fill(N_Cl);
       h_caloParticle_EEM_size->Fill(N_Cl_EEM); 
       h_caloParticle_EBM_size->Fill(N_Cl_EBM);
       h_caloParticle_EBP_size->Fill(N_Cl_EBP);
@@ -518,17 +560,29 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             matched_index = vector_spCl_matched_indices_single[iSC];
             if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<=1.479){
                h_superCluster_caloMatched_energy_EB->Fill(superCluster_energy[matched_index]); 
-               h_superCluster_caloMatched_e3x3_EB->Fill(superCluster_e3x3[matched_index]); 
                h_superCluster_caloMatched_eta_EB->Fill(superCluster_eta[matched_index]); 
                h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[matched_index]); 
-               h_superCluster_caloMatched_R9_EB->Fill(superCluster_R9[matched_index]); 
+               h_superCluster_caloMatched_r9_EB->Fill(superCluster_r9[matched_index]); 
+               h_superCluster_caloMatched_sigmaIetaIeta_EB->Fill(superCluster_sigmaIetaIeta[iSC]);
+               h_superCluster_caloMatched_sigmaIetaIphi_EB->Fill(superCluster_sigmaIetaIphi[iSC]);
+               h_superCluster_caloMatched_sigmaIphiIphi_EB->Fill(superCluster_sigmaIphiIphi[iSC]);
+               h_superCluster_caloMatched_full5x5_r9_EB->Fill(superCluster_full5x5_r9[iSC]);
+               h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+               h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+               h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
             }
             if(caloParticle_eta[icP]<-1.479 || caloParticle_eta[icP]>1.479){
                h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[matched_index]); 
-               h_superCluster_caloMatched_e3x3_EE->Fill(superCluster_e3x3[matched_index]); 
                h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[matched_index]); 
                h_superCluster_caloMatched_phi_EE->Fill(superCluster_phi[matched_index]); 
-               h_superCluster_caloMatched_R9_EE->Fill(superCluster_R9[matched_index]); 
+               h_superCluster_caloMatched_r9_EE->Fill(superCluster_r9[matched_index]); 
+               h_superCluster_caloMatched_sigmaIetaIeta_EE->Fill(superCluster_sigmaIetaIeta[iSC]);
+               h_superCluster_caloMatched_sigmaIetaIphi_EE->Fill(superCluster_sigmaIetaIphi[iSC]);
+               h_superCluster_caloMatched_sigmaIphiIphi_EE->Fill(superCluster_sigmaIphiIphi[iSC]);
+               h_superCluster_caloMatched_full5x5_r9_EE->Fill(superCluster_full5x5_r9[iSC]);
+               h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+               h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+               h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
 
             }
          }
@@ -744,6 +798,8 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          } //end of matched index
       }// end of loop on matched indices            
    } // end loop calo particles
+
+   h_caloParticle_size->Fill(N_Cl);
 
    h_PFClusters_caloMatched_size->Fill(N_pfCl);
    h_PFClusters_caloMatched_EEM_size->Fill(N_pfCl_EEM);
