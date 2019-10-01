@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_noPU_pfrh1_seed3_V01_v01_n15000";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_wPU_pfrh1_seed3_V01_v03_n15000";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -376,7 +376,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",0.87,0.6,1.4);
+         RooRealVar *mean   = new RooRealVar("mean","mean",0.875,0.6,1.4);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.04, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
