@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_wPU_pfrh1_seed3_V01_v03_n15000";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_noPU_pfrh1_seed3_V01_v01_n15000_test";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -798,11 +798,11 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
             }
             if(do_binningEt && use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[kk] + "_Et" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
-               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_Et" + ETranges[ii])->Clone("hist_deno");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_simEnergy_Eta" + ETAranges[kk] + "_Et" + ETranges[ii])->Clone("hist_deno");
             }
             else if(!do_binningEt && use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[kk] + "_En" + ETranges[ii] + "_forEfficiency")->Clone("hist_num");
-               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[kk] + "_En" + ETranges[ii])->Clone("hist_deno");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_simEnergy_Eta" + ETAranges[kk] + "_En" + ETranges[ii])->Clone("hist_deno");
             }
 
 
@@ -879,11 +879,11 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
             } 
             if(do_binningEt && use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[ii] + "_Et" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
-               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_Et" + ETranges[kk])->Clone("hist_deno");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_simEnergy_Eta" + ETAranges[ii] + "_Et" + ETranges[kk])->Clone("hist_deno");
             }
             else if(!do_binningEt && use_simEnergy){
                hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[ii] + "_En" + ETranges[kk] + "_forEfficiency")->Clone("hist_num");
-               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_Eta" + ETAranges[ii] + "_En" + ETranges[kk])->Clone("hist_deno");
+               hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_simEnergy_Eta" + ETAranges[ii] + "_En" + ETranges[kk])->Clone("hist_deno");
             } 
 
 
