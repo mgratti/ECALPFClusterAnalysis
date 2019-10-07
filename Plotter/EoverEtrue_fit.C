@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_noPU_pfrh1_seed3_V01_v01_n15000_test";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1_seed3_V01_v01_n15000";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -61,12 +61,12 @@ Bool_t do_EB = true;
 Bool_t do_EE = false;
 
 // choose which Etrue definition you want to use (choose only one)
-Bool_t use_energy    = false;
-Bool_t use_simEnergy = true;
+Bool_t use_energy    = true;
+Bool_t use_simEnergy = false;
 
 // choose whether you want to bin in ET or energy
-Bool_t do_binningEt = true;
-Bool_t do_binningEn = false;
+Bool_t do_binningEt = false;
+Bool_t do_binningEn = true;
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 Bool_t do_CBfit       = false; 
@@ -170,6 +170,10 @@ void EoverEtrue_fit(){
    ETAvalue["0p00_0p50"].second = 0.5;
    ETAvalue["0p50_1p00"].first  = 0.5;
    ETAvalue["0p50_1p00"].second = 1.0;
+   ETAvalue["1p00_1p44"].first  = 1.0;
+   ETAvalue["1p00_1p44"].second = 1.44;
+   ETAvalue["1p44_1p48"].first  = 1.44;
+   ETAvalue["1p44_1p48"].second = 1.48;
    ETAvalue["1p00_1p48"].first  = 1.0;
    ETAvalue["1p00_1p48"].second = 1.48;
    ETAvalue["1p48_2p00"].first  = 1.48;
@@ -184,10 +188,12 @@ void EoverEtrue_fit(){
    map<int, EColor> color;
    color[0]=kRed;
    color[1]=kMagenta;
-   color[2]=kOrange;
-   color[3]=kGreen;
-   color[4]=kBlue;
-   color[5]=kBlack;
+   color[2]=kTeal;
+   color[3]=kOrange;
+   color[4]=kGreen;
+   color[5]=kCyan;
+   color[6]=kBlue;
+   color[7]=kBlack;
 
    // we perform the fit
    FitParameters fitParameters_EB;
@@ -376,7 +382,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",0.875,0.6,1.4);
+         RooRealVar *mean   = new RooRealVar("mean","mean",0.87,0.6,1.4);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.04, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);

@@ -7,7 +7,7 @@
 import sys
 import os
 sys.path.append('/work/mratti/plotting/myplotting')
-from spares import *
+#from spares import *
 from array import *
 
 from ROOT import TH1F, TGraph, TGraph2D, TCanvas, TLegend, TFile, TTree, gROOT, TF1, TLatex, gStyle, TH2D, gPad, TColor,TMultiGraph, TH1, TMath
