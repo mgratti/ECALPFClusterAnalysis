@@ -8,9 +8,9 @@
 
 void start_PFClusterAnalyzer(){
 
-  TString inFileName = "/t3home/anlyon/CMSSW_10_6_0/src/RecoSimStudies/Dumpers/test/outputfiles/dumped_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh2.0_seed3.0_V00_V02_n150000_withOldDumper.root";
+  TString inFileName = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/dumped_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1_seed3_V01_v01_n15000.root";
   
-  TString outFileName = "./outputfiles/histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh2.0_seed3.0_V00_V02_n150000_withOldDumper.root";
+  TString outFileName = "./outputfiles/histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1_seed3_V01_v01_n15000_EB.root";
 
   TChain * c = new TChain("recosimdumper/caloTree");
   c->Add(inFileName);

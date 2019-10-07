@@ -440,41 +440,41 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    //std::cout << "igP=" << igP << " energy=" << genParticle_energy[igP] << " eta=" << genParticle_eta[igP] << " phi=" << genParticle_phi[igP] << std::endl;
    //}
 
-   /*
+
    //we loop on the (reco) superCluster
    for(unsigned int iSC(0); iSC<superCluster_energy.GetSize(); ++iSC){
-   if(flag_doEB){
-   if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
-   h_superCluster_energy_EB->Fill(superCluster_energy[iSC]);
-   h_superCluster_eta_EB->Fill(superCluster_eta[iSC]);
-   h_superCluster_phi_EB->Fill(superCluster_phi[iSC]);
-   h_superCluster_r9_EB->Fill(superCluster_r9[iSC]);
-   h_superCluster_sigmaIetaIeta_EB->Fill(superCluster_sigmaIetaIeta[iSC]);
-   //h_superCluster_sigmaIetaIphi_EB->Fill(superCluster_sigmaIetaIphi[iSC]);
-   h_superCluster_sigmaIphiIphi_EB->Fill(superCluster_sigmaIphiIphi[iSC]);
-   h_superCluster_full5x5_r9_EB->Fill(superCluster_full5x5_r9[iSC]);
-   h_superCluster_full5x5_sigmaIetaIeta_EB->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
-   h_superCluster_full5x5_sigmaIetaIphi_EB->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
-   h_superCluster_full5x5_sigmaIphiIphi_EB->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
+      if(flag_doEB){
+         if(superCluster_eta[iSC]>=-1.479 && superCluster_eta[iSC]<=1.479){
+            h_superCluster_energy_EB->Fill(superCluster_energy[iSC]);
+            h_superCluster_eta_EB->Fill(superCluster_eta[iSC]);
+            h_superCluster_phi_EB->Fill(superCluster_phi[iSC]);
+            h_superCluster_r9_EB->Fill(superCluster_r9[iSC]);
+            h_superCluster_sigmaIetaIeta_EB->Fill(superCluster_sigmaIetaIeta[iSC]);
+            h_superCluster_sigmaIetaIphi_EB->Fill(superCluster_sigmaIetaIphi[iSC]);
+            h_superCluster_sigmaIphiIphi_EB->Fill(superCluster_sigmaIphiIphi[iSC]);
+            h_superCluster_full5x5_r9_EB->Fill(superCluster_full5x5_r9[iSC]);
+            h_superCluster_full5x5_sigmaIetaIeta_EB->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+            h_superCluster_full5x5_sigmaIetaIphi_EB->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+            h_superCluster_full5x5_sigmaIphiIphi_EB->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
+         }
+      }
+      else if(flag_doEE){
+         if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
+            h_superCluster_energy_EE->Fill(superCluster_energy[iSC]);
+            h_superCluster_eta_EE->Fill(superCluster_eta[iSC]);
+            h_superCluster_phi_EE->Fill(superCluster_phi[iSC]);
+            h_superCluster_r9_EE->Fill(superCluster_r9[iSC]);
+            h_superCluster_sigmaIetaIeta_EE->Fill(superCluster_sigmaIetaIeta[iSC]);
+            h_superCluster_sigmaIetaIphi_EE->Fill(superCluster_sigmaIetaIphi[iSC]);
+            h_superCluster_sigmaIphiIphi_EE->Fill(superCluster_sigmaIphiIphi[iSC]);
+            h_superCluster_full5x5_r9_EE->Fill(superCluster_full5x5_r9[iSC]);
+            h_superCluster_full5x5_sigmaIetaIeta_EE->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+            h_superCluster_full5x5_sigmaIetaIphi_EE->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+            h_superCluster_full5x5_sigmaIphiIphi_EE->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
+         }
+      }
    }
-   }
-   else if(flag_doEE){
-   if(superCluster_eta[iSC]<-1.479 || superCluster_eta[iSC]>1.479){
-   h_superCluster_energy_EE->Fill(superCluster_energy[iSC]);
-   h_superCluster_eta_EE->Fill(superCluster_eta[iSC]);
-   h_superCluster_phi_EE->Fill(superCluster_phi[iSC]);
-   h_superCluster_r9_EE->Fill(superCluster_r9[iSC]);
-   h_superCluster_sigmaIetaIeta_EE->Fill(superCluster_sigmaIetaIeta[iSC]);
-   h_superCluster_sigmaIetaIphi_EE->Fill(superCluster_sigmaIetaIphi[iSC]);
-   h_superCluster_sigmaIphiIphi_EE->Fill(superCluster_sigmaIphiIphi[iSC]);
-   h_superCluster_full5x5_r9_EE->Fill(superCluster_full5x5_r9[iSC]);
-   h_superCluster_full5x5_sigmaIetaIeta_EE->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
-   h_superCluster_full5x5_sigmaIetaIphi_EE->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
-   h_superCluster_full5x5_sigmaIphiIphi_EE->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
-   }
-   }
-   }
-   */
+
    //count indices needed to retrieve the size
    int N_pfCl = 0;
    int N_pfCl_EEM = 0;
@@ -615,7 +615,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             }
          }
       }
-/*
+
       // caloMatched superCluster
       // Step 1: we get the indices of the superCluster associated to a caloParticle
       for(unsigned int ispCl=0; ispCl<superClusterHit_energy[icP].size(); ispCl++){
@@ -639,43 +639,47 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }//end match superClusterHit - superCluster
       }//end of loop on superClusterHits
 
+      cout << "found matched index" << endl;
       // Step 2: we fill the histograms with the selected superClusters
       //it has been checked that at most one SuperCluster was matched with the caloParticle
       for(unsigned int iSC(0); iSC < vector_spCl_matched_indices_single.size(); ++iSC){
          int matched_index;
          if(vector_spCl_matched_indices_single[iSC] != -1){
             matched_index = vector_spCl_matched_indices_single[iSC];
-            if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<=1.479){
-               h_superCluster_caloMatched_energy_EB->Fill(superCluster_energy[matched_index]); 
-               h_superCluster_caloMatched_eta_EB->Fill(superCluster_eta[matched_index]); 
-               h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[matched_index]); 
-               h_superCluster_caloMatched_r9_EB->Fill(superCluster_r9[matched_index]); 
-               h_superCluster_caloMatched_sigmaIetaIeta_EB->Fill(superCluster_sigmaIetaIeta[iSC]);
-               h_superCluster_caloMatched_sigmaIetaIphi_EB->Fill(superCluster_sigmaIetaIphi[iSC]);
-               h_superCluster_caloMatched_sigmaIphiIphi_EB->Fill(superCluster_sigmaIphiIphi[iSC]);
-               h_superCluster_caloMatched_full5x5_r9_EB->Fill(superCluster_full5x5_r9[iSC]);
-               h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
-               h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
-               h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
+            if(flag_doEB){
+               if(caloParticle_eta[icP]>=-1.479 && caloParticle_eta[icP]<=1.479){
+                  h_superCluster_caloMatched_energy_EB->Fill(superCluster_energy[matched_index]); 
+                  h_superCluster_caloMatched_eta_EB->Fill(superCluster_eta[matched_index]); 
+                  h_superCluster_caloMatched_phi_EB->Fill(superCluster_phi[matched_index]); 
+                  h_superCluster_caloMatched_r9_EB->Fill(superCluster_r9[matched_index]); 
+                  h_superCluster_caloMatched_sigmaIetaIeta_EB->Fill(superCluster_sigmaIetaIeta[iSC]);
+                  h_superCluster_caloMatched_sigmaIetaIphi_EB->Fill(superCluster_sigmaIetaIphi[iSC]);
+                  h_superCluster_caloMatched_sigmaIphiIphi_EB->Fill(superCluster_sigmaIphiIphi[iSC]);
+                  h_superCluster_caloMatched_full5x5_r9_EB->Fill(superCluster_full5x5_r9[iSC]);
+                  h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+                  h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+                  h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
+               }
             }
-            if(caloParticle_eta[icP]<-1.479 || caloParticle_eta[icP]>1.479){
-               h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[matched_index]); 
-               h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[matched_index]); 
-               h_superCluster_caloMatched_phi_EE->Fill(superCluster_phi[matched_index]); 
-               h_superCluster_caloMatched_r9_EE->Fill(superCluster_r9[matched_index]); 
-               h_superCluster_caloMatched_sigmaIetaIeta_EE->Fill(superCluster_sigmaIetaIeta[iSC]);
-               h_superCluster_caloMatched_sigmaIetaIphi_EE->Fill(superCluster_sigmaIetaIphi[iSC]);
-               h_superCluster_caloMatched_sigmaIphiIphi_EE->Fill(superCluster_sigmaIphiIphi[iSC]);
-               h_superCluster_caloMatched_full5x5_r9_EE->Fill(superCluster_full5x5_r9[iSC]);
-               h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
-               h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
-               h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
-
+            else if(flag_doEE){
+               if(caloParticle_eta[icP]<-1.479 || caloParticle_eta[icP]>1.479){
+                  h_superCluster_caloMatched_energy_EE->Fill(superCluster_energy[matched_index]); 
+                  h_superCluster_caloMatched_eta_EE->Fill(superCluster_eta[matched_index]); 
+                  h_superCluster_caloMatched_phi_EE->Fill(superCluster_phi[matched_index]); 
+                  h_superCluster_caloMatched_r9_EE->Fill(superCluster_r9[matched_index]); 
+                  h_superCluster_caloMatched_sigmaIetaIeta_EE->Fill(superCluster_sigmaIetaIeta[iSC]);
+                  h_superCluster_caloMatched_sigmaIetaIphi_EE->Fill(superCluster_sigmaIetaIphi[iSC]);
+                  h_superCluster_caloMatched_sigmaIphiIphi_EE->Fill(superCluster_sigmaIphiIphi[iSC]);
+                  h_superCluster_caloMatched_full5x5_r9_EE->Fill(superCluster_full5x5_r9[iSC]);
+                  h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE->Fill(superCluster_full5x5_sigmaIetaIeta[iSC]);
+                  h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE->Fill(superCluster_full5x5_sigmaIetaIphi[iSC]);
+                  h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE->Fill(superCluster_full5x5_sigmaIphiIphi[iSC]);
+               }
             }
          }
       }
       // end of caloMatched superCluster
-*/
+
 
       //---PFClusters_caloMatched---
       // Step1: we get the indices of the caloMatched PFClusters
