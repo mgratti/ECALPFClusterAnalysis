@@ -148,6 +148,8 @@ class PFClusterAnalyzer : public TSelector {
       TH2F* h_PFClusters_caloMatched_nPFClusters_vs_energy_EB;
       TH2F* h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy_EB;
       TH2F* h_PFClusters_caloMatched_nPFClusters_vs_eta_EB;
+      TH2F* h_PFClusters_caloMatched_EoverEtrue_iEta_iPhi_EB;
+      TH2F* h_PFClusters_caloMatched_et_iEta_iPhi_EB;
       TH1F* h_PFClusters_caloMatched_deltaR_EB;
  
       TH1F* h_PFClusters_caloMatched_size_EE;
