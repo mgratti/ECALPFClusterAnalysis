@@ -68,6 +68,9 @@ Bool_t use_simEnergy = false;
 Bool_t do_binningEt = false;
 Bool_t do_binningEn = true;
 
+// choose whether to use a finner binning or not
+Bool_t do_fineBinning = false;
+
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 Bool_t do_CBfit       = false; 
 Bool_t do_doubleCBfit = true;
@@ -136,9 +139,22 @@ void EoverEtrue_fit(){
       ETranges = {"0_5", "5_10", "10_15", "15_20"};
    }
    else if(do_0to100GeV){
-      ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
+      if(!do_fineBinning){
+         ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
+      }
+      else{
+         ETranges = {"0_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"};
+      }
    }
-   vector<TString> ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
+   vector<TString> ETAranges_EB;
+   if(!do_fineBinning){
+      ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
+   }
+   else{
+      ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p44", "1p44_1p48"};
+   }
+ 
+
    vector<TString> ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
 
 
