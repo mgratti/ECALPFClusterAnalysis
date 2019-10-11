@@ -61,15 +61,15 @@ Bool_t do_EB = true;
 Bool_t do_EE = false;
 
 // choose which Etrue definition you want to use (choose only one)
-Bool_t use_energy    = true;
-Bool_t use_simEnergy = false;
+Bool_t use_energy    = false;
+Bool_t use_simEnergy = true;
 
 // choose whether you want to bin in ET or energy
-Bool_t do_binningEt = false;
-Bool_t do_binningEn = true;
+Bool_t do_binningEt = true;
+Bool_t do_binningEn = false;
 
 // choose whether to use a finner binning or not
-Bool_t do_fineBinning = false;
+Bool_t do_fineBinning = true;
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 Bool_t do_CBfit       = false; 
@@ -398,8 +398,8 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",0.87,0.6,1.4);
-         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.04, 0.0, 0.3);
+         RooRealVar *mean   = new RooRealVar("mean","mean",0.85,0.6,1.4);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.038, 0.0, 0.3);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
 
