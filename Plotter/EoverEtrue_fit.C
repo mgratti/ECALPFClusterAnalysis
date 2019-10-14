@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EE_noPU_pfrh1.0_seed3.0_V01_v32_n15000";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -57,8 +57,8 @@ Bool_t do_0to20GeV  = false;
 Bool_t do_0to100GeV = true;
 
 // choose between endcap and/or barrel
-Bool_t do_EB = true;
-Bool_t do_EE = false;
+Bool_t do_EB = false;
+Bool_t do_EE = true;
 
 // choose which Etrue definition you want to use (choose only one)
 Bool_t use_energy    = false;
