@@ -217,8 +217,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
       h_PFClusters_caloMatched_deltaR_EB    = new TH1F("h_PFClusters_caloMatched_deltaR_EB","h_PFClusters_caloMatched_deltaR_EB",300,0.,7.);
       h_PFClusters_caloMatched_EoverEtrue_iEta_iPhi_EB = new TH2F("h_PFClusters_caloMatched_EoverEtrue_iEta_iPhi_EB", "h_PFClusters_caloMatched_EoverEtrue_iEta_iPhi_EB", 172, -86., 86., 360, 1., 361.);
       h_PFClusters_caloMatched_et_iEta_iPhi_EB = new TH2F("h_PFClusters_caloMatched_et_iEta_iPhi_EB", "h_PFClusters_caloMatched_et_iEta_iPhi_EB", 172, -86., 86., 360, 1., 361.);
-      
-      
+
+
       //EBM
       h_PFClusters_caloMatched_EBM_eta     = new TH1F("h_PFClusters_caloMatched_EBM_eta","h_PFClusters_caloMatched_EBM_eta",300,-3.,3.);
       h_PFClusters_caloMatched_EBM_size    = new TH1F("h_PFClusters_caloMatched_EBM_size","h_PFClusters_caloMatched_EBM_size",50,0.,50.);
@@ -477,7 +477,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }
       }
    }
-
    //count indices needed to retrieve the size
    int N_pfCl = 0;
    int N_pfCl_EEM = 0;
@@ -682,7 +681,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }
       // end of caloMatched superCluster
 
-
       //---PFClusters_caloMatched---
       // Step1: we get the indices of the caloMatched PFClusters
 
@@ -730,7 +728,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }
       } // end loop pfClusterHits
 
-
       //in case we want to save only one PFCluster per PFClusterHit, we keep the index of the PFCluster having the more hits
       if(flag_keepOnlyOnePFCluster){
          int matched_index = vector_matched_indices_single[0];
@@ -743,9 +740,12 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          vector_matched_indices_single.push_back(matched_index);
       }
 
+
       if(vector_matched_indices_single[0]==-1){
-         if(TMath::Abs(caloParticle_eta[icP])<1.479){
-            h_caloParticle_phi_vs_eta_ifNoPFCluster_EB->Fill(caloParticle_phi[icP], caloParticle_eta[icP]);
+         if(flag_doEB){
+            if(TMath::Abs(caloParticle_eta[icP])<1.479){
+               h_caloParticle_phi_vs_eta_ifNoPFCluster_EB->Fill(caloParticle_phi[icP], caloParticle_eta[icP]);
+            }
          }
       }
 
@@ -755,7 +755,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       double filling_energy=0;
       double filling_phi=0;
       double filling_eta=0;
-
       for(unsigned int iMatched(0); iMatched<vector_matched_indices_single.size(); ++iMatched){
          int matched_index = vector_matched_indices_single[iMatched];
          int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[iMatched]);
@@ -876,7 +875,6 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
                }
             }
-
             //we fill the caloMatched histograms binned in eta and ET
             for(TString Eta_key: Eta_keys){
                for(TString Et_key: Et_keys){

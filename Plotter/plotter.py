@@ -123,7 +123,7 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_simEnergy_EB', xtitle='caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_size_EB', xtitle='number of caloParticle per event', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_size_EB', xtitle='number of caloParticle per event', ytitle='Entries', xrange=(0.,11.))
 
         beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_et_EB', xtitle='caloParticle ET [GeV]', ytitle='Entries', xrange=None)
         
@@ -266,7 +266,7 @@ if options.doClusterAnalysis:
 
         beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_simEnergy_EE', xtitle='caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_size_EE', xtitle='number of caloParticle per event', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_size_EE', xtitle='number of caloParticle per event', ytitle='Entries', xrange=(0.,11.))
 
         beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_et_EE', xtitle='caloParticle ET [GeV]', ytitle='Entries', xrange=None)
         

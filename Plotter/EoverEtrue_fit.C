@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1_seed3_V01_v01_n15000";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -69,7 +69,7 @@ Bool_t do_binningEt = true;
 Bool_t do_binningEn = false;
 
 // choose whether to use a finner binning or not
-Bool_t do_fineBinning = true;
+Bool_t do_fineBinning = false;
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 Bool_t do_CBfit       = false; 
@@ -398,8 +398,8 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",0.85,0.6,1.4);
-         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.038, 0.0, 0.3);
+         RooRealVar *mean   = new RooRealVar("mean","mean",1.01,0.9,1.1);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.03, 0.0, 0.05);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
 
