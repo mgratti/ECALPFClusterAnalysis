@@ -219,11 +219,11 @@ void EoverEtrue_fit(){
 
    //color for the resolution, scale and efficiency plots
    map<int, EColor> color;
-   color[0]=kRed;
-   color[1]=kMagenta;
-   color[2]=kTeal;
-   color[3]=kOrange;
-   color[4]=kGreen;
+   color[0]=kOrange;
+   color[1]=kRed;
+   color[2]=kMagenta;
+   color[3]=kGreen;
+   color[4]=kTeal;
    color[5]=kCyan;
    color[6]=kBlue;
    color[7]=kBlack;
@@ -623,10 +623,10 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
          frame2->Draw();
 
          TLine *line = new TLine();
-         line->DrawLine(0.,0,2.,0);
+         line->DrawLine(rangeMin,0,rangeMax,0);
          line->SetLineColor(2);
-         line->DrawLine(0.,-3,2.,-3);
-         line->DrawLine(0.,3,2.,3);
+         line->DrawLine(rangeMin,-3,rangeMax,-3);
+         line->DrawLine(rangeMin,3,rangeMax,3);
 
          // create the output directory
          system(Form("mkdir -p %s", outputdir.c_str()));
