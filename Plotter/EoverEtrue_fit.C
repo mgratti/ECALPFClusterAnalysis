@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_EE_noPU_pfrh1.0_seed3.0_V01_v32_n15000";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -57,19 +57,21 @@ Bool_t do_0to20GeV  = false;
 Bool_t do_0to100GeV = true;
 
 // choose between endcap and/or barrel
-Bool_t do_EB = false;
-Bool_t do_EE = true;
+Bool_t do_EB = true;
+Bool_t do_EE = false;
 
 // choose which Etrue definition you want to use (choose only one)
 Bool_t use_energy    = false;
 Bool_t use_simEnergy = true;
 
 // choose whether you want to bin in ET or energy
-Bool_t do_binningEt = true;
-Bool_t do_binningEn = false;
+Bool_t do_binningEt = false;
+Bool_t do_binningEn = true;
 
 // choose whether to use a finner binning or not
-Bool_t do_fineBinning = false;
+Bool_t do_fineBinning_energy = false;
+Bool_t do_fineBinning_eta    = true;
+
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 Bool_t do_CBfit       = false; 
@@ -77,8 +79,8 @@ Bool_t do_doubleCBfit = true;
 Bool_t do_BGfit       = false;
 
 // choose between fitting the whole distribution or the peak only
-Bool_t do_fitAll  = true;
-Bool_t do_fitPeak = false;
+Bool_t do_fitAll  = false;
+Bool_t do_fitPeak = true;
 
 // choose which plots to produce
 Bool_t do_resolutionPlot = true;
@@ -139,7 +141,7 @@ void EoverEtrue_fit(){
       ETranges = {"0_5", "5_10", "10_15", "15_20"};
    }
    else if(do_0to100GeV){
-      if(!do_fineBinning){
+      if(!do_fineBinning_energy){
          ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
       }
       else{
@@ -147,13 +149,13 @@ void EoverEtrue_fit(){
       }
    }
    vector<TString> ETAranges_EB;
-   if(!do_fineBinning){
+   if(!do_fineBinning_eta){
       ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
    }
    else{
-      ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p44", "1p44_1p48"};
+      ETAranges_EB = {"0p00_0p20", "0p20_0p40", "0p40_0p60", "0p60_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
    }
- 
+
 
    vector<TString> ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
 
@@ -181,7 +183,22 @@ void EoverEtrue_fit(){
    ETvalue["80_100"].first  = 80;
    ETvalue["80_100"].second = 100; 
 
-
+   ETAvalue["0p00_0p20"].first = 0.;
+   ETAvalue["0p00_0p20"].second = 0.2;
+   ETAvalue["0p20_0p40"].first = 0.2;
+   ETAvalue["0p20_0p40"].second = 0.4;
+   ETAvalue["0p40_0p60"].first = 0.4;
+   ETAvalue["0p40_0p60"].second = 0.6;
+   ETAvalue["0p60_0p80"].first = 0.6;
+   ETAvalue["0p60_0p80"].second = 0.8;
+   ETAvalue["0p80_1p00"].first = 0.8;
+   ETAvalue["0p80_1p00"].second = 1.;
+   ETAvalue["1p00_1p20"].first = 1.;
+   ETAvalue["1p00_1p20"].second = 1.2;
+   ETAvalue["1p20_1p44"].first = 1.2;
+   ETAvalue["1p20_1p44"].second = 1.44;
+   ETAvalue["1p40_1p60"].first = 1.4;
+   ETAvalue["1p40_1p60"].second = 1.6;
    ETAvalue["0p00_0p50"].first  = 0.0;
    ETAvalue["0p00_0p50"].second = 0.5;
    ETAvalue["0p50_1p00"].first  = 0.5;
@@ -366,8 +383,8 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
    fitParameters.outputdir = outputdir;
 
    // ranges of the distribution
-   Double_t rangeMin = 0.;
-   Double_t rangeMax = 2.;
+   Double_t rangeMin = 0.9;
+   Double_t rangeMax = 1.1;
 
 
    // we loop on the different ET and ETA ranges
@@ -398,7 +415,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",1.01,0.9,1.1);
+         RooRealVar *mean   = new RooRealVar("mean","mean",1.015,0.9,1.1);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.03, 0.0, 0.05);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
@@ -457,7 +474,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
                result = doubleCBpdf->fitTo(*rdh);
             }
             else if(do_fitPeak){
-               EoverEtrue->setRange("peak",  0.6, 1.1);
+               EoverEtrue->setRange("peak",  0.9, 1.1);
                result = doubleCBpdf->fitTo(*rdh, Range("peak"));
             }      
          }
@@ -686,10 +703,10 @@ void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
       if(do_binningEt){
-        graph->GetXaxis()->SetTitle("E_{T} [GeV]");
+         graph->GetXaxis()->SetTitle("E_{T} [GeV]");
       }
       else{
-        graph->GetXaxis()->SetTitle("E [GeV]");
+         graph->GetXaxis()->SetTitle("E [GeV]");
       }
       graph->GetXaxis()->SetTitleSize(0.04);
       graph->GetXaxis()->SetTitleOffset(1.1);

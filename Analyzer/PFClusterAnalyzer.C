@@ -126,12 +126,33 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    if(flag_doEB){
       Eta_keys.push_back("0p00_0p50");
+      Eta_keys.push_back("0p00_0p20");
+      Eta_keys.push_back("0p20_0p40");
+      Eta_keys.push_back("0p40_0p60");
+      Eta_keys.push_back("0p60_0p80");
+      Eta_keys.push_back("0p80_1p00");
+      Eta_keys.push_back("1p00_1p20");
+      Eta_keys.push_back("1p20_1p44");
       Eta_keys.push_back("0p50_1p00");
       Eta_keys.push_back("1p00_1p44");
       Eta_keys.push_back("1p44_1p48");
       Eta_keys.push_back("1p00_1p48");
       Eta_edges["0p00_0p50"].first = 0.;
       Eta_edges["0p00_0p50"].second = 0.5;
+      Eta_edges["0p00_0p20"].first = 0.;
+      Eta_edges["0p00_0p20"].second = 0.2;
+      Eta_edges["0p20_0p40"].first = 0.2;
+      Eta_edges["0p20_0p40"].second = 0.4;
+      Eta_edges["0p40_0p60"].first = 0.4;
+      Eta_edges["0p40_0p60"].second = 0.6;
+      Eta_edges["0p60_0p80"].first = 0.6;
+      Eta_edges["0p60_0p80"].second = 0.8;
+      Eta_edges["0p80_1p00"].first = 0.8;
+      Eta_edges["0p80_1p00"].second = 1.;
+      Eta_edges["1p00_1p20"].first = 1.;
+      Eta_edges["1p00_1p20"].second = 1.2;
+      Eta_edges["1p20_1p44"].first = 1.2;
+      Eta_edges["1p20_1p44"].second = 1.44;
       Eta_edges["0p50_1p00"].first = 0.5;
       Eta_edges["0p50_1p00"].second = 1.0;
       Eta_edges["1p00_1p44"].first = 1.0;
@@ -348,38 +369,41 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
 
    fout->cd("EtEta_binned");
+   int nBins_binned = 100;
+   float rangeMin_binned = 0.8;
+   float rangeMax_binned = 1.1;
    for (TString Et_key : Et_keys){
       for (TString Eta_key: Eta_keys){
          TString histo_name            = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_Et" + Et_key;
-         h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name,histo_name,100,0.,2.);
+         h_PFclusters_caloMatched_eOverEtrue_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name,histo_name,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_n          = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_En" + Et_key;
-         h_PFclusters_caloMatched_eOverEtrue_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_n,histo_name_n,100,0.,2.);
+         h_PFclusters_caloMatched_eOverEtrue_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_n,histo_name_n,nBins_binned,rangeMin_binned,rangeMax_binned);
 
          TString histo_name_simEnergy   = "h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + Eta_key + "_Et" + Et_key;
-         h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_simEnergy,histo_name_simEnergy,100,0.,2.);
+         h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_simEnergy,histo_name_simEnergy,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_simEnergy_n = "h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + Eta_key + "_En" + Et_key;
-         h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_simEnergy_n,histo_name_simEnergy_n,100,0.,2.);
+         h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_simEnergy_n,histo_name_simEnergy_n,nBins_binned,rangeMin_binned,rangeMax_binned);
 
 
          TString histo_name_efficiency   = "h_PFclusters_caloMatched_size_Eta" + Eta_key + "_Et" + Et_key + "_forEfficiency";
-         h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiency,histo_name_efficiency,100,0.,2.);
+         h_PFclusters_caloMatched_size_EtaEtBinned_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiency,histo_name_efficiency,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_efficiency_n = "h_PFclusters_caloMatched_size_Eta" + Eta_key + "_En" + Et_key + "_forEfficiency";
-         h_PFclusters_caloMatched_size_EtaEnBinned_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiency_n,histo_name_efficiency_n,100,0.,2.);
+         h_PFclusters_caloMatched_size_EtaEnBinned_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiency_n,histo_name_efficiency_n,nBins_binned,rangeMin_binned,rangeMax_binned);
 
          TString histo_name_efficiencySim_n = "h_PFclusters_caloMatched_size_simEnergy_Eta" + Eta_key + "_En" + Et_key + "_forEfficiency";
-         h_PFclusters_caloMatched_size_EtaEnBinned_simEnergy_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiencySim_n,histo_name_efficiencySim_n,100,0.,2.);
+         h_PFclusters_caloMatched_size_EtaEnBinned_simEnergy_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiencySim_n,histo_name_efficiencySim_n,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_efficiencySim = "h_PFclusters_caloMatched_size_simEnergy_Eta" + Eta_key + "_Et" + Et_key + "_forEfficiency";
-         h_PFclusters_caloMatched_size_EtaEtBinned_simEnergy_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiencySim,histo_name_efficiencySim,100,0.,2.);
+         h_PFclusters_caloMatched_size_EtaEtBinned_simEnergy_forEfficiency[Eta_key][Et_key] = new TH1F(histo_name_efficiencySim,histo_name_efficiencySim,nBins_binned,rangeMin_binned,rangeMax_binned);
 
 
          TString histo_name_size             = "h_caloParticle_size_Eta" + Eta_key + "_Et" + Et_key;
-         h_caloParticle_size_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_size,histo_name_size,100,0.,2.);
+         h_caloParticle_size_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_size,histo_name_size,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_size_simEnergy   = "h_caloParticle_size_simEnergy_Eta" + Eta_key + "_Et" + Et_key;
-         h_caloParticle_size_EtaEtBinned_simEnergy[Eta_key][Et_key] = new TH1F(histo_name_size_simEnergy,histo_name_size_simEnergy,100,0.,2.);
+         h_caloParticle_size_EtaEtBinned_simEnergy[Eta_key][Et_key] = new TH1F(histo_name_size_simEnergy,histo_name_size_simEnergy,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_size_n           = "h_caloParticle_size_Eta" + Eta_key + "_En" + Et_key;
-         h_caloParticle_size_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_size_n,histo_name_size_n,100,0.,2.);
+         h_caloParticle_size_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_size_n,histo_name_size_n,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_size_n_simEnergy = "h_caloParticle_size_simEnergy_Eta" + Eta_key + "_En" + Et_key;
-         h_caloParticle_size_EtaEnBinned_simEnergy[Eta_key][Et_key] = new TH1F(histo_name_size_n_simEnergy,histo_name_size_n_simEnergy,100,0.,2.);
+         h_caloParticle_size_EtaEnBinned_simEnergy[Eta_key][Et_key] = new TH1F(histo_name_size_n_simEnergy,histo_name_size_n_simEnergy,nBins_binned,rangeMin_binned,rangeMax_binned);
 
 
 
