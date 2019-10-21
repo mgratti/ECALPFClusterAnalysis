@@ -77,8 +77,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    //Choose one caloParticle - cluster matching method 
    flag_doMatching_numberOfHits = false;
-   flag_doMatching_score        = true;
-
+   flag_doMatching_score        = false;
+   flag_doMatching_deltaR       = true;
    //Turn to true this flag in case you want to save only one PFCluster per caloParticle
    flag_keepOnlyOnePFCluster = true;
 
@@ -475,7 +475,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //if(entry>30){ throw std::invalid_argument("aborting");}
+   //if(entry>1000){ throw std::invalid_argument("aborting");}
 
    // loop over genParticles
    //for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
@@ -805,8 +805,9 @@ if(flag_doMatching_numberOfHits){
 else if(flag_doMatching_score){
    vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_score(matchingMap_caloParticle_PFCluster, icP);
 }
-
-
+else if(flag_doMatching_deltaR){
+   vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_deltaR(pfCluster_energy, pfCluster_eta, pfCluster_phi, icP, 10.);
+}
 for(unsigned int iMatched(0); iMatched<vector_matched_indices.size(); ++iMatched){
    int matched_index = vector_matched_indices[iMatched];
    int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices[iMatched]);
@@ -840,7 +841,7 @@ for(unsigned int iMatched(0); iMatched<vector_matched_indices.size(); ++iMatched
             //h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy->Fill(N_pfCl, caloParticle_energy[icP]);
             h_PFClusters_caloMatched_nPFClusters_vs_caloEnergy_EB->Fill(N_pfCl, caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))));
             h_PFClusters_caloMatched_nPFClusters_vs_eta_EB->Fill(filling_eta, N_pfCl);
-            h_PFClusters_caloMatched_deltaR_EB->Fill(TMath::Sqrt((filling_eta-caloParticle_eta[icP])*(filling_eta-caloParticle_eta[icP]) + (filling_eta-caloParticle_phi[icP]) * (filling_phi-caloParticle_phi[icP])));
+            h_PFClusters_caloMatched_deltaR_EB->Fill(TMath::Sqrt((filling_eta-caloParticle_eta[icP])*(filling_eta-caloParticle_eta[icP]) + (filling_phi-caloParticle_phi[icP]) * (filling_phi-caloParticle_phi[icP])));
 
             //we fill the histogram for E/Etrue < 0.5 and ET>50
             if(filling_energy/caloParticle_simEnergy[icP] < 0.5 && caloParticle_energy[icP]*TMath::Sin(2*TMath::ATan(TMath::Exp(-caloParticle_eta[icP]))) > 50){
@@ -1242,6 +1243,43 @@ vector<int> PFClusterAnalyzer::getMatchedIndices_numberOfHits(const TTreeReaderA
       vector_matched_indices.clear();
       vector_matched_indices.push_back(matched_index);
    }
+
+   return vector_matched_indices;  
+}
+
+vector<int> PFClusterAnalyzer::getMatchedIndices_deltaR(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& pfCluster_eta, const TTreeReaderArray<float>& pfCluster_phi, unsigned int icP, float deltaRThreshold){
+
+   //the deltaRThreshold is the value below which we consider the distance between cluster and caloParticle to be reasonable
+
+   vector<int> vector_matched_indices{-1};
+
+   map<int, float> map_clusterIndex_deltaR;
+   map_clusterIndex_deltaR.insert({-1,deltaRThreshold});
+   //cout << endl << endl << "caloParticle n°" << icP << endl;
+   float deltaR;
+   for(unsigned int iCl = 0; iCl<pfCluster_energy.GetSize(); ++iCl){
+      deltaR = TMath::Sqrt((pfCluster_eta[iCl]-caloParticle_eta[icP])*(pfCluster_eta[iCl]-caloParticle_eta[icP]) 
+            + (pfCluster_phi[iCl]-caloParticle_phi[icP]) * (pfCluster_phi[iCl]-caloParticle_phi[icP]));
+      for (auto itr = map_clusterIndex_deltaR.begin(); itr != map_clusterIndex_deltaR.end(); ++itr){
+         if(deltaR<itr->second){
+            map_clusterIndex_deltaR.clear();
+            map_clusterIndex_deltaR.insert({iCl, deltaR});
+         }
+
+         //cout << "cluster " << iCl << " with delta R " << deltaR << endl;
+
+      }
+   }
+
+   for (auto itr = map_clusterIndex_deltaR.begin(); itr != map_clusterIndex_deltaR.end(); ++itr){
+      //cout << "cluster " << itr->first << " selected with deltaR " << itr->second << endl;
+      vector_matched_indices.push_back(itr->first);
+   }
+
+   //cout << "selected index: " << endl;
+   //for(unsigned int i(0); i<vector_matched_indices.size(); ++i){
+   //   cout << vector_matched_indices[i] << endl;
+   //}
 
    return vector_matched_indices;  
 }

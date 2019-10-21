@@ -115,6 +115,8 @@ class PFClusterAnalyzer : public TSelector {
       //matching methods
       Bool_t flag_doMatching_numberOfHits;
       Bool_t flag_doMatching_score;
+      Bool_t flag_doMatching_deltaR;
+
 
       //only produce EB (EE) histograms with EB (EE) inputfiles
       Bool_t flag_doEB;
@@ -346,11 +348,9 @@ class PFClusterAnalyzer : public TSelector {
 
       vector<int> getMatchedIndices_score(const vector<MatchingMap>& matchingMap, unsigned int icP);
       vector<int> getMatchedIndices_numberOfHits(const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy, unsigned int icP);
+      vector<int> getMatchedIndices_deltaR(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& pfCluster_eta, const TTreeReaderArray<float>& pfCluster_phi, unsigned int icP, float deltaRThreshold);
 
-
-
-
- 
+      
       ClassDef(PFClusterAnalyzer,0);
 
 };
