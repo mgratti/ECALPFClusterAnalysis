@@ -112,6 +112,10 @@ class PFClusterAnalyzer : public TSelector {
       //Turn to true this flag in case you want to save only one PFCluster per caloParticle
       Bool_t flag_keepOnlyOnePFCluster;
 
+      //matching methods
+      Bool_t flag_doMatching_numberOfHits;
+      Bool_t flag_doMatching_score;
+
       //only produce EB (EE) histograms with EB (EE) inputfiles
       Bool_t flag_doEB;
       Bool_t flag_doEE;
@@ -339,7 +343,12 @@ class PFClusterAnalyzer : public TSelector {
       
       vector<MatchingMap> getMapCaloParticleCluster(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& caloParticle_energy, const TTreeReaderArray<float>& caloParticle_simEnergy, const TTreeReaderArray<vector<float>>& simHit_energy, const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy);
 
-      vector<int> getMatchedIndices(const vector<MatchingMap>& matchingMap, unsigned int icP);
+
+      vector<int> getMatchedIndices_score(const vector<MatchingMap>& matchingMap, unsigned int icP);
+      vector<int> getMatchedIndices_numberOfHits(const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy, unsigned int icP);
+
+
+
 
  
       ClassDef(PFClusterAnalyzer,0);
