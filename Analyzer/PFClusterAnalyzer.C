@@ -30,8 +30,20 @@
 #include <cmath>
 #include <bits/stdc++.h>
 #include <stdexcept>
+#include<bits/stdc++.h> 
 
 using namespace std;
+
+
+bool sortbysecdesc(const pair<float,float> &a, const pair<float,float> &b){ 
+   return a.second>b.second; 
+} 
+
+//struct MatchingMap{
+//   unsigned int CaloIndex;
+//   unsigned int PFIndex;
+//   float Score;
+//};
 
 
 void PFClusterAnalyzer::Begin(TTree * /*tree*/)
@@ -370,8 +382,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    fout->cd("EtEta_binned");
    int nBins_binned = 100;
-   float rangeMin_binned = 0.8;
-   float rangeMax_binned = 1.1;
+   float rangeMin_binned = 0.;
+   float rangeMax_binned = 2.;
    for (TString Et_key : Et_keys){
       for (TString Eta_key: Eta_keys){
          TString histo_name            = "h_PFclusters_caloMatched_eOverEtrue_Eta" + Eta_key + "_Et" + Et_key;
@@ -404,11 +416,9 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
          h_caloParticle_size_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_size_n,histo_name_size_n,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_size_n_simEnergy = "h_caloParticle_size_simEnergy_Eta" + Eta_key + "_En" + Et_key;
          h_caloParticle_size_EtaEnBinned_simEnergy[Eta_key][Et_key] = new TH1F(histo_name_size_n_simEnergy,histo_name_size_n_simEnergy,nBins_binned,rangeMin_binned,rangeMax_binned);
-
-
-
       }
    }
+
 
    fout->cd("perEvent");
    for (int i=1; i<N_perEvent_plots+1; i++){
@@ -460,7 +470,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //if(entry>3){ throw std::invalid_argument("aborting");}
+   //if(entry>0){ throw std::invalid_argument("aborting");}
 
    // loop over genParticles
    //for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
@@ -501,6 +511,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }
       }
    }
+
    //count indices needed to retrieve the size
    int N_pfCl = 0;
    int N_pfCl_EEM = 0;
@@ -515,7 +526,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    int N_Cl_EEP = 0;
 
 
-   // loop over caloParticles
+   //in order to match a PFCluster to a caloParticle, we first build a map that stores the index of the caloParticle, the index of the Cluster, and the score
+   vector<MatchingMap> matchingMap_caloParticle_PFCluster = PFClusterAnalyzer::getMapCaloParticleCluster(pfCluster_energy, caloParticle_energy, caloParticle_simEnergy, simHit_energy, pfClusterHit_energy);
+
    for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
 
       //counts the number of crystals per caloParticle
@@ -526,7 +539,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
       //this vector will contain the indices of the PFClusters that match with a given PFClusterHit.
       vector<int> vector_matched_indices{-1};
-      vector<int> vector_matched_indices_single{-1};
+      //vector<int> vector_matched_indices_single{-1};
 
       //same than above but for superCluster - superClusterHits
       vector<int> vector_spCl_matched_indices{-1};
@@ -704,84 +717,85 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }
       }
       // end of caloMatched superCluster
-
-      //---PFClusters_caloMatched---
-      // Step1: we get the indices of the caloMatched PFClusters
-
+      /*   
       // loop over pfClusterHits associated to calo particle
       for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
 
-         //for each pfClusterHit, we save a map that lists all the pfClusters to which the hit is associated and the energy deposited in the crystal
-         //A given hit can belong to more than one pfCluster, in case of an overlap
-         map<int, float>  map_pfClusters = pfClusterHit_energy[icP][ipfClH];
-         float pfClH_filling_energy = 0;
+      //for each pfClusterHit, we save a map that lists all the pfClusters to which the hit is associated and the energy deposited in the crystal
+      //A given hit can belong to more than one pfCluster, in case of an overlap
+      map<int, float>  map_pfClusters = pfClusterHit_energy[icP][ipfClH];
+      float pfClH_filling_energy = 0;
 
-         //if the hit is not matched to a PFCluster, the size of the map is 0
-         if(map_pfClusters.size()!=0){
-            N_pfClH++;
+      //if the hit is not matched to a PFCluster, the size of the map is 0
+      if(map_pfClusters.size()!=0){
+      N_pfClH++;
 
-            //we get the pfCluster index out of the map and store the all the indices (with repetition)
-            for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
-               vector_matched_indices.push_back(itr->first);
-               pfClH_filling_energy += itr->second;
-            }
+      //we get the pfCluster index out of the map and store the all the indices (with repetition)
+      for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
+      vector_matched_indices.push_back(itr->first);
+      pfClH_filling_energy += itr->second;
+      }
 
-            //same as above, but this time the index is saved only once
-            for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
-               if(std::find(vector_matched_indices_single.begin(), vector_matched_indices_single.end(), itr->first)==vector_matched_indices_single.end()){
-                  vector_matched_indices_single.push_back(itr->first);
-               }
-            }
-         }//end match pfClusterHit - pfCluster
+      //same as above, but this time the index is saved only once
+      for (auto itr = map_pfClusters.begin(); itr != map_pfClusters.end(); ++itr) { 
+      if(std::find(vector_matched_indices_single.begin(), vector_matched_indices_single.end(), itr->first)==vector_matched_indices_single.end()){
+      vector_matched_indices_single.push_back(itr->first);
+      }
+      }
+      }//end match pfClusterHit - pfCluster
 
 
 
-         if(entry<N_perEvent_plots){
-            if(fabs(pfClusterHit_eta[icP][ipfClH])<1.479){
-               h_PFClusterHits_caloMatched_EB_ietaiphi.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
-               h_PFClusterHits_all_EB_ietaiphi.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
-            } else {
-               if(pfClusterHit_eta[icP][ipfClH]>0){
-                  h_PFClusterHits_caloMatched_EEP_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
-                  h_PFClusterHits_all_EEP_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
-               } else {
-                  h_PFClusterHits_caloMatched_EEM_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
-                  h_PFClusterHits_all_EEM_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
-               }
-            }
-         }
+      //if(entry<N_perEvent_plots){
+      //if(fabs(pfClusterHit_eta[icP][ipfClH])<1.479){
+      //h_PFClusterHits_caloMatched_EB_ietaiphi.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+      //h_PFClusterHits_all_EB_ietaiphi.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+      //} else {
+      //if(pfClusterHit_eta[icP][ipfClH]>0){
+      //h_PFClusterHits_caloMatched_EEP_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+      //h_PFClusterHits_all_EEP_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+      //} else {
+      //h_PFClusterHits_caloMatched_EEM_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+      //h_PFClusterHits_all_EEM_ixiy.at((Int_t)entry)->Fill(pfClusterHit_ieta[icP][ipfClH],pfClusterHit_iphi[icP][ipfClH],pfClH_filling_energy);
+      // }
+      // }
+      // }
       } // end loop pfClusterHits
+
 
       //in case we want to save only one PFCluster per PFClusterHit, we keep the index of the PFCluster having the more hits
       if(flag_keepOnlyOnePFCluster){
-         int matched_index = vector_matched_indices_single[0];
-         for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
-            if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>=count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
-               matched_index = vector_matched_indices_single[i];
-            }
-         }
-         vector_matched_indices_single.clear();
-         vector_matched_indices_single.push_back(matched_index);
+      int matched_index = vector_matched_indices_single[0];
+      for(unsigned int i(1); i<=vector_matched_indices_single.size(); ++i){
+      if(count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i])>=count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[i-1])){
+      matched_index = vector_matched_indices_single[i];
       }
-
+      }
+      vector_matched_indices_single.clear();
+      vector_matched_indices_single.push_back(matched_index);
+      }
 
       if(vector_matched_indices_single[0]==-1){
-         if(flag_doEB){
-            if(TMath::Abs(caloParticle_eta[icP])<1.479){
-               h_caloParticle_phi_vs_eta_ifNoPFCluster_EB->Fill(caloParticle_phi[icP], caloParticle_eta[icP]);
-            }
-         }
+      if(TMath::Abs(caloParticle_eta[icP])<1.479){
+      if(flag_doEB){
+      h_caloParticle_phi_vs_eta_ifNoPFCluster_EB->Fill(caloParticle_phi[icP], caloParticle_eta[icP]);
       }
-
+      }
+      }
+      */      
       // Step 2: we fill the histograms with the selected PFClusters
 
       //we loop on all the PFClusters associated to the same PFClusterHit and sum the energy, eta, phi
       double filling_energy=0;
       double filling_phi=0;
       double filling_eta=0;
-      for(unsigned int iMatched(0); iMatched<vector_matched_indices_single.size(); ++iMatched){
-         int matched_index = vector_matched_indices_single[iMatched];
-         int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices_single[iMatched]);
+
+      vector_matched_indices = PFClusterAnalyzer::getMatchedIndices(matchingMap_caloParticle_PFCluster, icP);
+
+
+      for(unsigned int iMatched(0); iMatched<vector_matched_indices.size(); ++iMatched){
+         int matched_index = vector_matched_indices[iMatched];
+         int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices[iMatched]);
          //if(matched_index!=-1 && nOccurrences!=1)
          if(matched_index!=-1){
             filling_energy = pfCluster_energy[matched_index];
@@ -899,6 +913,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
                }
             }
+
             //we fill the caloMatched histograms binned in eta and ET
             for(TString Eta_key: Eta_keys){
                for(TString Et_key: Et_keys){
@@ -959,7 +974,8 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             //h_PFClusters_caloMatched_nPFClusters_vs_eta->Fill(filling_eta, N_pfCl);
 
          } //end of matched index
-      }// end of loop on matched indices            
+      }// end of loop on matched indices 
+
    } // end loop calo particles
 
 
@@ -1021,3 +1037,160 @@ void PFClusterAnalyzer::Terminate()
    // the results graphically or save the results to file.
 
 }
+
+
+
+
+
+
+
+
+
+
+
+vector<MatchingMap> PFClusterAnalyzer::getMapCaloParticleCluster(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& caloParticle_energy, const TTreeReaderArray<float>& caloParticle_simEnergy, const TTreeReaderArray<vector<float>>& simHit_energy, const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy){
+
+   //this map will store the indices of the caloParticle and the cluster
+   map<int, int> map_caloParticle_cluster;
+
+   vector<MatchingMap> matchingMap;
+
+   // The first step consists in associating to each PFCluster the caloParticle that contributes to most of its energy
+   // For each PFCluster, we loop on all the caloParticles, compute their associated score, and finally save the caloParticle with the highest one
+   for(unsigned int iPF(0); iPF<pfCluster_energy.GetSize(); ++iPF){
+
+      //map that stores for each caloParticle its associated score
+      map<int, float> map_caloIndex_score;
+
+      //cout << endl << endl << "PFCluster n° " << iPF << endl;
+
+      for (unsigned int icP=0; icP<caloParticle_energy.GetSize(); icP++){
+
+         //cout << endl << "caloParticle n " << icP << endl;
+         //cout << "simEnergy: " << caloParticle_simEnergy[icP] << endl;
+
+         double score = 0;
+         for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
+            for (auto itr = pfClusterHit_energy[icP][ipfClH].begin(); itr != pfClusterHit_energy[icP][ipfClH].end(); ++itr) { 
+               //cout << "index: " << itr->first << endl;
+               unsigned int index = itr->first;
+               // the following conditions ensures that the caloParticle has some hits in the cluster
+               if (index == iPF){
+                  score += simHit_energy[icP][ipfClH] / caloParticle_simEnergy[icP];
+                  //cout << "Here!!" << endl;  
+                  //cout << "pfClusterHit energy: " << itr->second << " / simHit_energy: " << simHit_energy[icP][ipfClH] << " / score: " << score << endl;
+               }
+            }
+         }
+         //cout << "total score: " << score << endl;
+         if(score!=0){
+            map_caloIndex_score.insert({icP, score}); 
+         }
+      }
+
+
+
+      for(auto itr = map_caloIndex_score.begin(); itr != map_caloIndex_score.end(); ++itr){
+         //cout << itr->first << " " << itr->second << endl;
+      }
+
+      // this map will contain the caloParticle index associated to the maximum score
+      map<int, float> map_highest_score;
+      map_highest_score.insert({0, 0.});
+      for(auto itr = map_caloIndex_score.begin(); itr != map_caloIndex_score.end(); ++itr){
+         for(auto itr2 = map_highest_score.begin(); itr2 != map_highest_score.end(); ++itr2){
+            if(itr->second>itr2->second){
+               map_highest_score.clear();
+               map_highest_score.insert({itr->first, itr->second});
+            }
+         }
+      }
+
+
+      int index_caloParticle;
+      float minFraction = 0.05;
+      for(auto itr2 = map_highest_score.begin(); itr2 != map_highest_score.end(); ++itr2){
+         //cout << "The associated caloParticle is " << itr2->first << " with an associated score of " << itr2->second << endl;
+         MatchingMap matchingMap_tmp;
+         index_caloParticle = itr2->first;
+         if(itr2->second>minFraction){
+             //cout << "map_caloParticle_cluster filled" << endl;
+            //map_caloParticle_cluster.insert({index_caloParticle, iPF});
+            matchingMap_tmp.CaloIndex = index_caloParticle;
+            matchingMap_tmp.PFIndex = iPF;
+            matchingMap_tmp.Score = itr2->second;
+            matchingMap.push_back(matchingMap_tmp);
+            //map_caloParticle_cluster.insert({1,1});
+            //map_caloParticle_cluster.insert({1,1});
+         }
+      }
+
+      //map<int, int> map_caloParticle_cluster;
+      //map_caloParticle_cluster.insert({index_caloParticle, iPF});
+
+   }
+
+   for(unsigned int i(0); i<matchingMap.size(); ++i){
+      //cout << "calo " << matchingMap[i].CaloIndex << " associated with " << matchingMap[i].PFIndex << " with score " << matchingMap[i].Score << endl; 
+   }
+
+
+
+
+   for(auto itr = map_caloParticle_cluster.begin(); itr != map_caloParticle_cluster.end(); ++itr){
+      //cout << "calo " << itr->first << " associated with " << itr->second << endl;
+   }
+
+   return matchingMap;
+}
+// at this point we have retrieved the caloParticle contributing the most to the energy of the cluster
+// In other words, only one caloParticle is associated to a given cluster
+// The opposite is not true: a caloParticle can have more than one cluster associated to it
+
+vector<int> PFClusterAnalyzer::getMatchedIndices(const vector<MatchingMap>& matchingMap, unsigned int icP){
+
+
+
+   vector<int> vector_matched_indices;
+
+
+   vector<pair<int, float>> pair_clusterIndex_score; 
+
+   for(unsigned int iMap(0); iMap<matchingMap.size(); ++iMap){
+      pair<float, float> pair_clusterIndex_score_tmp;
+      if(icP==matchingMap[iMap].CaloIndex){
+         //cout << "calo " << matchingMap[iMap].CaloIndex << " associated with " << matchingMap[iMap].PFIndex << " with score " << matchingMap[iMap].Score << endl;
+         pair_clusterIndex_score_tmp.first = matchingMap[iMap].PFIndex; 
+         pair_clusterIndex_score_tmp.second = matchingMap[iMap].Score;
+         pair_clusterIndex_score.push_back(pair_clusterIndex_score_tmp);
+      }
+   }
+
+   //cout << endl << "pair formed: " << endl;
+   for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
+      //cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
+   }
+
+   sort(pair_clusterIndex_score.begin(), pair_clusterIndex_score.end(), sortbysecdesc);
+
+   //cout << endl << "sorted pair: " << endl;
+   for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
+      //cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
+   }
+
+   //vector<int> vector_matched_indices;
+
+
+   for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
+      vector_matched_indices.push_back(pair_clusterIndex_score[i].first); 
+   }
+
+   //cout << endl << "matched indices: " << endl;
+   for(unsigned int i(0); i<vector_matched_indices.size(); ++i){
+      //cout << vector_matched_indices[i] << endl;
+   }
+
+   return vector_matched_indices;  
+}
+
+

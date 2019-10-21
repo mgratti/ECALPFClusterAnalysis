@@ -26,6 +26,14 @@
 #include <map>
 #include <cmath>
 
+struct MatchingMap{
+   unsigned int CaloIndex;
+   unsigned int PFIndex;
+   float Score;
+};
+
+
+
 class PFClusterAnalyzer : public TSelector {
    public :
       TTreeReader     fReader;  //!the tree reader
@@ -43,6 +51,7 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<float> genParticle_pt = {fReader, "genParticle_pt"};
       TTreeReaderArray<float> genParticle_eta = {fReader, "genParticle_eta"};
       TTreeReaderArray<float> genParticle_phi = {fReader, "genParticle_phi"};
+      TTreeReaderArray<vector<float>> simHit_energy = {fReader, "simHit_energy"};
       TTreeReaderArray<float> caloParticle_energy = {fReader, "caloParticle_energy"};
       TTreeReaderArray<float> caloParticle_simEnergy = {fReader, "caloParticle_simEnergy"};
       TTreeReaderArray<float> caloParticle_pt = {fReader, "caloParticle_pt"};
@@ -52,11 +61,11 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<int> caloParticle_iphi = {fReader, "caloParticle_iphi"};
       TTreeReaderArray<int> caloParticle_iz = {fReader, "caloParticle_iz"};
       TTreeReaderArray<vector<map<int,float> >> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
-      TTreeReaderArray<vector<float>> pfClusterHit_eta = {fReader, "pfClusterHit_eta"};
-      TTreeReaderArray<vector<float>> pfClusterHit_phi = {fReader, "pfClusterHit_phi"};
-      TTreeReaderArray<vector<int>> pfClusterHit_ieta = {fReader, "pfClusterHit_ieta"};
-      TTreeReaderArray<vector<int>> pfClusterHit_iphi = {fReader, "pfClusterHit_iphi"};
-      TTreeReaderArray<vector<int>> pfClusterHit_iz = {fReader, "pfClusterHit_iz"};
+      //TTreeReaderArray<vector<float>> pfClusterHit_eta = {fReader, "pfClusterHit_eta"};
+      //TTreeReaderArray<vector<float>> pfClusterHit_phi = {fReader, "pfClusterHit_phi"};
+      //TTreeReaderArray<vector<int>> pfClusterHit_ieta = {fReader, "pfClusterHit_ieta"};
+      //TTreeReaderArray<vector<int>> pfClusterHit_iphi = {fReader, "pfClusterHit_iphi"};
+      //TTreeReaderArray<vector<int>> pfClusterHit_iz = {fReader, "pfClusterHit_iz"};
       TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_energy = {fReader, "pfClusterHit_noCaloPart_energy"};
       TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_eta = {fReader, "pfClusterHit_noCaloPart_eta"};
       TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_phi = {fReader, "pfClusterHit_noCaloPart_phi"};
@@ -326,7 +335,13 @@ class PFClusterAnalyzer : public TSelector {
       virtual TList  *GetOutputList() const { return fOutput; }
       virtual void    SlaveTerminate();
       virtual void    Terminate();
+      
+      
+      vector<MatchingMap> getMapCaloParticleCluster(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& caloParticle_energy, const TTreeReaderArray<float>& caloParticle_simEnergy, const TTreeReaderArray<vector<float>>& simHit_energy, const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy);
 
+      vector<int> getMatchedIndices(const vector<MatchingMap>& matchingMap, unsigned int icP);
+
+ 
       ClassDef(PFClusterAnalyzer,0);
 
 };

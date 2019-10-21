@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_wPU_pfrh1.0_seed3.0_V01_v33_n15000";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -383,8 +383,8 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
    fitParameters.outputdir = outputdir;
 
    // ranges of the distribution
-   Double_t rangeMin = 0.9;
-   Double_t rangeMax = 1.1;
+   Double_t rangeMin = 0.;
+   Double_t rangeMax = 2.;
 
 
    // we loop on the different ET and ETA ranges
@@ -416,7 +416,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
          RooRealVar *mean   = new RooRealVar("mean","mean",1.015,0.9,1.1);
-         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.03, 0.0, 0.05);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.027, 0.0, 0.05);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
 
@@ -424,9 +424,9 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
 
          // double crystal ball (same gaussian body but different exponential tails)
-         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 3.0, -5, 5.);
-         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 5., 0., 10.);
-         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 4.0, -5, 5.);
+         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 3.0, -15, 15.);
+         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 5., 0., 50.);
+         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", -2.0, -15, 15.);
          RooRealVar *n_2      = new RooRealVar("n_2", "n_2", 1., 0., 50.);
 
          RooCBShape *CBpdf_1 = new RooCBShape("CBpdf_1", "CBpdf_1", *EoverEtrue, *mean, *sigma, *alpha_1, *n_1);
