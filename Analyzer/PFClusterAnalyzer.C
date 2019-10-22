@@ -75,14 +75,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    //----------- USER'S DECISION BOARD --------------//
 
-   //Choose one caloParticle - cluster matching method 
-   flag_doMatching_numberOfHits = false;
-   flag_doMatching_score        = false;
-   flag_doMatching_deltaR       = true;
    //Turn to true this flag in case you want to save only one PFCluster per caloParticle
    flag_keepOnlyOnePFCluster = true;
-
-
 
    //------------------------------------------------//
 
@@ -98,7 +92,22 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
       flag_doEE = true;
    }
 
-
+   
+   flag_doMatching_numberOfHits = false;
+   flag_doMatching_score        = false;
+   flag_doMatching_deltaR       = false;
+ 
+   if(fileName.find("numberOfHits") != std::string::npos){
+      flag_doMatching_numberOfHits = true;
+   }
+   else if(fileName.find("simFraction") != std::string::npos){
+      flag_doMatching_score = true;
+   }
+   else if(fileName.find("deltaR") != std::string::npos){
+      flag_doMatching_deltaR = true;
+   }
+   
+ 
    // output
    fout = new TFile(foutName, "RECREATE"); 
    if(!fout->IsOpen()) throw std::runtime_error("Output file could not be created");

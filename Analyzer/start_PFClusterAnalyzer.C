@@ -8,20 +8,48 @@
 
 void start_PFClusterAnalyzer(){
 
-  TString inFileName = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/dumped_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000.root";
-  //TString inFileName = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/dumped_singlePhoton_withTracker_pT0to100GeV_2k_EB.root";
-  //TString inFileName = "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/photon_Et1to100GeV_closeEcal_EE_noPU_pfrh1.0_seed3.0_V01_v52_n15000.root";
-  
+   //----------- USER'S DECISION BOARD --------------//
 
-  TString outFileName = "./outputfiles/histo_test_matching_EB.root";
+   // Information on the file to be processed
+   TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
+   TString inFileName = "dumped_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
 
-  TChain * c = new TChain("recosimdumper/caloTree");
-  c->Add(inFileName);
+   
+   // Choose one caloParticle - cluster method 
+   Bool_t doMatching_numberOfHits = false;
+   Bool_t doMatching_simFraction  = false;
+   Bool_t doMatching_deltaR       = true;
 
-  //TProof::Open("");
-  //c->SetProof();
+   //------------------------------------------------//
 
-  c->Process("PFClusterAnalyzer.C+", outFileName);
+
+   TString inFile = inDirectory + inFileName + ".root";
+
+   TChain * c = new TChain("recosimdumper/caloTree");
+   c->Add(inFile);
+
+
+   //create ouputFile
+   TString outDirectory =  "./outputfiles/";
+   inFileName.Remove(0,7);
+   TString outFileName = "histo_" + inFileName;
+   if(doMatching_numberOfHits){
+      outFileName += "_numberOfHits";
+   }
+   else if(doMatching_simFraction){
+      outFileName += "_simFraction";
+   }
+   else if(doMatching_deltaR){
+      outFileName += "_deltaR";
+   }
+
+   if(inFileName.Contains("EB")){
+      outFileName += "_EB";
+   }
+   TString outFile = outDirectory + outFileName + ".root";
+
+
+   c->Process("PFClusterAnalyzer.C+", outFile);
 
 }
 
