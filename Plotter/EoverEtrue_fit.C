@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_wPU_pfrh1.0_seed3.0_V01_v33_n15000";
+string fileName = "histo_test_matching";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -70,7 +70,7 @@ Bool_t do_binningEn = true;
 
 // choose whether to use a finner binning or not
 Bool_t do_fineBinning_energy = false;
-Bool_t do_fineBinning_eta    = true;
+Bool_t do_fineBinning_eta    = false;
 
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
@@ -125,7 +125,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 // converts double to string with adjusting the number of decimals
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
-void producePlots(TString, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor>,string);
+void producePlots(TString, Bool_t, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor>,string);
 // produce the efficiency plots
 void produceEfficiencyPlot(vector<TString>, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string);
 
@@ -292,11 +292,11 @@ void EoverEtrue_fit(){
 
    // we get the resolution, scale and efficiency plots
    if(do_resolutionPlot){
-      producePlots("resolution", sigma, sigma_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
+      producePlots("resolution", flagList.do_binningEt, sigma, sigma_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
    }
 
    if(do_scalePlot){
-      producePlots("scale", mean, mean_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
+      producePlots("scale", flagList.do_binningEt, mean, mean_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir);
    }
 
    if(do_efficiencyPlot){
@@ -666,7 +666,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
 
 
-void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
+void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir){
 
    // we first produce the plot of the resolution as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
@@ -727,6 +727,14 @@ void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_
       leg1 -> Draw("same");
 
    }
+   TPaveText* label = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   label->SetBorderSize(0);
+   label->SetFillColor(kWhite);
+   label->SetTextSize(0.04);
+   label->SetTextFont(42);
+   label->SetTextAlign(11);
+   label->AddText("#eta bins: ");
+   label->Draw("same");
 
    TString dir = outputdir.c_str();
 
@@ -793,6 +801,22 @@ void producePlots(TString what, vector<map<TString, map<TString, Float_t>>> map_
       leg2 -> Draw("same");
 
    }
+
+   TPaveText* label2 = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   label2->SetBorderSize(0);
+   label2->SetFillColor(kWhite);
+   label2->SetTextSize(0.04);
+   label2->SetTextFont(42);
+   label2->SetTextAlign(11);
+   if(do_binningEt){
+      label2->AddText("E_{T} bins: ");
+   }
+   else{
+      label2->AddText("Energy bins: ");
+   }
+   label2->Draw("same");
+
+
    if(what=="resolution"){
       c2->SaveAs(dir + "resolution_vs_eta.png");
    }
@@ -883,6 +907,14 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
 
    }
 
+   TPaveText* label = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   label->SetBorderSize(0);
+   label->SetFillColor(kWhite);
+   label->SetTextSize(0.04);
+   label->SetTextFont(42);
+   label->SetTextAlign(11);
+   label->AddText("#eta bins: ");
+   label->Draw("same");
 
    TString dir = outputdir.c_str();
 
@@ -959,6 +991,20 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
       leg2 -> Draw("same");
 
    }
+   TPaveText* label2 = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   label2->SetBorderSize(0);
+   label2->SetFillColor(kWhite);
+   label2->SetTextSize(0.04);
+   label2->SetTextFont(42);
+   label2->SetTextAlign(11);
+   if(do_binningEt){
+      label2->AddText("E_{T} bins: ");
+   }
+   else{
+      label2->AddText("Energy bins: ");
+   }
+   label2->Draw("same");
+
    c2->SaveAs(dir + "efficiency_vs_eta.png");
 
    delete c1;
