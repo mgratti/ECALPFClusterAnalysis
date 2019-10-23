@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_test_matching";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000_deltaR";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -70,7 +70,7 @@ Bool_t do_binningEn = true;
 
 // choose whether to use a finner binning or not
 Bool_t do_fineBinning_energy = false;
-Bool_t do_fineBinning_eta    = false;
+Bool_t do_fineBinning_eta    = true;
 
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
@@ -79,8 +79,8 @@ Bool_t do_doubleCBfit = true;
 Bool_t do_BGfit       = false;
 
 // choose between fitting the whole distribution or the peak only
-Bool_t do_fitAll  = false;
-Bool_t do_fitPeak = true;
+Bool_t do_fitAll  = true;
+Bool_t do_fitPeak = false;
 
 // choose which plots to produce
 Bool_t do_resolutionPlot = true;
@@ -359,6 +359,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
    // define the output directory
    string outputdir = "myPlots/fits/" + fileName;
+   
    if(do_binningEt){
       outputdir += "_EtaEtBinned";
    }
@@ -670,7 +671,7 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
 
    // we first produce the plot of the resolution as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
-   TLegend* leg1 = new TLegend(0.55, 0.6, 0.75, 0.8);
+   TLegend* leg1 = new TLegend(0.55, 0.55, 0.75, 0.8);
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       Float_t x, resolution, error_hi, error_lo;
@@ -727,7 +728,7 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
       leg1 -> Draw("same");
 
    }
-   TPaveText* label = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   TPaveText* label = new TPaveText(0.55,0.83,0.75,0.86,"brNDC");
    label->SetBorderSize(0);
    label->SetFillColor(kWhite);
    label->SetTextSize(0.04);
@@ -802,7 +803,7 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
 
    }
 
-   TPaveText* label2 = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   TPaveText* label2 = new TPaveText(0.55,0.8,0.75,0.83,"brNDC");
    label2->SetBorderSize(0);
    label2->SetFillColor(kWhite);
    label2->SetTextSize(0.04);
@@ -835,7 +836,7 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
-   TLegend* leg1 = new TLegend(0.55, 0.6, 0.75, 0.8);
+   TLegend* leg1 = new TLegend(0.55, 0.55, 0.75, 0.8);
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       Float_t x, efficiency, error;
@@ -907,7 +908,7 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
 
    }
 
-   TPaveText* label = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   TPaveText* label = new TPaveText(0.55,0.83,0.75,0.86,"brNDC");
    label->SetBorderSize(0);
    label->SetFillColor(kWhite);
    label->SetTextSize(0.04);
@@ -991,7 +992,7 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
       leg2 -> Draw("same");
 
    }
-   TPaveText* label2 = new TPaveText(0.55,0.75,0.75,0.8,"brNDC");
+   TPaveText* label2 = new TPaveText(0.55,0.8,0.75,0.83,"brNDC");
    label2->SetBorderSize(0);
    label2->SetFillColor(kWhite);
    label2->SetTextSize(0.04);
