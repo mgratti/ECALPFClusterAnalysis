@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000_deltaR";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V01_v310_n15000_simFraction";
 
 // enter the number of k events
 Int_t kEvents = 150;

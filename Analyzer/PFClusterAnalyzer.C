@@ -809,10 +809,10 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       //vector_matched_indices = PFClusterAnalyzer::getMatchedIndices(matchingMap_caloParticle_PFCluster, icP, "numberOfHits");
       vector<int> vector_matched_indices;
       if(flag_doMatching_numberOfHits){
-         //vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_numberOfHits(pfClusterHit_energy, icP);
+         vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_numberOfHits(pfClusterHit_energy, icP);
       }
       else if(flag_doMatching_score){
-         //vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_score(matchingMap_caloParticle_PFCluster, icP);
+         vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_score(matchingMap_caloParticle_PFCluster, icP);
       }
       else if(flag_doMatching_deltaR){
          vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_deltaR(pfCluster_energy, pfCluster_eta, pfCluster_phi, icP, 0.05);
@@ -1215,6 +1215,7 @@ vector<int> PFClusterAnalyzer::getMatchedIndices_numberOfHits(const TTreeReaderA
 
    vector<int> vector_matched_indices_all{-1};
    vector<int> vector_matched_indices{-1};
+
 
    // loop over pfClusterHits associated to calo particle
    for(unsigned int ipfClH=0; ipfClH<pfClusterHit_energy[icP].size(); ipfClH++){
