@@ -1,5 +1,5 @@
 #example of use: 
-# python plotter.py -f histo_singlePhoton_5k_EB --doClusterAnalysis
+# python plotter.py -f histo_singlePhoton_5k_EB --doClusterAnalysis --doEB
 
 
 
@@ -11,10 +11,10 @@ import sys
 import os
 sys.path.append('utils')
 sys.path.append('./')
-from spares import *
-import graphUtils as gU
+#from spares import *
+#import graphUtils as gU
 from array import *
-from analyzeRecHits import beautify2DPlot, beautify1DPlot
+from analyzeRecHits import beautify1DPlot
 
 
 colors = [   kOrange+1, kRed, kMagenta+2, kViolet+8, kAzure-8, kAzure+6 ,
@@ -27,6 +27,10 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='', add_help=True)
     parser.add_argument('-f', '--inputFile', type=str, dest='inputFile', help='e.g. path/to/file/filename', default=None)
     parser.add_argument('--doClusterAnalysis', dest='doClusterAnalysis', help='beautify 1D plot', action='store_true', default=False)
+    parser.add_argument('--doEB', dest='doEB', help='plot EB', action='store_true', default=False)
+    parser.add_argument('--doEE', dest='doEE', help='plot EE', action='store_true', default=False)
+
+
 
 options = parser.parse_args()
 
@@ -59,190 +63,296 @@ os.system('mkdir {}'.format(outputdir_caloParticle))
 
 
 if options.doClusterAnalysis:
-
+   if options.doEB:
 
 		  #inputfile = inputfile.format(a=anaName, s=1.0, g=1.0, n=150000, v=version)
         inputfile = inputfile.format(f=inputFile)
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_energy', xtitle='PFClusters_caloMatched_energy [GeV]', ytitle='Entries', xrange=None)    
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_energy_EB', xtitle='caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_size', xtitle='PFClusters_caloMatched_size', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_size_EB', xtitle='number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nRecHit', xtitle='PFClusters_caloMatched_nRecHit', ytitle='Entries', xrange=(0.,40.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nRecHit_EB', xtitle='number of crystals per caloMatched PFCluster', ytitle='Entries', xrange=(0.,40.))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nXtals', xtitle='PFClusters_caloMatched_total_nXtals', ytitle='Entries', xrange=(0.,45.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nXtals_EB', xtitle='number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_et', xtitle='PFClusters_caloMatched_ET [GeV]', ytitle='Entries', xrange=None)
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_et_EB', xtitle='caloMatched PFCluster ET [GeV]', ytitle='Entries', xrange=None)
         
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eta', xtitle='PFClusters_caloMatched_eta', ytitle='Entries', xrange=(-4.,4.))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eta_EB', xtitle='caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_phi', xtitle='PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_phi_EB', xtitle='caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eOverEtrue', xtitle='E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eOverEtrue_EB', xtitle='inclusive E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        
+        
+
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_energy', xtitle='EBM caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_size', xtitle='EBM number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_nXtals', xtitle='EBM number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_et', xtitle='EBM caloMatched PFCluster ET [GeV]', ytitle='Entries', xrange=None)
+        
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_eta', xtitle='EBM caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_phi', xtitle='EBM caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_eOverEtrue', xtitle='EBM E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+       
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_energy', xtitle='EBP caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_size', xtitle='EBP number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_nXtals', xtitle='EBP number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_et', xtitle='EBP caloMatched PFCluster ET [GeV]', ytitle='Entries', xrange=None)
+        
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_eta', xtitle='EBP caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_phi', xtitle='EBP caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_eOverEtrue', xtitle='EBP E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+       
+
+
+
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_energy_EB', xtitle='caloParticle energy [GeV]', ytitle='Entries', xrange=None)    
+
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_simEnergy_EB', xtitle='caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
+
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_size_EB', xtitle='number of caloParticle per event', ytitle='Entries', xrange=(0.,11.))
+
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_et_EB', xtitle='caloParticle ET [GeV]', ytitle='Entries', xrange=None)
+        
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_eta_EB', xtitle='caloParticl eta', ytitle='Entries', xrange=(-4.,4.))
+
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_phi_EB', xtitle='caloParticle phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_energy', xtitle='EBM caloParticle energy [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_simEnergy', xtitle='EBM caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
  
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eOverEtrue_simEnergy', xtitle='E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_size', xtitle='EBM number of caloParticle per event', ytitle='Entries', xrange=(0.,10.))
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_et', xtitle='EBM caloParticle ET [GeV]', ytitle='Entries', xrange=None)
+        
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_eta', xtitle='EBM caloParticle eta', ytitle='Entries', xrange=(-4.,4.))
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_phi', xtitle='EBM caloParticle phi', ytitle='Entries', xrange=(-3.2,3.2))
+
        
 
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_energy', xtitle='EBP caloParticle energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_energy', xtitle='EEM_PFClusters_caloMatched_energy [GeV]', ytitle='Entries', xrange=None)    
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_simEnergy', xtitle='EBP caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_size', xtitle='EEM_PFClusters_caloMatched_size', ytitle='Entries', xrange=(0.,10.))
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_size', xtitle='EBP number of caloParticle per event', ytitle='Entries', xrange=(0.,10.))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_nXtals', xtitle='EEM_PFClusters_caloMatched_nXtals', ytitle='Entries', xrange=(0.,45.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_et', xtitle='EEM_PFClusters_caloMatched_ET [GeV]', ytitle='Entries', xrange=None)
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_et', xtitle='EBP caloParticle ET [GeV]', ytitle='Entries', xrange=None)
         
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_eta', xtitle='EEM_PFClusters_caloMatched_eta', ytitle='Entries', xrange=(-4.,4.))
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_eta', xtitle='EBP caloParticle eta', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_phi', xtitle='EEM_PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_eOverEtrue', xtitle='EEM E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_phi', xtitle='EBP caloParticle phi', ytitle='Entries', xrange=(-3.2,3.2))
        
 
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_energy', xtitle='EBM_PFClusters_caloMatched_energy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_size', xtitle='EBM_PFClusters_caloMatched_size', ytitle='Entries', xrange=(0.,10.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_nXtals', xtitle='EBM_PFClusters_caloMatched_nXtals', ytitle='Entries', xrange=(0.,45.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_et', xtitle='EBM_PFClusters_caloMatched_ET [GeV]', ytitle='Entries', xrange=None)
+        #superCluster
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_energy_EB', xtitle='superCluster energy EB [GeV]', ytitle='Entries', xrange=None)    
         
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_eta', xtitle='EBM_PFClusters_caloMatched_eta', ytitle='Entries', xrange=(-4.,4.))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_eta_EB', xtitle='superCluster eta EB', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_phi', xtitle='EBM_PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_phi_EB', xtitle='superCluster phi EB', ytitle='Entries', xrange=(-3.2,3.2))
 
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBM_eOverEtrue', xtitle='EBM E/Etrue', ytitle='Entries', xrange=(0.,1.5))
-       
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_energy', xtitle='EBP_PFClusters_caloMatched_energy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_size', xtitle='EBP_PFClusters_caloMatched_size', ytitle='Entries', xrange=(0.,10.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_nXtals', xtitle='EBP_PFClusters_caloMatched_nXtals', ytitle='Entries', xrange=(0.,45.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_et', xtitle='EBP_PFClusters_caloMatched_ET [GeV]', ytitle='Entries', xrange=None)
-        
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_eta', xtitle='EBP_PFClusters_caloMatched_eta', ytitle='Entries', xrange=(-4.,4.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_phi', xtitle='EBP_PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EBP_eOverEtrue', xtitle='EBP E/Etrue', ytitle='Entries', xrange=(0.,1.5))
-       
-
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_energy', xtitle='EEP_PFClusters_caloMatched_energy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_size', xtitle='EEP_PFClusters_caloMatched_size', ytitle='Entries', xrange=(0.,10.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_nXtals', xtitle='EEP_PFClusters_caloMatched_nXtals', ytitle='Entries', xrange=(0.,45.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_et', xtitle='EEP_PFClusters_caloMatched_ET [GeV]', ytitle='Entries', xrange=None)
-        
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_eta', xtitle='EEP_PFClusters_caloMatched_eta', ytitle='Entries', xrange=(-4.,4.))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_phi', xtitle='EEP_PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
-
-        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_eOverEtrue', xtitle='EEP E/Etrue', ytitle='Entries', xrange=(0.,1.5))
-       
-
-
-
-
-
-
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_energy', xtitle='caloParticle_energy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_simEnergy', xtitle='caloParticle_simEnergy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_size', xtitle='caloParticle_size', ytitle='Entries', xrange=(0.,10.))
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_et', xtitle='caloParticle_ET [GeV]', ytitle='Entries', xrange=None)
-        
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_eta', xtitle='caloParticle_eta', ytitle='Entries', xrange=(-4.,4.))
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_phi', xtitle='caloParticle_phi', ytitle='Entries', xrange=(-3.2,3.2))
-
-
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_energy', xtitle='EEM_caloParticle_energy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_simEnergy', xtitle='EEM_caloParticle_simEnergy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_size', xtitle='EEM_caloParticle_size', ytitle='Entries', xrange=(0.,10.))
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_et', xtitle='EEM_caloParticle_ET [GeV]', ytitle='Entries', xrange=None)
-        
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_eta', xtitle='EEM_caloParticle_eta', ytitle='Entries', xrange=(-4.,4.))
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_phi', xtitle='EEM_caloParticle_phi', ytitle='Entries', xrange=(-3.2,3.2))
-
-
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_energy', xtitle='EBM_caloParticle_energy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_simEnergy', xtitle='EBM_caloParticle_simEnergy [GeV]', ytitle='Entries', xrange=None)    
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_r9_EB', xtitle='superCluster r9 EB', ytitle='Entries', xrange=None)
  
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_size', xtitle='EBM_caloParticle_size', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_sigmaIetaIeta_EB', xtitle='superCluster sigmaIetaIeta EB', ytitle='Entries', xrange=None)
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_sigmaIetaIphi_EB', xtitle='superCluster sigmaIetaIphi EB', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_sigmaIphiIphi_EB', xtitle='superCluster sigmaIphiIphi EB', ytitle='Entries', xrange=None)
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_et', xtitle='EBM_caloParticle_ET [GeV]', ytitle='Entries', xrange=None)
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_r9_EB', xtitle='superCluster full5x5 r9 EB', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_sigmaIetaIeta_EB', xtitle='superCluster full5x5 sigmaIetaIeta EB', ytitle='Entries', xrange=None)
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_sigmaIetaIphi_EB', xtitle='superCluster full5x5 sigmaIetaIphi EB', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_sigmaIphiIphi_EB', xtitle='superCluster full5x5 sigmaIphiIphi EB', ytitle='Entries', xrange=None)
+
+
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_energy_EB', xtitle='caloMatched superCluster energy EB [GeV]', ytitle='Entries', xrange=None)    
         
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_eta', xtitle='EBM_caloParticle_eta', ytitle='Entries', xrange=(-4.,4.))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_eta_EB', xtitle='caloMatched superCluster eta EB', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBM_phi', xtitle='EBM_caloParticle_phi', ytitle='Entries', xrange=(-3.2,3.2))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_phi_EB', xtitle='caloMatched superCluster phi EB', ytitle='Entries', xrange=(-3.2,3.2))
 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_r9_EB', xtitle='caloMatched superCluster r9 EB', ytitle='Entries', xrange=(0.,1.5))
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_sigmaIetaIeta_EB', xtitle='caloMatched superCluster sigmaIetaIeta EB', ytitle='Entries', xrange=None)
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_sigmaIetaIphi_EB', xtitle='caloMatched superCluster sigmaIetaIphi EB', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_sigmaIphiIphi_EB', xtitle='caloMatched superCluster sigmaIphiIphi EB', ytitle='Entries', xrange=None)
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_r9_EB', xtitle='caloMatched superCluster full5x5 r9 EB', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB', xtitle='caloMatched superCluster full5x5 sigmaIetaIeta EB', ytitle='Entries', xrange=None)
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB', xtitle='caloMatched superCluster full5x5 sigmaIetaIphi EB', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB', xtitle='caloMatched superCluster full5x5 sigmaIphiIphi EB', ytitle='Entries', xrange=None)
+
+
+   if options.doEE:
+
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_energy_EE', xtitle='caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
+
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_size_EE', xtitle='number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
+
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nRecHit_EE', xtitle='number of crystals per caloMatched PFCluster', ytitle='Entries', xrange=(0.,40.))
+
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_nXtals_EE', xtitle='number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
+
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_et_EE', xtitle='caloMatched PFCluster ET [GeV]', ytitle='Entries', xrange=None)
+        
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eta_EE', xtitle='caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
+
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_phi_EE', xtitle='caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+        beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_eOverEtrue_EE', xtitle='inclusive E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        
+        
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_energy', xtitle='EEM caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_size', xtitle='EEM number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_nXtals', xtitle='EEM number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_et', xtitle='EEM caloMatched PFCluster ET [GeV]', ytitle='Entries', xrange=None)
+        
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_eta', xtitle='EEM caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_phi', xtitle='EEM caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEM_eOverEtrue', xtitle='EEM E/Etrue', ytitle='Entries', xrange=(0.,1.5))
        
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_energy', xtitle='EBP_caloParticle_energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_simEnergy', xtitle='EBP_caloParticle_simEnergy [GeV]', ytitle='Entries', xrange=None)    
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_energy', xtitle='EBP caloMatched PFCluster energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_size', xtitle='EBP_caloParticle_size', ytitle='Entries', xrange=(0.,10.))
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_size', xtitle='EBP number of caloMatched PFClusters per event', ytitle='Entries', xrange=(0.,10.))
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_et', xtitle='EBP_caloParticle_ET [GeV]', ytitle='Entries', xrange=None)
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_nXtals', xtitle='EBP number of crystals per caloParticle', ytitle='Entries', xrange=(0.,45.))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_et', xtitle='EBP caloMatched PFCluster ET [GeV]', ytitle='Entries', xrange=None)
         
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_eta', xtitle='EBP_caloParticle_eta', ytitle='Entries', xrange=(-4.,4.))
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_eta', xtitle='EBP caloMatched PFCluster eta', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EBP_phi', xtitle='EBP_caloParticle_phi', ytitle='Entries', xrange=(-3.2,3.2))
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_phi', xtitle='EBP caloMatched PFCluster phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+        #beautify1DPlot(outputdir=outputdir_pfCluster, inputfile=inputfile, inputdir='PFCluster_caloMatched', histoname='h_PFClusters_caloMatched_EEP_eOverEtrue', xtitle='EBP E/Etrue', ytitle='Entries', xrange=(0.,1.5))
        
 
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_energy', xtitle='EEP_caloParticle_energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_simEnergy', xtitle='EEP_caloParticle_simEnergy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_size', xtitle='EEP_caloParticle_size', ytitle='Entries', xrange=(0.,10.))
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_energy_EE', xtitle='caloParticle energy [GeV]', ytitle='Entries', xrange=None)    
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_et', xtitle='EEP_caloParticle_ET [GeV]', ytitle='Entries', xrange=None)
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_simEnergy_EE', xtitle='caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
+
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_size_EE', xtitle='number of caloParticle per event', ytitle='Entries', xrange=(0.,11.))
+
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_et_EE', xtitle='caloParticle ET [GeV]', ytitle='Entries', xrange=None)
         
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_eta', xtitle='EEP_caloParticle_eta', ytitle='Entries', xrange=(-4.,4.))
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_eta_EE', xtitle='caloParticl eta', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_phi', xtitle='EEP_caloParticle_phi', ytitle='Entries', xrange=(-3.2,3.2))
+        beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_phi_EE', xtitle='caloParticle phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_energy', xtitle='EEM caloParticle energy [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_simEnergy', xtitle='EEM caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_size', xtitle='EEM number of caloParticle per event', ytitle='Entries', xrange=(0.,10.))
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_et', xtitle='EEM caloParticle ET [GeV]', ytitle='Entries', xrange=None)
+        
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_eta', xtitle='EEM caloParticle eta', ytitle='Entries', xrange=(-4.,4.))
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEM_phi', xtitle='EEM caloParticle phi', ytitle='Entries', xrange=(-3.2,3.2))
+
+
+        
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_energy', xtitle='EBP caloParticle energy [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_simEnergy', xtitle='EBP caloParticle energy (sim) [GeV]', ytitle='Entries', xrange=None)    
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_size', xtitle='EBP number of caloParticle per event', ytitle='Entries', xrange=(0.,10.))
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_et', xtitle='EBP caloParticle ET [GeV]', ytitle='Entries', xrange=None)
+        
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_eta', xtitle='EBP caloParticle eta', ytitle='Entries', xrange=(-4.,4.))
+
+        #beautify1DPlot(outputdir=outputdir_caloParticle, inputfile=inputfile, inputdir='caloParticle', histoname='h_caloParticle_EEP_phi', xtitle='EBP caloParticle phi', ytitle='Entries', xrange=(-3.2,3.2))
+       
 
        
         #superCluster
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_energy', xtitle='EB_PFClusters_caloMatched_energy [GeV]', ytitle='Entries', xrange=None)    
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_energy_EE', xtitle='superCluster energy EE [GeV]', ytitle='Entries', xrange=None)    
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_eta_EE', xtitle='superCluster eta EE', ytitle='Entries', xrange=(-4.,4.))
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_phi_EE', xtitle='superCluster phi EE', ytitle='Entries', xrange=(-3.2,3.2))
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_r9_EE', xtitle='superCluster r9 EE', ytitle='Entries', xrange=(0.,1.5))
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_sigmaIetaIeta_EE', xtitle='superCluster sigmaIetaIeta EE', ytitle='Entries', xrange=None)
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_sigmaIetaIphi_EE', xtitle='superCluster sigmaIetaIphi EE', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_sigmaIphiIphi_EE', xtitle='superCluster sigmaIphiIphi EE', ytitle='Entries', xrange=None)
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_r9_EE', xtitle='superCluster full5x5 r9 EE', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_sigmaIetaIeta_EE', xtitle='superCluster full5x5 sigmaIetaIeta EE', ytitle='Entries', xrange=None)
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_sigmaIetaIphi_EE', xtitle='superCluster full5x5 sigmaIetaIphi EE', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_full5x5_sigmaIphiIphi_EE', xtitle='superCluster full5x5 sigmaIphiIphi EE', ytitle='Entries', xrange=None)
+
+
+
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_energy_EE', xtitle='caloMatched superCluster energy EE [GeV]', ytitle='Entries', xrange=None)    
         
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_eta', xtitle='EB_PFClusters_caloMatched_eta', ytitle='Entries', xrange=(-4.,4.))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_eta_EE', xtitle='caloMatched superCluster eta EE', ytitle='Entries', xrange=(-4.,4.))
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_phi', xtitle='EB_PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_phi_EE', xtitle='caloMatched superCluster phi EE', ytitle='Entries', xrange=(-3.2,3.2))
 
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_eOverEtrue', xtitle='EB E/Etrue', ytitle='Entries', xrange=(0.,1.5))
-       
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EB_eOverEtrue', xtitle='EB E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_r9_EE', xtitle='caloMatched superCluster r9 EE', ytitle='Entries', xrange=(0.,1.5))
  
-
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_energy', xtitle='EE_PFClusters_caloMatched_energy [GeV]', ytitle='Entries', xrange=None)    
-
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_eta', xtitle='EE_PFClusters_caloMatched_eta', ytitle='Entries', xrange=(-4.,4.))
-
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_phi', xtitle='EE_PFClusters_caloMatched_phi', ytitle='Entries', xrange=(-3.2,3.2))
-
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_eOverEtrue', xtitle='EE E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_sigmaIetaIeta_EE', xtitle='caloMatched superCluster sigmaIetaIeta EE', ytitle='Entries', xrange=None)
        
-        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_PFClusters_caloMatched_EE_eOverEtrue', xtitle='EE E/Etrue', ytitle='Entries', xrange=(0.,1.5))
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_sigmaIetaIphi_EE', xtitle='caloMatched superCluster sigmaIetaIphi EE', ytitle='Entries', xrange=None)
  
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_sigmaIphiIphi_EE', xtitle='caloMatched superCluster sigmaIphiIphi EE', ytitle='Entries', xrange=None)
+
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_r9_EE', xtitle='caloMatched superCluster full5x5 r9 EE', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE', xtitle='caloMatched superCluster full5x5 sigmaIetaIeta EE', ytitle='Entries', xrange=None)
+       
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE', xtitle='caloMatched superCluster full5x5 sigmaIetaIphi EE', ytitle='Entries', xrange=None)
+ 
+        beautify1DPlot(outputdir=outputdir_superCluster, inputfile=inputfile, inputdir='SuperCluster', histoname='h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE', xtitle='caloMatched superCluster full5x5 sigmaIphiIphi EE', ytitle='Entries', xrange=None)
+
 
 
 

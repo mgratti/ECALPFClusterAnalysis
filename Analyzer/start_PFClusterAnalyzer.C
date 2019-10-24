@@ -8,16 +8,48 @@
 
 void start_PFClusterAnalyzer(){
 
-  TString inFileName = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/dumped_singlePhoton_5k_EB_test.root";
-  TString outFileName = "./outputfiles/histo_singlePhoton_5k_EB.root";
+   //----------- USER'S DECISION BOARD --------------//
 
-  TChain * c = new TChain("recosimdumper/caloTree");
-  c->Add(inFileName);
+   // Information on the file to be processed
+   TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
+   TString inFileName = "dumped_photon_Et1to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V01_v310_n15000";
 
-  //TProof::Open("");
-  //c->SetProof();
+   
+   // Choose one caloParticle - cluster method 
+   Bool_t doMatching_numberOfHits = false;
+   Bool_t doMatching_simFraction  = true;
+   Bool_t doMatching_deltaR       = false;
 
-  c->Process("PFClusterAnalyzer.C+", outFileName);
+   //------------------------------------------------//
+
+
+   TString inFile = inDirectory + inFileName + ".root";
+
+   TChain * c = new TChain("recosimdumper/caloTree");
+   c->Add(inFile);
+
+
+   //create ouputFile
+   TString outDirectory =  "./outputfiles/";
+   inFileName.Remove(0,7);
+   TString outFileName = "histo_" + inFileName;
+   if(doMatching_numberOfHits){
+      outFileName += "_numberOfHits";
+   }
+   else if(doMatching_simFraction){
+      outFileName += "_simFraction";
+   }
+   else if(doMatching_deltaR){
+      outFileName += "_deltaR";
+   }
+
+   if(inFileName.Contains("EB")){
+      outFileName += "_EB";
+   }
+   TString outFile = outDirectory + outFileName + ".root";
+
+
+   c->Process("PFClusterAnalyzer.C+", outFile);
 
 }
 
