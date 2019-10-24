@@ -16,8 +16,8 @@ void start_PFClusterAnalyzer(){
 
    
    // Choose one caloParticle - cluster method 
-   Bool_t doMatching_numberOfHits = true;
-   Bool_t doMatching_simFraction  = false;
+   Bool_t doMatching_numberOfHits = false;
+   Bool_t doMatching_simFraction  = true;
    Bool_t doMatching_deltaR       = false;
 
    //------------------------------------------------//
