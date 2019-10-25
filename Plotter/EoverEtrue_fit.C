@@ -47,7 +47,7 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V01_v310_n15000_simFraction";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_wPU_pfrh1.0_seed3.0_V01_v33_n15000_simFraction";
 
 // enter the number of k events
 Int_t kEvents = 150;
@@ -756,7 +756,7 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
    label_info->SetTextFont(42);
    label_info->SetTextAlign(11);
    TString nEvents = to_string(kEvents);
-   label_info->AddText(nEvents + " Events");
+   label_info->AddText(nEvents + "k Events");
    label_info->AddText("Matching: " + matching);
    label_info->Draw("same");
 
@@ -948,7 +948,7 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
    label_info->SetTextFont(42);
    label_info->SetTextAlign(11);
    TString nEvents = to_string(kEvents);
-   label_info->AddText(nEvents + " Events");
+   label_info->AddText(nEvents + "k Events");
    label_info->AddText("Matching: " + matching);
    label_info->Draw("same");
 
