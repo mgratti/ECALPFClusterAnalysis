@@ -6,15 +6,17 @@
 #include <iostream>
 #include "TProof.h"
 
+
 void start_PFClusterAnalyzer(){
+
 
    //----------- USER'S DECISION BOARD --------------//
 
    // Information on the file to be processed
    TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
-   TString inFileName = "dumped_photon_Et1to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_V01_v330_n15000";
+   TString inFileName = "dumped_photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V01_v62_n30000";
 
-   
+
    // Choose one caloParticle - cluster method 
    Bool_t doMatching_numberOfHits = false;
    Bool_t doMatching_simFraction  = true;
@@ -45,6 +47,9 @@ void start_PFClusterAnalyzer(){
 
    if(inFileName.Contains("EB")){
       outFileName += "_EB";
+   }
+   else if(inFileName.Contains("EE")){
+      outFileName += "_EE";
    }
    TString outFile = outDirectory + outFileName + ".root";
 
