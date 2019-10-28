@@ -157,7 +157,13 @@ void EoverEtrue_fit(){
    }
 
 
-   vector<TString> ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
+   vector<TString> ETAranges_EE;
+   if(!do_fineBinning_eta){
+      ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
+   }
+   else{
+      ETAranges_EE = {"1p48_1p57", "1p57_1p65", "1p65_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
+   }
 
 
    map<TString, Edges> ETvalue;
@@ -205,6 +211,24 @@ void EoverEtrue_fit(){
    ETAvalue["0p50_1p00"].second = 1.0;
    ETAvalue["1p00_1p44"].first  = 1.0;
    ETAvalue["1p00_1p44"].second = 1.44;
+   ETAvalue["1p48_1p57"].first = 1.479;
+   ETAvalue["1p48_1p57"].second = 1.566;
+   ETAvalue["1p57_1p65"].first = 1.566;
+   ETAvalue["1p57_1p65"].second = 1.653;
+   ETAvalue["1p65_1p85"].first = 1.653;
+   ETAvalue["1p65_1p85"].second = 1.85;
+   ETAvalue["1p85_2p00"].first = 1.85;
+   ETAvalue["1p85_2p00"].second = 2.0;
+   ETAvalue["2p00_2p20"].first = 2.0;
+   ETAvalue["2p00_2p20"].second = 2.20;
+   ETAvalue["2p20_2p40"].first = 2.20;
+   ETAvalue["2p20_2p40"].second = 2.40;
+   ETAvalue["2p40_2p60"].first = 2.40;
+   ETAvalue["2p40_2p60"].second = 2.60;
+   ETAvalue["2p60_2p80"].first = 2.60;
+   ETAvalue["2p60_2p80"].second = 2.80;
+   ETAvalue["2p80_3p00"].first = 2.80;
+   ETAvalue["2p80_3p00"].second = 3.0;
    ETAvalue["1p44_1p48"].first  = 1.44;
    ETAvalue["1p44_1p48"].second = 1.48;
    ETAvalue["1p00_1p48"].first  = 1.0;
@@ -371,7 +395,7 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
 
    // define the output directory
    string outputdir = "myPlots/fits/" + fileName;
-   
+
    if(do_binningEt){
       outputdir += "_EtaEtBinned";
    }

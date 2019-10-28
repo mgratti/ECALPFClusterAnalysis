@@ -189,9 +189,44 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
       Eta_edges["1p00_1p48"].second = 1.479;
    }
    if(flag_doEE){
+      Eta_keys.push_back("1p48_1p57");
+      Eta_keys.push_back("1p57_1p65");
+      Eta_keys.push_back("1p65_1p85");
+      Eta_keys.push_back("1p85_2p00");
+      Eta_keys.push_back("2p00_2p20");
+      Eta_keys.push_back("2p20_2p40");
+      Eta_keys.push_back("2p40_2p60");
+      Eta_keys.push_back("2p60_2p80");
+      Eta_keys.push_back("2p80_3p00");
       Eta_keys.push_back("1p48_2p00");
       Eta_keys.push_back("2p00_2p50");
+      Eta_keys.push_back("1p48_2p00");
       Eta_keys.push_back("2p50_3p00");
+
+      Eta_edges["1p48_1p57"].first = 1.479;
+      Eta_edges["1p48_1p57"].second = 1.566;
+      Eta_edges["1p57_1p65"].first = 1.566;
+      Eta_edges["1p57_1p65"].second = 1.653;
+      Eta_edges["1p65_1p85"].first = 1.653;
+      Eta_edges["1p65_1p85"].second = 1.85;
+      Eta_edges["1p85_2p00"].first = 1.85;
+      Eta_edges["1p85_2p00"].second = 2.0;
+      Eta_edges["2p00_2p20"].first = 2.0;
+      Eta_edges["2p00_2p20"].second = 2.20;
+      Eta_edges["2p20_2p40"].first = 2.20;
+      Eta_edges["2p20_2p40"].second = 2.40;
+      Eta_edges["2p40_2p60"].first = 2.40;
+      Eta_edges["2p40_2p60"].second = 2.60;
+      Eta_edges["2p60_2p80"].first = 2.60;
+      Eta_edges["2p60_2p80"].second = 2.80;
+      Eta_edges["2p80_3p00"].first = 2.80;
+      Eta_edges["2p80_3p00"].second = 3.0;
+      Eta_edges["1p48_2p00"].first = 1.479;
+      Eta_edges["1p48_2p00"].second = 2.0;
+      
+      
+      
+      
       Eta_edges["1p48_2p00"].first = 1.479;
       Eta_edges["1p48_2p00"].second = 2.0;
       Eta_edges["2p00_2p50"].first = 2.0;
