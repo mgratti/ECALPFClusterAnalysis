@@ -1,4 +1,5 @@
 #include "TStyle.h"
+#include "Rtypes.h"
 #include "RooGlobalFunc.h"
 #include "RooRealVar.h"
 #include "RooDataSet.h"
@@ -87,6 +88,10 @@ Bool_t do_resolutionPlot = true;
 Bool_t do_scalePlot      = true;
 Bool_t do_efficiencyPlot = true;
 
+
+// choose whether to produce only the efficiency plot or not
+Bool_t do_efficiencyPlotOnly = false;
+
 //////////////////////////////////////////////////////////////////////
 
 
@@ -127,7 +132,7 @@ TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
 void producePlots(TString, Bool_t, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor>, string, Int_t, TString);
 // produce the efficiency plots
-void produceEfficiencyPlot(vector<TString>, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, TString);
+void produceEfficiencyPlot(string, Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, TString);
 
 
 // main function
@@ -246,11 +251,12 @@ void EoverEtrue_fit(){
    color[0]=kOrange;
    color[1]=kRed;
    color[2]=kMagenta;
-   color[3]=kGreen;
-   color[4]=kTeal;
+   color[3]=kPink;
+   color[4]=kGreen;
    color[5]=kCyan;
    color[6]=kBlue;
-   color[7]=kBlack;
+   color[7]=kViolet;
+   color[8]=kBlack;
 
    // we get the matching strategy from the fileName
    TString matching;
@@ -267,54 +273,57 @@ void EoverEtrue_fit(){
    // we perform the fit
    FitParameters fitParameters_EB;
    FitParameters fitParameters_EE;
-   if(do_EB){
-      fitParameters_EB = performFit(fileName, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
-   }
-   if(do_EE){
-      fitParameters_EE = performFit(fileName, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
-   }
 
-   // we retrieve the parameters of the fit
+   // we retrieve parameters of the fit
    vector<map<TString, map<TString, Float_t>>> sigma;
    vector<map<TString, map<TString, vector<Float_t>>>> sigma_error;
    vector<map<TString, map<TString, Float_t>>> mean;
    vector<map<TString, map<TString, vector<Float_t>>>> mean_error;
 
-   if(do_EB){
-      sigma.push_back(fitParameters_EB.map_sigma);
-      sigma_error.push_back(fitParameters_EB.map_sigma_error);
-      mean.push_back(fitParameters_EB.map_mean);
-      mean_error.push_back(fitParameters_EB.map_mean_error);
+   vector<TString> input;
+   string outputdir;
 
+   if(!do_efficiencyPlotOnly){
+      if(do_EB){
+         fitParameters_EB = performFit(fileName, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
+      }
       if(do_EE){
+         fitParameters_EE = performFit(fileName, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
+      }
+
+      if(do_EB){
+         sigma.push_back(fitParameters_EB.map_sigma);
+         sigma_error.push_back(fitParameters_EB.map_sigma_error);
+         mean.push_back(fitParameters_EB.map_mean);
+         mean_error.push_back(fitParameters_EB.map_mean_error);
+
+         if(do_EE){
+            sigma.push_back(fitParameters_EE.map_sigma);
+            sigma_error.push_back(fitParameters_EE.map_sigma_error);
+            mean.push_back(fitParameters_EE.map_mean);
+            mean_error.push_back(fitParameters_EE.map_mean_error);
+         }
+      }
+      else{
          sigma.push_back(fitParameters_EE.map_sigma);
          sigma_error.push_back(fitParameters_EE.map_sigma_error);
          mean.push_back(fitParameters_EE.map_mean);
          mean_error.push_back(fitParameters_EE.map_mean_error);
       }
-   }
-   else{
-      sigma.push_back(fitParameters_EE.map_sigma);
-      sigma_error.push_back(fitParameters_EE.map_sigma_error);
-      mean.push_back(fitParameters_EE.map_mean);
-      mean_error.push_back(fitParameters_EE.map_mean_error);
-   }
 
-   // we get the other elements needed to produce the resolution/scale/efficiency plots
-   vector<TString> input;
-   string outputdir;
-   if(do_EB){
-      input.push_back(fitParameters_EB.inputFile);
-      outputdir = fitParameters_EB.outputdir;
-      if(do_EE){
+      // we get the other elements needed to produce the resolution/scale/efficiency plots
+      if(do_EB){
+         input.push_back(fitParameters_EB.inputFile);
+         outputdir = fitParameters_EB.outputdir;
+         if(do_EE){
+            input.push_back(fitParameters_EE.inputFile);
+         }
+      }
+      else{
          input.push_back(fitParameters_EE.inputFile);
+         outputdir = fitParameters_EE.outputdir;
       }
    }
-   else{
-      input.push_back(fitParameters_EE.inputFile);
-      outputdir = fitParameters_EE.outputdir;
-   }
-
    vector<TString> ETAranges;
    if(do_EB){
       ETAranges = ETAranges_EB;
@@ -327,16 +336,16 @@ void EoverEtrue_fit(){
    }
 
    // we get the resolution, scale and efficiency plots
-   if(do_resolutionPlot){
+   if(do_resolutionPlot && !do_efficiencyPlotOnly){
       producePlots("resolution", flagList.do_binningEt, sigma, sigma_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching);
    }
 
-   if(do_scalePlot){
+   if(do_scalePlot && !do_efficiencyPlotOnly){
       producePlots("scale", flagList.do_binningEt, mean, mean_error, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching);
    }
 
-   if(do_efficiencyPlot){
-      produceEfficiencyPlot(input, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching);
+   if(do_efficiencyPlot || do_efficiencyPlotOnly){
+      produceEfficiencyPlot(fileName, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching);
    }
 
 
@@ -880,11 +889,22 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
 
 
 
-void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, TString matching){
+void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, TString matching){
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
    TLegend* leg1 = new TLegend(0.55, 0.55, 0.75, 0.8);
+
+   vector<TString> input;
+   TString filename = fileName.c_str();
+   if(do_EB==true){
+      input.push_back("../Analyzer/outputfiles/" + filename + "_EB.root");
+   }
+
+   if(do_EE==true){
+      input.push_back("../Analyzer/outputfiles/" + filename + "_EE.root");
+   }
+
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       Float_t x, efficiency, error;
@@ -988,6 +1008,16 @@ void produceEfficiencyPlot(vector<TString> input, Bool_t do_binningEt, Bool_t us
 
    TH1D* hist_num = 0;
    TH1D* hist_deno = 0;
+
+   TFile* inputFile = 0;
+   TString name_tmp = fileName.c_str();
+   if(do_EB==true){
+      inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EB.root");
+   }
+   else if(do_EE==true){
+      inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EE.root");
+   }
+
 
    for(unsigned int kk(0); kk<ETranges.size(); ++kk){
 
