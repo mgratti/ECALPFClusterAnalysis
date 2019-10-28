@@ -70,7 +70,7 @@ Bool_t do_binningEt = false;
 Bool_t do_binningEn = true;
 
 // choose whether to use a finner binning or not
-Bool_t do_fineBinning_energy = false;
+Bool_t do_fineBinning_energy = true;
 Bool_t do_fineBinning_eta    = true;
 
 
@@ -90,7 +90,7 @@ Bool_t do_efficiencyPlot = true;
 
 
 // choose whether to produce only the efficiency plot or not
-Bool_t do_efficiencyPlotOnly = true;
+Bool_t do_efficiencyPlotOnly = false;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -166,7 +166,7 @@ void EoverEtrue_fit(){
       ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
    }
    else{
-      ETAranges_EE = {"1p48_1p57", "1p57_1p65", "1p65_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
+      ETAranges_EE = {"1p57_1p65", "1p48_1p57", "1p57_1p65", "1p65_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
    }
 
 
@@ -456,8 +456,56 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         RooRealVar *mean   = new RooRealVar("mean","mean",1.015,0.9,1.1);
-         RooRealVar *sigma  = new RooRealVar("sigma","sigma",0.027, 0.0, 0.05);
+         float mean_init;
+         float mean_min;
+         float mean_max;
+
+         float sigma_init;
+         float sigma_min = 0.;
+         float sigma_max;
+
+         float alpha_1_init;
+         float alpha_1_min = -50;
+         float alpha_1_max = 50;
+
+         float alpha_2_init;
+         float alpha_2_min = -15;
+         float alpha_2_max = 15;
+
+         float n_1_init;
+         float n_1_min = 0;
+         float n_1_max = 50;
+
+         float n_2_init;
+         float n_2_min = 0;
+         float n_2_max = 15;
+
+
+        if(ETvalue[ETranges[i]].second <= 30){
+            mean_init = 1.7;
+            mean_min = 0.7;
+            mean_max = 0.99;
+            sigma_init = 0.07;
+            sigma_max = 0.12;
+            alpha_1_init = 10.;
+            alpha_2_init = 1.;
+            n_1_init = 1;
+            n_2_init = 1;
+         }
+        else{
+            mean_init = 1.015;
+            mean_min = 0.9;
+            mean_max = 1.1;
+            sigma_init = 0.027;
+            sigma_max = 0.07;
+            alpha_1_init = 3.0;
+            alpha_2_init = -2.0;
+            n_1_init = 5;
+            n_2_init = 1;
+         }
+
+         RooRealVar *mean   = new RooRealVar("mean","mean", mean_init, mean_min, mean_max);
+         RooRealVar *sigma  = new RooRealVar("sigma","sigma", sigma_init, sigma_min, sigma_max);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
          RooRealVar *n      = new RooRealVar("n", "n", 1., 0., 10.);
 
@@ -465,10 +513,10 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
 
          // double crystal ball (same gaussian body but different exponential tails)
-         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 3.0, -15, 15.);
-         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", 5., 0., 50.);
-         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", -2.0, -15, 15.);
-         RooRealVar *n_2      = new RooRealVar("n_2", "n_2", 1., 0., 50.);
+         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", alpha_1_init, alpha_1_min, alpha_2_max);
+         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", n_1_init, n_1_min, n_1_max);
+         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", alpha_2_init, alpha_2_min, alpha_2_max);
+         RooRealVar *n_2      = new RooRealVar("n_2", "n_2", n_2_init, n_2_min, n_2_max);
 
          RooCBShape *CBpdf_1 = new RooCBShape("CBpdf_1", "CBpdf_1", *EoverEtrue, *mean, *sigma, *alpha_1, *n_1);
          RooCBShape *CBpdf_2 = new RooCBShape("CBpdf_2", "CBpdf_2", *EoverEtrue, *mean, *sigma, *alpha_2, *n_2);
