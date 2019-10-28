@@ -117,7 +117,6 @@ struct FlagList{
 
 struct FitParameters{
    TString inputFile;
-   //string outputdir;
    map<TString, map<TString, Float_t>> map_sigma;
    map<TString, map<TString, vector<Float_t>>> map_sigma_error;
    map<TString, map<TString, Float_t>> map_mean;
@@ -248,17 +247,17 @@ void EoverEtrue_fit(){
 
    //color for the resolution, scale and efficiency plots
    map<int, EColor> color;
-   color[1]=kYellow;
    color[0]=kOrange;
-   color[4]=kRed;
-   color[5]=kMagenta;
-   color[2]=kGreen;
-   color[3]=kCyan;
+   color[1]=kGreen;
+   color[2]=kCyan;
+   color[3]=kRed;
+   color[4]=kMagenta;
+   color[5]=kViolet;
+   color[6]=kAzure;
    color[7]=kBlue;
-   color[6]=kViolet;
    color[8]=kBlack;
 
-   // define the output directory
+  // define the output directory
    string outputdir = "myPlots/fits/" + fileName;
 
    if(do_binningEt){
@@ -306,7 +305,6 @@ void EoverEtrue_fit(){
    vector<map<TString, map<TString, vector<Float_t>>>> mean_error;
 
    vector<TString> input;
-   //string outputdir;
 
    if(!do_efficiencyPlotOnly){
       if(do_EB){
