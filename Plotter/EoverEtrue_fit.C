@@ -90,7 +90,7 @@ Bool_t do_efficiencyPlot = true;
 
 
 // choose whether to produce only the efficiency plot or not
-Bool_t do_efficiencyPlotOnly = false;
+Bool_t do_efficiencyPlotOnly = true;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -117,7 +117,7 @@ struct FlagList{
 
 struct FitParameters{
    TString inputFile;
-   string outputdir;
+   //string outputdir;
    map<TString, map<TString, Float_t>> map_sigma;
    map<TString, map<TString, vector<Float_t>>> map_sigma_error;
    map<TString, map<TString, Float_t>> map_mean;
@@ -126,7 +126,7 @@ struct FitParameters{
 
 
 // additional functions
-FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flaglist, string);
+FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flaglist, string);
 // converts double to string with adjusting the number of decimals
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
@@ -248,15 +248,40 @@ void EoverEtrue_fit(){
 
    //color for the resolution, scale and efficiency plots
    map<int, EColor> color;
+   color[1]=kYellow;
    color[0]=kOrange;
-   color[1]=kRed;
-   color[2]=kMagenta;
-   color[3]=kPink;
-   color[4]=kGreen;
-   color[5]=kCyan;
-   color[6]=kBlue;
-   color[7]=kViolet;
+   color[4]=kRed;
+   color[5]=kMagenta;
+   color[2]=kGreen;
+   color[3]=kCyan;
+   color[7]=kBlue;
+   color[6]=kViolet;
    color[8]=kBlack;
+
+   // define the output directory
+   string outputdir = "myPlots/fits/" + fileName;
+
+   if(do_binningEt){
+      outputdir += "_EtaEtBinned";
+   }
+   else if(do_binningEn){
+      outputdir += "_EtaEnBinned";
+   }
+   if(do_CBfit){
+      outputdir += "_CB";
+   }
+   else if(do_doubleCBfit){
+      outputdir += "_doubleCB";
+   }
+   if(do_BGfit){
+      outputdir += "_BG";
+   }
+
+   if(use_simEnergy){
+      outputdir += "_simEnergy";
+   }
+   outputdir += "/";
+
 
    // we get the matching strategy from the fileName
    TString matching;
@@ -281,14 +306,14 @@ void EoverEtrue_fit(){
    vector<map<TString, map<TString, vector<Float_t>>>> mean_error;
 
    vector<TString> input;
-   string outputdir;
+   //string outputdir;
 
    if(!do_efficiencyPlotOnly){
       if(do_EB){
-         fitParameters_EB = performFit(fileName, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
+         fitParameters_EB = performFit(fileName, outputdir, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
       }
       if(do_EE){
-         fitParameters_EE = performFit(fileName, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
+         fitParameters_EE = performFit(fileName, outputdir, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
       }
 
       if(do_EB){
@@ -314,14 +339,12 @@ void EoverEtrue_fit(){
       // we get the other elements needed to produce the resolution/scale/efficiency plots
       if(do_EB){
          input.push_back(fitParameters_EB.inputFile);
-         outputdir = fitParameters_EB.outputdir;
          if(do_EE){
             input.push_back(fitParameters_EE.inputFile);
          }
       }
       else{
          input.push_back(fitParameters_EE.inputFile);
-         outputdir = fitParameters_EE.outputdir;
       }
    }
    vector<TString> ETAranges;
@@ -354,7 +377,7 @@ void EoverEtrue_fit(){
 
 
 
-FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flagList, string do_where){
+FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flagList, string do_where){
 
    Bool_t do_EB = false;
    Bool_t do_EE = false;
@@ -401,32 +424,6 @@ FitParameters performFit(string fileName, Int_t kEvents, vector<TString> ETrange
    }
 
    fitParameters.inputFile = inputFile->GetName();
-
-   // define the output directory
-   string outputdir = "myPlots/fits/" + fileName;
-
-   if(do_binningEt){
-      outputdir += "_EtaEtBinned";
-   }
-   else if(do_binningEn){
-      outputdir += "_EtaEnBinned";
-   }
-   if(do_CBfit){
-      outputdir += "_CB";
-   }
-   else if(do_doubleCBfit){
-      outputdir += "_doubleCB";
-   }
-   if(do_BGfit){
-      outputdir += "_BG";
-   }
-
-   if(use_simEnergy){
-      outputdir += "_simEnergy";
-   }
-   outputdir += "/";
-
-   fitParameters.outputdir = outputdir;
 
    // ranges of the distribution
    Double_t rangeMin = 0.;
@@ -1008,16 +1005,6 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
 
    TH1D* hist_num = 0;
    TH1D* hist_deno = 0;
-
-   TFile* inputFile = 0;
-   TString name_tmp = fileName.c_str();
-   if(do_EB==true){
-      inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EB.root");
-   }
-   else if(do_EE==true){
-      inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EE.root");
-   }
-
 
    for(unsigned int kk(0); kk<ETranges.size(); ++kk){
 
