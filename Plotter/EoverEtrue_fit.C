@@ -48,18 +48,19 @@ using namespace std;
 //                    User's decision board                         //
 
 // enter the file name
-string fileName = "histo_photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh1.0_seed3.0_V01_v61_n30000_simFraction";
+string fileName = "histo_photon_Et1to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_V01_v330_n15000_simFraction";
 
 // enter the number of k events
-Int_t kEvents = 300;
+Int_t kEvents = 150;
 
 // choose which energy range you are using (choose only one)
-Bool_t do_0to20GeV  = false;
-Bool_t do_0to100GeV = true;
+Bool_t do_0to20GeV    = false;
+Bool_t do_0to100GeV   = true;
+Bool_t do_0p1to200GeV = false;
 
 // choose between endcap and/or barrel
-Bool_t do_EB = false;
-Bool_t do_EE = true;
+Bool_t do_EB = true;
+Bool_t do_EE = false;
 
 // choose which Etrue definition you want to use (choose only one)
 Bool_t use_energy    = false;
@@ -135,14 +136,14 @@ void produceEfficiencyPlot(string, Bool_t, Bool_t, Bool_t, Bool_t, vector<TStrin
 
 
 // main function
+//void EoverEtrue_fit(string fileName){
 void EoverEtrue_fit(){
-
    FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
    // define the different Et and Eta slots
    vector<TString> ETranges;
    if(do_0to20GeV){
-      ETranges = {"0_5", "5_10", "10_15", "15_20"};
+      ETranges = {"1_5", "5_10", "10_15", "15_20"};
    }
    else if(do_0to100GeV){
       if(!do_fineBinning_energy){
@@ -150,6 +151,14 @@ void EoverEtrue_fit(){
       }
       else{
          ETranges = {"0_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"};
+      }
+   }
+   else if(do_0p1to200GeV){
+      if(!do_fineBinning_energy){
+         ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
+      }
+      else{
+         ETranges = {"0_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
       }
    }
    vector<TString> ETAranges_EB;
@@ -166,7 +175,7 @@ void EoverEtrue_fit(){
       ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
    }
    else{
-      ETAranges_EE = {"1p57_1p65", "1p48_1p57", "1p57_1p65", "1p65_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
+      ETAranges_EE = {"1p48_1p57", "1p57_1p65", "1p65_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
    }
 
 
@@ -174,7 +183,9 @@ void EoverEtrue_fit(){
    map<TString, Edges> ETAvalue;
 
    // and adjust the boundaries
-   ETvalue["0_5"].first = 0.;
+   ETvalue["0p1_1"].first = 0.1;
+   ETvalue["0p1_1"].second = 1.;
+   ETvalue["0_5"].first = 1.;
    ETvalue["0_5"].second = 5.;
    ETvalue["5_10"].first = 5.;
    ETvalue["5_10"].second = 10.;
@@ -192,6 +203,17 @@ void EoverEtrue_fit(){
    ETvalue["60_80"].second = 80; 
    ETvalue["80_100"].first  = 80;
    ETvalue["80_100"].second = 100; 
+   ETvalue["100_120"].first = 100.;
+   ETvalue["100_120"].second = 120.;
+   ETvalue["120_140"].first = 120.;
+   ETvalue["120_140"].second = 140.;
+   ETvalue["140_160"].first = 140.;
+   ETvalue["140_160"].second = 160.;
+   ETvalue["160_180"].first = 160.;
+   ETvalue["160_180"].second = 180.;
+   ETvalue["180_200"].first = 180.;
+   ETvalue["180_200"].second = 200.;
+
 
    ETAvalue["0p00_0p20"].first = 0.;
    ETAvalue["0p00_0p20"].second = 0.2;
@@ -257,7 +279,7 @@ void EoverEtrue_fit(){
    color[7]=kBlue;
    color[8]=kBlack;
 
-  // define the output directory
+   // define the output directory
    string outputdir = "myPlots/fits/" + fileName;
 
    if(do_binningEt){
@@ -481,7 +503,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
          float n_2_max = 15;
 
 
-        if(ETvalue[ETranges[i]].second <= 30){
+         if(ETvalue[ETranges[i]].second <= 30){
             mean_init = 1.7;
             mean_min = 0.7;
             mean_max = 0.99;
@@ -489,10 +511,10 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
             sigma_max = 0.12;
             alpha_1_init = 10.;
             alpha_2_init = 1.;
-            n_1_init = 1;
-            n_2_init = 1;
+            n_1_init = 1.;
+            n_2_init = 1.;
          }
-        else{
+         else{
             mean_init = 1.015;
             mean_min = 0.9;
             mean_max = 1.1;
@@ -759,7 +781,7 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
 
    // we first produce the plot of the resolution as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
-   TLegend* leg1 = new TLegend(0.55, 0.55, 0.75, 0.8);
+   TLegend* leg1 = new TLegend(0.7, 0.55, 0.9, 0.85);
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       Float_t x, resolution, error_hi, error_lo;
@@ -809,26 +831,26 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
       }
 
       leg1 -> AddEntry(graph, ETAranges[kk]);
-      leg1 -> SetTextSize(0.04);
+      leg1 -> SetTextSize(0.025);
       leg1 -> SetLineColor(0);
       leg1 -> SetFillColorAlpha(0, 0);
       leg1 -> SetBorderSize(0);
       leg1 -> Draw("same");
 
    }
-   TPaveText* label = new TPaveText(0.55,0.83,0.75,0.86,"brNDC");
+   TPaveText* label = new TPaveText(0.7,0.85,0.9,0.88,"brNDC");
    label->SetBorderSize(0);
    label->SetFillColor(kWhite);
-   label->SetTextSize(0.04);
+   label->SetTextSize(0.025);
    label->SetTextFont(42);
    label->SetTextAlign(11);
    label->AddText("#eta bins: ");
    label->Draw("same");
 
-   TPaveText* label_info = new TPaveText(0.15,0.73,0.45,0.6,"brNDC");
+   TPaveText* label_info = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
    label_info->SetBorderSize(0);
    label_info->SetFillColor(kWhite);
-   label_info->SetTextSize(0.034);
+   label_info->SetTextSize(0.028);
    label_info->SetTextFont(42);
    label_info->SetTextAlign(11);
    TString nEvents = to_string(kEvents);
@@ -848,7 +870,7 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
 
    // we then produce the plot of the resolution as a function of eta for different energy ranges
    TCanvas* c2 = new TCanvas("c2", "c2", 700, 600);
-   TLegend* leg2 = new TLegend(0.55, 0.6, 0.75, 0.8);
+   TLegend* leg2 = new TLegend(0.7, 0.55, 0.9, 0.85);
 
 
    for(unsigned int kk(0); kk<ETranges.size(); ++kk){
@@ -894,7 +916,7 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
       }
 
       leg2 -> AddEntry(graph, ETranges[kk]);
-      leg2 -> SetTextSize(0.04);
+      leg2 -> SetTextSize(0.025);
       leg2 -> SetLineColor(0);
       leg2 -> SetFillColorAlpha(0, 0);
       leg2 -> SetBorderSize(0);
@@ -902,10 +924,10 @@ void producePlots(TString what, Bool_t do_binningEt, vector<map<TString, map<TSt
 
    }
 
-   TPaveText* label2 = new TPaveText(0.55,0.8,0.75,0.83,"brNDC");
+   TPaveText* label2 = new TPaveText(0.7,0.85,0.9,0.88,"brNDC");
    label2->SetBorderSize(0);
    label2->SetFillColor(kWhite);
-   label2->SetTextSize(0.04);
+   label2->SetTextSize(0.025);
    label2->SetTextFont(42);
    label2->SetTextAlign(11);
    if(do_binningEt){
@@ -936,7 +958,7 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
-   TLegend* leg1 = new TLegend(0.55, 0.55, 0.75, 0.8);
+   TLegend* leg1 = new TLegend(0.7, 0.55, 0.9, 0.85);
 
    vector<TString> input;
    TString filename = fileName.c_str();
@@ -990,7 +1012,7 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
             graph->SetPointError(thisPoint, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, (ETvalue[ETranges[ii]].second - ETvalue[ETranges[ii]].first)/2, error/2, error/2);
          }
       }
-      graph->GetYaxis()->SetRangeUser(0.4, 1.5);
+      graph->GetYaxis()->SetRangeUser(0.3, 1.5);
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
       if(do_binningEt){
@@ -1011,7 +1033,7 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
       }
 
       leg1 -> AddEntry(graph, ETAranges[kk]);
-      leg1 -> SetTextSize(0.04);
+      leg1 -> SetTextSize(0.025);
       leg1 -> SetLineColor(0);
       leg1 -> SetFillColorAlpha(0, 0);
       leg1 -> SetBorderSize(0);
@@ -1019,19 +1041,19 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
 
    }
 
-   TPaveText* label = new TPaveText(0.55,0.83,0.75,0.86,"brNDC");
+   TPaveText* label = new TPaveText(0.7,0.85,0.9,0.88,"brNDC");
    label->SetBorderSize(0);
    label->SetFillColor(kWhite);
-   label->SetTextSize(0.04);
+   label->SetTextSize(0.025);
    label->SetTextFont(42);
    label->SetTextAlign(11);
    label->AddText("#eta bins: ");
    label->Draw("same");
 
-   TPaveText* label_info = new TPaveText(0.15,0.73,0.45,0.6,"brNDC");
+   TPaveText* label_info = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
    label_info->SetBorderSize(0);
    label_info->SetFillColor(kWhite);
-   label_info->SetTextSize(0.034);
+   label_info->SetTextSize(0.028);
    label_info->SetTextFont(42);
    label_info->SetTextAlign(11);
    TString nEvents = to_string(kEvents);
@@ -1047,7 +1069,7 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
 
    // we then produce the plot of the efficiency as a function of eta for different energy ranges
    TCanvas* c2 = new TCanvas("c2", "c2", 700, 600);
-   TLegend* leg2 = new TLegend(0.55, 0.6, 0.75, 0.8);
+   TLegend* leg2 = new TLegend(0.7, 0.55, 0.9, 0.85);
 
    TH1D* hist_num = 0;
    TH1D* hist_deno = 0;
@@ -1091,7 +1113,7 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
 
          }
       }
-      graph->GetYaxis()->SetRangeUser(0.4, 1.5);
+      graph->GetYaxis()->SetRangeUser(0.3, 1.5);
       graph->GetYaxis()->SetTitleSize(0.04);
       graph->GetYaxis()->SetTitleOffset(1.2);
       graph->GetXaxis()->SetTitle("#eta");
@@ -1107,17 +1129,17 @@ void produceEfficiencyPlot(string fileName, Bool_t do_EB, Bool_t do_EE, Bool_t d
       }
 
       leg2 -> AddEntry(graph, ETranges[kk]);
-      leg2 -> SetTextSize(0.04);
+      leg2 -> SetTextSize(0.025);
       leg2 -> SetLineColor(0);
       leg2 -> SetFillColorAlpha(0, 0);
       leg2 -> SetBorderSize(0);
       leg2 -> Draw("same");
 
    }
-   TPaveText* label2 = new TPaveText(0.55,0.8,0.75,0.83,"brNDC");
+   TPaveText* label2 = new TPaveText(0.7,0.85,0.9,0.88,"brNDC");
    label2->SetBorderSize(0);
    label2->SetFillColor(kWhite);
-   label2->SetTextSize(0.04);
+   label2->SetTextSize(0.025);
    label2->SetTextFont(42);
    label2->SetTextAlign(11);
    if(do_binningEt){

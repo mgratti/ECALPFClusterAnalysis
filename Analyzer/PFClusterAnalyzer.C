@@ -119,7 +119,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    fout->mkdir("SuperCluster");
    fout->mkdir("perEvent");
 
-   Et_keys.push_back("0_5");
+   Et_keys.push_back("0p1_1");
+   Et_keys.push_back("1_5");
    Et_keys.push_back("5_10");
    Et_keys.push_back("10_15");
    Et_keys.push_back("15_20");
@@ -129,9 +130,17 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    Et_keys.push_back("40_60");
    Et_keys.push_back("60_80");
    Et_keys.push_back("80_100");
+   Et_keys.push_back("100_120");
+   Et_keys.push_back("120_140");
+   Et_keys.push_back("140_160");
+   Et_keys.push_back("160_180");
+   Et_keys.push_back("180_200");
 
-   Et_edges["0_5"].first = 0.;
-   Et_edges["0_5"].second = 5.;
+
+   Et_edges["0p1_1"].first = 0.1;
+   Et_edges["0p1_1"].second = 1.;
+   Et_edges["1_5"].first = 1.;
+   Et_edges["1_5"].second = 5.;
    Et_edges["5_10"].first = 5.;
    Et_edges["5_10"].second = 10.;
    Et_edges["10_15"].first = 10.;
@@ -149,6 +158,18 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    Et_edges["60_80"].second = 80.;
    Et_edges["80_100"].first = 80.;
    Et_edges["80_100"].second = 100.;
+   Et_edges["100_120"].first = 100.;
+   Et_edges["100_120"].second = 120.;
+   Et_edges["120_140"].first = 120.;
+   Et_edges["120_140"].second = 140.;
+   Et_edges["140_160"].first = 140.;
+   Et_edges["140_160"].second = 160.;
+   Et_edges["160_180"].first = 160.;
+   Et_edges["160_180"].second = 180.;
+   Et_edges["180_200"].first = 180.;
+   Et_edges["180_200"].second = 200.;
+
+
 
    if(flag_doEB){
       Eta_keys.push_back("0p00_0p50");
@@ -1094,7 +1115,6 @@ void PFClusterAnalyzer::Terminate()
    // The Terminate() function is the last function to be called during
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
-
 }
 
 
