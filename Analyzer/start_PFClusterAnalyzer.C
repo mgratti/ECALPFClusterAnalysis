@@ -13,8 +13,8 @@ void start_PFClusterAnalyzer(){
    //----------- USER'S DECISION BOARD --------------//
 
    // Information on the file to be processed
-   TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/";
-   TString inFileName = "photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
+   TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles";
+   TString inFileName = "photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh1.0_seed3.0_V01_v61_n30000";
 
 
    // Choose one caloParticle - cluster method 
@@ -33,7 +33,7 @@ void start_PFClusterAnalyzer(){
 
    //create ouputFile
    TString outDirectory =  "./outputfiles/";
-   inFileName.Remove(0,7);
+   //inFileName.Remove(0,7);
    TString outFileName = "histo_" + inFileName;
    if(doMatching_numberOfHits){
       outFileName += "_numberOfHits";
