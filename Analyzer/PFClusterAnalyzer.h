@@ -52,14 +52,14 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<float> genParticle_eta = {fReader, "genParticle_eta"};
       TTreeReaderArray<float> genParticle_phi = {fReader, "genParticle_phi"};
       TTreeReaderArray<vector<float>> simHit_energy = {fReader, "simHit_energy"};
-      TTreeReaderArray<float> caloParticle_energy = {fReader, "caloParticle_energy"};
+      TTreeReaderArray<float> caloParticle_genEnergy = {fReader, "caloParticle_genEnergy"};
       TTreeReaderArray<float> caloParticle_simEnergy = {fReader, "caloParticle_simEnergy"};
-      TTreeReaderArray<float> caloParticle_pt = {fReader, "caloParticle_pt"};
-      TTreeReaderArray<float> caloParticle_eta = {fReader, "caloParticle_eta"};
-      TTreeReaderArray<float> caloParticle_phi = {fReader, "caloParticle_phi"};
-      TTreeReaderArray<int> caloParticle_ieta = {fReader, "caloParticle_ieta"};
-      TTreeReaderArray<int> caloParticle_iphi = {fReader, "caloParticle_iphi"};
-      TTreeReaderArray<int> caloParticle_iz = {fReader, "caloParticle_iz"};
+      TTreeReaderArray<float> caloParticle_genPt = {fReader, "caloParticle_genPt"};
+      TTreeReaderArray<float> caloParticle_genEta = {fReader, "caloParticle_genEta"};
+      TTreeReaderArray<float> caloParticle_genPhi = {fReader, "caloParticle_genPhi"};
+      TTreeReaderArray<int> caloParticle_simIeta = {fReader, "caloParticle_simIeta"};
+      TTreeReaderArray<int> caloParticle_simIphi = {fReader, "caloParticle_simIphi"};
+      TTreeReaderArray<int> caloParticle_simIz = {fReader, "caloParticle_simIz"};
       TTreeReaderArray<vector<map<int,float> >> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
       //TTreeReaderArray<vector<float>> pfClusterHit_eta = {fReader, "pfClusterHit_eta"};
       //TTreeReaderArray<vector<float>> pfClusterHit_phi = {fReader, "pfClusterHit_phi"};
@@ -220,19 +220,19 @@ class PFClusterAnalyzer : public TSelector {
 
       // calo particles
       TH1F* h_caloParticle_size_EB;
-      TH1F* h_caloParticle_energy_EB;
+      TH1F* h_caloParticle_genEnergy_EB;
       TH1F* h_caloParticle_simEnergy_EB;
       TH1F* h_caloParticle_et_EB;
-      TH1F* h_caloParticle_eta_EB;
-      TH1F* h_caloParticle_phi_EB;
-      TH2F* h_caloParticle_phi_vs_eta_ifNoPFCluster_EB;
+      TH1F* h_caloParticle_genEta_EB;
+      TH1F* h_caloParticle_genPhi_EB;
+      TH2F* h_caloParticle_genPhi_vs_eta_ifNoPFCluster_EB;
       
       TH1F* h_caloParticle_size_EE;
-      TH1F* h_caloParticle_energy_EE;
+      TH1F* h_caloParticle_genEnergy_EE;
       TH1F* h_caloParticle_simEnergy_EE;
       TH1F* h_caloParticle_et_EE;
-      TH1F* h_caloParticle_eta_EE;
-      TH1F* h_caloParticle_phi_EE;
+      TH1F* h_caloParticle_genEta_EE;
+      TH1F* h_caloParticle_genPhi_EE;
 
 
       TH1F* h_caloParticle_EEM_size;
@@ -343,7 +343,7 @@ class PFClusterAnalyzer : public TSelector {
       virtual void    Terminate();
       
       
-      vector<MatchingMap> getMapCaloParticleCluster(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& caloParticle_energy, const TTreeReaderArray<float>& caloParticle_simEnergy, const TTreeReaderArray<vector<float>>& simHit_energy, const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy);
+      vector<MatchingMap> getMapCaloParticleCluster(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& caloParticle_genEnergy, const TTreeReaderArray<float>& caloParticle_simEnergy, const TTreeReaderArray<vector<float>>& simHit_energy, const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy);
 
 
       vector<int> getMatchedIndices_score(const vector<MatchingMap>& matchingMap, unsigned int icP);

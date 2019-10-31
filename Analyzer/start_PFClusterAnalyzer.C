@@ -13,7 +13,7 @@ void start_PFClusterAnalyzer(){
    //----------- USER'S DECISION BOARD --------------//
 
    // Information on the file to be processed
-   TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
+   TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/";
    TString inFileName = "photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
 
 
