@@ -78,6 +78,9 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<int> pfCluster_ieta = {fReader, "pfCluster_ieta"};
       TTreeReaderArray<int> pfCluster_iphi = {fReader, "pfCluster_iphi"};
       TTreeReaderArray<int> pfCluster_iz = {fReader, "pfCluster_iz"};
+      TTreeReaderArray<int> pfCluster_dR_genScore_MatchedIndex = {fReader, "pfCluster_dR_genScore_MatchedIndex"};
+      TTreeReaderArray<int> pfCluster_sim_fraction_min1_MatchedIndex = {fReader, "pfCluster_sim_fraction_min1_MatchedIndex"};
+      TTreeReaderArray<int> pfCluster_sim_fraction_MatchedIndex = {fReader, "pfCluster_sim_fraction_MatchedIndex"};
       TTreeReaderArray<vector<map<int,float> >> superClusterHit_energy = {fReader, "superClusterHit_energy"};
       TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_energy = {fReader, "superClusterHit_noCaloPart_energy"};
       TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_eta = {fReader, "superClusterHit_noCaloPart_eta"};

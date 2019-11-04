@@ -540,7 +540,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //if(entry>1000){ throw std::invalid_argument("aborting");}
+   if(entry>3){ throw std::invalid_argument("aborting");}
 
    // loop over genParticles
    //for (unsigned int igP=0; igP<genParticle_energy.GetSize(); igP++){
@@ -601,7 +601,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       matchingMap_caloParticle_PFCluster = PFClusterAnalyzer::getMapCaloParticleCluster(pfCluster_energy, caloParticle_genEnergy, caloParticle_simEnergy, simHit_energy, pfClusterHit_energy);
    }
 
-
+ 
    for (unsigned int icP=0; icP<caloParticle_genEnergy.GetSize(); icP++){
       //counts the number of crystals per caloParticle
       int N_pfClH=0;
@@ -873,22 +873,33 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       else if(flag_doMatching_deltaR){
          vector_matched_indices = PFClusterAnalyzer::getMatchedIndices_deltaR(pfCluster_energy, pfCluster_eta, pfCluster_phi, icP, 0.05);
       }
-      for(unsigned int iMatched(0); iMatched<vector_matched_indices.size(); ++iMatched){
-         int matched_index = vector_matched_indices[iMatched];
-         int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices[iMatched]);
+
+      //cout << "check size: " << vector_matched_indices.size() << " " <<  pfCluster_sim_fraction_MatchedIndex.GetSize() << endl; 
+      //if(vector_matched_indices.size()!=0){
+      //   cout << icP << " " <<  vector_matched_indices[0] << " " << pfCluster_sim_fraction_MatchedIndex[icP] << endl;
+      //}
+
+      //for(unsigned int iMatched(0); iMatched<vector_matched_indices.size(); ++iMatched){
+         //int matched_index = vector_matched_indices[iMatched];
+         if(pfCluster_sim_fraction_MatchedIndex.GetSize()!=0){
+         //cout << "size: " << pfCluster_sim_fraction_MatchedIndex.GetSize() << endl;
+         int matched_index = pfCluster_sim_fraction_MatchedIndex[icP];
+         //int nOccurrences = count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices[iMatched]);
          //if(matched_index!=-1 && nOccurrences!=1)
+         //cout << "matched index: " << matched_index << endl;
          if(matched_index!=-1){
             filling_energy = pfCluster_energy[matched_index];
             filling_phi    = pfCluster_phi[matched_index];
             filling_eta    = pfCluster_eta[matched_index];
 
+            //cout << matched_index << endl;
             if(flag_doEB){
                if(TMath::Abs(caloParticle_genEta[icP])<1.479){
                   //number of recHit per PFCluster
-                  h_PFClusters_caloMatched_nRecHit_EB->Fill(nOccurrences);
+                  //h_PFClusters_caloMatched_nRecHit_EB->Fill(nOccurrences);
 
                   //number of recHit and energy
-                  h_PFClusters_caloMatched_nRecHit_vs_energy_EB->Fill(nOccurrences, filling_energy);
+                  //h_PFClusters_caloMatched_nRecHit_vs_energy_EB->Fill(nOccurrences, filling_energy);
 
                   N_pfCl++;
                   h_PFClusters_caloMatched_nXtals_EB->Fill(N_pfClH);
@@ -896,7 +907,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                   h_PFClusters_caloMatched_et_EB->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
                   h_PFClusters_caloMatched_phi_EB->Fill(filling_phi);
                   h_PFClusters_caloMatched_eta_EB->Fill(filling_eta);
-                  h_PFClusters_caloMatched_eOverEtrue_EB->Fill(filling_energy / caloParticle_genEnergy[icP]);         
+                  //h_PFClusters_caloMatched_eOverEtrue_EB->Fill(filling_energy / caloParticle_genEnergy[icP]);         
                   if(caloParticle_simEnergy[icP]!=-1){
                      h_PFClusters_caloMatched_eOverEtrue_simEnergy_EB->Fill(filling_energy / caloParticle_simEnergy[icP]);         
                   }
@@ -943,10 +954,10 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             if(flag_doEE){
                if(TMath::Abs(caloParticle_genEta[icP])>1.479){
                   //number of recHit per PFCluster
-                  h_PFClusters_caloMatched_nRecHit_EE->Fill(nOccurrences);
+                  //h_PFClusters_caloMatched_nRecHit_EE->Fill(nOccurrences);
 
                   //number of recHit and energy
-                  h_PFClusters_caloMatched_nRecHit_vs_energy_EE->Fill(nOccurrences, filling_energy);
+                  //h_PFClusters_caloMatched_nRecHit_vs_energy_EE->Fill(nOccurrences, filling_energy);
 
                   N_pfCl++;
                   h_PFClusters_caloMatched_nXtals_EE->Fill(N_pfClH);
@@ -1054,9 +1065,35 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             //h_PFClusters_caloMatched_nPFClusters_vs_eta->Fill(filling_eta, N_pfCl);
 
          } //end of matched index
-      }// end of loop on matched indices 
+         } 
+      //}// end of loop on matched indices 
 
    } // end loop calo particles
+
+   //if(pfCluster_sim_fraction_MatchedIndex.GetSize()>10){
+   //   cout << "more than one PFCluster!" << endl;
+   //}
+
+   //test implementation of new matching
+   /*
+   //cout << pfCluster_dR_genScore_MatchedIndex.GetSize() << " " << pfCluster_sim_fraction_MatchedIndex.GetSize() << endl;
+   for(unsigned int iPF(0); iPF<pfCluster_energy.GetSize(); ++iPF){
+
+   //for(unsigned int iMatched(0); iMatched < pfCluster_sim_fraction_MatchedIndex.GetSize(); ++iMatched){
+   
+      int matched_index = pfCluster_sim_fraction_min1_MatchedIndex[iPF];
+      if(matched_index != -1){
+         if(TMath::Abs(caloParticle_genEta[matched_index])<1.479){
+      h_PFClusters_caloMatched_eOverEtrue_EB->Fill(pfCluster_energy[iPF] / caloParticle_simEnergy[matched_index]); 
+         }
+      }
+   }
+  // }
+ */
+   //cout << endl << endl << "vector: " << endl;
+   //for(unsigned int i(0); i<pfCluster_sim_fraction_MatchedIndex.GetSize(); ++i){
+   //   cout << pfCluster_sim_fraction_MatchedIndex[i] << " " << pfCluster_dR_genScore_MatchedIndex[i] <<  endl;
+   //}
 
 
    if(flag_doEB){
@@ -1124,9 +1161,6 @@ void PFClusterAnalyzer::Terminate()
 
 
 
-
-
-
 vector<MatchingMap> PFClusterAnalyzer::getMapCaloParticleCluster(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& caloParticle_genEnergy, const TTreeReaderArray<float>& caloParticle_simEnergy, const TTreeReaderArray<vector<float>>& simHit_energy, const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy){
    // The aim of this function consists in associating to each PFCluster the caloParticle that contributes to most of its energy
 
@@ -1142,11 +1176,11 @@ vector<MatchingMap> PFClusterAnalyzer::getMapCaloParticleCluster(const TTreeRead
       //map that stores for each caloParticle its associated score
       map<int, float> map_caloIndex_score;
 
-      //cout << endl << endl << "PFCluster n° " << iPF << endl;
+      cout << endl << endl << "PFCluster n° " << iPF << endl;
 
       for (unsigned int icP=0; icP<caloParticle_genEnergy.GetSize(); icP++){
 
-         //cout << endl << "caloParticle n " << icP << endl;
+         cout << endl << "caloParticle n " << icP << endl;
          //cout << "simEnergy: " << caloParticle_simEnergy[icP] << endl;
 
          double score = 0;
@@ -1159,7 +1193,7 @@ vector<MatchingMap> PFClusterAnalyzer::getMapCaloParticleCluster(const TTreeRead
                }
             }
          }
-         //cout << "total score: " << score << endl;
+         cout << "total score: " << score << endl;
          if(score!=0){
             map_caloIndex_score.insert({icP, score}); 
          }
@@ -1167,9 +1201,9 @@ vector<MatchingMap> PFClusterAnalyzer::getMapCaloParticleCluster(const TTreeRead
 
 
 
-      //for(auto itr = map_caloIndex_score.begin(); itr != map_caloIndex_score.end(); ++itr){
-      //cout << itr->first << " " << itr->second << endl;
-      //}
+      for(auto itr = map_caloIndex_score.begin(); itr != map_caloIndex_score.end(); ++itr){
+      cout << itr->first << " " << itr->second << endl;
+      }
 
       // this map will contain the caloParticle index associated to the maximum score
       map<int, float> map_highest_score;
@@ -1198,9 +1232,9 @@ vector<MatchingMap> PFClusterAnalyzer::getMapCaloParticleCluster(const TTreeRead
       }
    }
 
-   //for(unsigned int i(0); i<matchingMap.size(); ++i){
-   //cout <<  " cluster " << matchingMap[i].PFIndex << " associated with calo " << matchingMap[i].CaloIndex << " with score " << matchingMap[i].Score << endl; 
-   //}
+   for(unsigned int i(0); i<matchingMap.size(); ++i){
+   cout <<  " cluster " << matchingMap[i].PFIndex << " associated with calo " << matchingMap[i].CaloIndex << " with score " << matchingMap[i].Score << endl; 
+   }
 
    return matchingMap;
 }
@@ -1225,25 +1259,25 @@ vector<int> PFClusterAnalyzer::getMatchedIndices_score(const vector<MatchingMap>
       }
    }
 
-   //cout << endl << "pair formed: " << endl;
-   //for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
-   //cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
-   //}
+   cout << endl << "pair formed: " << endl;
+   for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
+   cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
+   }
 
    sort(pair_clusterIndex_score.begin(), pair_clusterIndex_score.end(), sortbysecdesc);
 
-   //cout << endl << "sorted pair: " << endl;
-   //for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
-   //cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
-   //}
+   cout << endl << "sorted pair: " << endl;
+   for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
+   cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
+   }
 
 
-   // if(pair_clusterIndex_score.size()>1){
-   //    cout << endl;
-   //for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
-   //   cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
-   // }
-   // }
+    if(pair_clusterIndex_score.size()>1){
+       cout << endl;
+   for(unsigned int i(0); i<pair_clusterIndex_score.size(); ++i){
+      cout << pair_clusterIndex_score[i].first << " " << pair_clusterIndex_score[i].second << endl;
+    }
+    }
 
    if(flag_keepOnlyOnePFCluster){
       if(pair_clusterIndex_score.size()!=0){
