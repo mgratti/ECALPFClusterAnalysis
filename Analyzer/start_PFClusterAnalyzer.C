@@ -13,15 +13,15 @@ void start_PFClusterAnalyzer(){
    //----------- USER'S DECISION BOARD --------------//
 
    // Information on the file to be processed
-   //TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
-   TString inDirectory = "/work/anlyon/CMSSW_10_6_1_patch1_old/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
-   TString inFileName = "dumped_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000";
+   TString inDirectory = "/t3home/anlyon/ECAL/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/";
+   //TString inDirectory = "/work/anlyon/CMSSW_10_6_1_patch1_old/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
+   TString inFileName = "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000";
 
 
    // Choose one caloParticle - cluster method 
    Bool_t doMatching_numberOfHits = false;
-   Bool_t doMatching_simFraction  = true;
-   Bool_t doMatching_deltaR       = false;
+   Bool_t doMatching_simFraction  = false;
+   Bool_t doMatching_deltaR       = true;
 
    //------------------------------------------------//
 

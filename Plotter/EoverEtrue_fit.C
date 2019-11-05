@@ -53,7 +53,7 @@ using namespace std;
 //fileName.push_back("histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V01_v310_n15000_simFraction");
 
 // enter the number of k events
-Int_t kEvents = 150;
+Int_t kEvents = 300;
 
 // choose which energy range you are using (choose only one)
 Bool_t do_0to20GeV    = false;
@@ -74,7 +74,7 @@ Bool_t do_binningEn = true;
 
 // choose whether to use a finner binning or not
 Bool_t do_fineBinning_energy = false;
-Bool_t do_fineBinning_eta    = false;
+Bool_t do_fineBinning_eta    = true;
 
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
@@ -93,7 +93,7 @@ Bool_t do_efficiencyPlot = true;
 
 
 // choose whether to produce only the efficiency plot or not
-Bool_t do_efficiencyPlotOnly = false;
+Bool_t do_efficiencyPlotOnly = true;
 
 // turn this option on to produce ratio plot (with two inputFiles)
 Bool_t do_ratioPlot = true;
@@ -149,8 +149,8 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 //void EoverEtrue_fit(vector<string> fileName){
 void EoverEtrue_fit(){
    vector<string> fileName;
-   fileName.push_back("histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000_simFraction_oldDumper");
-   fileName.push_back("histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V01_v310_n15000_simFraction");
+   fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000_simFraction");
+   fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR");
 
 
    FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
@@ -295,8 +295,8 @@ void EoverEtrue_fit(){
    color[8]=kBlack;
 
    // define the output directory
-   //string outputdir = "myPlots/fits/" + fileName;
-   string outputdir = "myPlots/fits/test";
+   string outputdir = "myPlots/fits/" + fileName[0];
+   //string outputdir = "myPlots/fits/test";
    if(do_binningEt){
       outputdir += "_EtaEtBinned";
    }
@@ -1168,6 +1168,31 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       label_info->Draw("same");
    }
 
+   TPaveText* label_thrs_up = new TPaveText(0.15,0.60,0.45,0.72,"brNDC");
+   label_thrs_up->SetBorderSize(0);
+   label_thrs_up->SetFillColor(kWhite);
+   label_thrs_up->SetTextSize(0.028);
+   label_thrs_up->SetTextFont(42);
+   label_thrs_up->SetTextAlign(11);
+   label_thrs_up->AddText("Ref PFRecHit thrs");
+   label_thrs_up->AddText("Ref Seeding thrs");
+   if(do_ratioPlot){
+      pad1->cd();
+   }
+   label_thrs_up->Draw("same");
+
+   TPaveText* label_thrs_down = new TPaveText(0.15,0.60,0.45,0.72,"brNDC");
+   label_thrs_down->SetBorderSize(0);
+   label_thrs_down->SetFillColor(kWhite);
+   label_thrs_down->SetTextSize(0.028);
+   label_thrs_down->SetTextFont(42);
+   label_thrs_down->SetTextAlign(11);
+   label_thrs_down->AddText("Ref PFRecHit thrs");
+   label_thrs_down->AddText("3#sigma Seeding thrs");
+   if(do_ratioPlot){
+      pad2->cd();
+      label_thrs_down->Draw("same");
+   }
 
    if(do_ratioPlot){
       outputdir += "ratio/";
@@ -1265,10 +1290,12 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    }
    label2->Draw("same");
    label_info->Draw("same");
+   label_thrs_up->Draw("same");
    if(do_ratioPlot){
       pad2->cd();
       label2->Draw("same");
       label_info->Draw("same");
+      label_thrs_down->Draw("same");
    }
 
 
