@@ -174,6 +174,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    if(flag_doEB){
       Eta_keys.push_back("0p00_0p50");
       Eta_keys.push_back("0p00_0p20");
+      Eta_keys.push_back("0p00_0p40");
+      Eta_keys.push_back("0p40_0p80");
       Eta_keys.push_back("0p20_0p40");
       Eta_keys.push_back("0p40_0p60");
       Eta_keys.push_back("0p60_0p80");
@@ -188,6 +190,10 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
       Eta_edges["0p00_0p50"].second = 0.5;
       Eta_edges["0p00_0p20"].first = 0.;
       Eta_edges["0p00_0p20"].second = 0.2;
+      Eta_edges["0p00_0p40"].first = 0.;
+      Eta_edges["0p00_0p40"].second = 0.4;
+      Eta_edges["0p40_0p80"].first = 0.4;
+      Eta_edges["0p40_0p80"].second = 0.8;
       Eta_edges["0p20_0p40"].first = 0.2;
       Eta_edges["0p20_0p40"].second = 0.4;
       Eta_edges["0p40_0p60"].first = 0.4;
