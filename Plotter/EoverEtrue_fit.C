@@ -73,8 +73,8 @@ Bool_t do_binningEt = false;
 Bool_t do_binningEn = true;
 
 // choose whether to use a finner binning or not
-Bool_t do_fineBinning_energy = false;
-Bool_t do_fineBinning_eta    = true;
+Bool_t do_fineBinning_energy = true;
+Bool_t do_fineBinning_eta    = false;
 
 
 // choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
@@ -93,10 +93,10 @@ Bool_t do_efficiencyPlot = true;
 
 
 // choose whether to produce only the efficiency plot or not
-Bool_t do_efficiencyPlotOnly = true;
+Bool_t do_efficiencyPlotOnly = false;
 
 // turn this option on to produce ratio plot (with two inputFiles)
-Bool_t do_ratioPlot = true;
+Bool_t do_ratioPlot = false;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -150,8 +150,8 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 void EoverEtrue_fit(){
    vector<string> fileName;
    //fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000_simFraction");
-   fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR");
-   fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR_good");
+   //fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR");
+   fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000_simFraction");
 
 
 
@@ -167,7 +167,7 @@ void EoverEtrue_fit(){
          ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
       }
       else{
-         ETranges = {"0_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"};
+         ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"};
       }
    }
    else if(do_0p1to200GeV){
@@ -175,7 +175,7 @@ void EoverEtrue_fit(){
          ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
       }
       else{
-         ETranges = {"0_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
+         ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
       }
    }
    vector<TString> ETAranges_EB;
@@ -203,8 +203,8 @@ void EoverEtrue_fit(){
    // and adjust the boundaries
    ETvalue["0p1_1"].first = 0.1;
    ETvalue["0p1_1"].second = 1.;
-   ETvalue["0_5"].first = 1.;
-   ETvalue["0_5"].second = 5.;
+   ETvalue["1_5"].first = 1.;
+   ETvalue["1_5"].second = 5.;
    ETvalue["5_10"].first = 5.;
    ETvalue["5_10"].second = 10.;
    ETvalue["10_15"].first = 10.;
@@ -1177,7 +1177,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_thrs_up->SetTextSize(0.028);
    label_thrs_up->SetTextFont(42);
    label_thrs_up->SetTextAlign(11);
-   label_thrs_up->AddText("Ref PFRecHit thrs");
+   label_thrs_up->AddText("0.5#sigma PFRecHit thrs");
    label_thrs_up->AddText("Ref Seeding thrs");
    if(do_ratioPlot){
       pad1->cd();

@@ -13,9 +13,9 @@ void start_PFClusterAnalyzer(){
    //----------- USER'S DECISION BOARD --------------//
 
    // Information on the file to be processed
-   TString inDirectory = "/t3home/anlyon/ECAL/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/";
-   //TString inDirectory = "/work/anlyon/CMSSW_10_6_1_patch1_old/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
-   TString inFileName = "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000";
+   //TString inDirectory = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
+   TString inDirectory = "/work/anlyon/CMSSW_10_6_1_patch1_old/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/";
+   TString inFileName = "photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_V03_v02_n30000";
 
 
    // Choose one caloParticle - cluster method 
