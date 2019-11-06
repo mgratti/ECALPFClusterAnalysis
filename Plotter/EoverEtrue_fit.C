@@ -32,6 +32,7 @@
 #include <iostream>
 #include <iomanip>
 #include <math.h>
+#include <fstream>
 
 using namespace RooFit ;
 using namespace std;
@@ -51,9 +52,10 @@ using namespace std;
 //vector<string> fileName;
 //fileName.push_back("histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000_simFraction_oldDumper");
 //fileName.push_back("histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V01_v310_n15000_simFraction");
-
+/*
 // enter the number of k events
 Int_t kEvents = 300;
+
 
 // choose which energy range you are using (choose only one)
 Bool_t do_0to20GeV    = false;
@@ -97,7 +99,7 @@ Bool_t do_efficiencyPlotOnly = false;
 
 // turn this option on to produce ratio plot (with two inputFiles)
 Bool_t do_ratioPlot = true;
-
+*/
 //////////////////////////////////////////////////////////////////////
 
 
@@ -146,16 +148,45 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
 
 // main function
-//void EoverEtrue_fit(vector<string> fileName){
-void EoverEtrue_fit(){
+//void EoverEtrue_fit(vector<TString> fileName){
+void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Bool_t use_simEnergy, Bool_t do_binningEt, Bool_t do_CBfit, Bool_t do_doubleCBfit, Bool_t do_BGfit, Bool_t do_fitPeak, Bool_t do_resolutionPlot, Bool_t do_scalePlot, Bool_t do_efficiencyPlot, Bool_t do_efficiencyPlotOnly, Bool_t do_ratioPlot){
    vector<string> fileName;
-   //fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000_simFraction");
-   //fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000_simFraction");
-   //fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR");
-   //fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh0.5_seedRef_V04_v02_n30000_simFraction");
-   fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seed3.0_V02_v02_n30000_simFraction");
-   fileName.push_back("histo_photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_V03_v02_n30000_deltaR");
 
+   string item;
+   ifstream myfile ("file.txt");
+   if(myfile.is_open()){
+      while(getline(myfile, item)){
+         cout << item << endl;
+         fileName.push_back(item);
+      }
+      myfile.close();
+   }
+   else{
+      cout << "Couldn't open the file listing the production label to be analysed!" << endl;
+   }
+
+   //implement here do_EB, do_EE
+   
+   Bool_t do_EB = true;
+   Bool_t do_EE = false;
+
+   // implement the energy range here
+
+   Bool_t do_0to20GeV = false;
+   Bool_t do_0to100GeV = true;
+   Bool_t do_0p1to200GeV = false;
+
+   // implement the number of events
+   Int_t kEvents = 300;
+
+   Bool_t use_energy = false; 
+   if(!use_simEnergy) use_energy = true;
+
+   Bool_t do_binningEn = true;
+   if(do_binningEt) do_binningEn = false;
+
+   Bool_t do_fitAll = true;
+   if(do_fitPeak) do_fitAll = false;
 
    FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
@@ -419,7 +450,6 @@ void EoverEtrue_fit(){
       vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(2);
       producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching);
    }
-
 
 }
 
