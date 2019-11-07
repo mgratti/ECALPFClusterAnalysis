@@ -60,7 +60,7 @@ do_fineBinning_energy=true
 do_fineBinning_eta=true
 
 # do you want to enable pop-up plots?
-do_popUpPlot=true
+do_popUpPlot=false
 
 
 # -----  2. Advanced parameters ----- #
@@ -151,10 +151,10 @@ for iFile in ${FilesArray[@]}; do
       echo "#############################################################################################"
       
       if [ "$do_popUpPlot" = false ] ; then       
-         root -l -q -b ../Plotter/EoverEtrue_fit.C+($do_fineBinning_energy, $do_fineBinning_eta, $use_simEnergy, $do_binningEt, $do_CBfit, $do_doubleCBfit, $do_BGfit, $do_fitPeak, $do_resolutionPlot, $do_scalePlot, $do_efficiencyPlot, $do_efficiencyPlotOnly, $do_ratioPlot)
+         root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
       fi 
       if [ "$do_popUpPlot" = true ] ; then
-         root -l -q ../Plotter/EoverEtrue_fit.C+($do_fineBinning_energy, $do_fineBinning_eta, $use_simEnergy, $do_binningEt, $do_CBfit, $do_doubleCBfit, $do_BGfit, $do_fitPeak, $do_resolutionPlot, $do_scalePlot, $do_efficiencyPlot, $do_efficiencyPlotOnly, $do_ratioPlot)
+         root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
       fi 
       rm file.txt
    fi
@@ -165,7 +165,7 @@ if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
    for iFile in ${FilesArray[@]}; do
       fileNameforPlotter="histo_"$iFile
       if [ "$doMatching_numberOfHits" = true ] ; then
-         fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
+         2fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
       fi
       if [ "$doMatching_simFraction" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_simFraction"
@@ -176,11 +176,11 @@ if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
       echo $fileNameforPlotter >> file.txt
    done
 
-   if [ "$do_popUpPlot" = false ] ; then       
-      root -l -q -b ../Plotter/EoverEtrue_fit.C+($do_fineBinning_energy, $do_fineBinning_eta, $use_simEnergy, $do_binningEt, $do_CBfit, $do_doubleCBfit, $do_BGfit, $do_fitPeak, $do_resolutionPlot, $do_scalePlot, $do_efficiencyPlot, $do_efficiencyPlotOnly, $do_ratioPlot)
+   if [ "$do_popUpPlot" = false ] ; then     
+      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
    fi
    if [ "$do_popUpPlot" = true ] ; then
-      root -l -q ../Plotter/EoverEtrue_fit.C+($do_fineBinning_energy, $do_fineBinning_eta, $use_simEnergy, $do_binningEt, $do_CBfit, $do_doubleCBfit, $do_BGfit, $do_fitPeak, $do_resolutionPlot, $do_scalePlot, $do_efficiencyPlot, $do_efficiencyPlotOnly, $do_ratioPlot)
+      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
    fi 
 
    rm file.txt

@@ -88,7 +88,25 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
 
 // main function
-void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Bool_t use_simEnergy, Bool_t do_binningEt, Bool_t do_CBfit, Bool_t do_doubleCBfit, Bool_t do_BGfit, Bool_t do_fitPeak, Bool_t do_resolutionPlot, Bool_t do_scalePlot, Bool_t do_efficiencyPlot, Bool_t do_efficiencyPlotOnly, Bool_t do_ratioPlot){
+void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString simEnergy, TString binningEt, TString CBfit, TString doubleCBfit, TString BGfit, TString fitPeak, TString resolutionPlot, TString scalePlot, TString efficiencyPlot, TString efficiencyPlotOnly, TString ratioPlot){
+ 
+   // we fetch argurments of the function
+   Bool_t do_fineBinning_energy = fineBinning_energy=="true" ? true : false;
+   Bool_t do_fineBinning_eta = fineBinning_eta=="true" ? true : false;
+   Bool_t use_simEnergy = simEnergy=="true" ? true : false;
+   Bool_t do_binningEt = binningEt=="true" ? true : false;
+   Bool_t do_CBfit = CBfit=="true" ? true : false;
+   Bool_t do_doubleCBfit = doubleCBfit=="true" ? true : false;
+   Bool_t do_BGfit = BGfit=="true" ? true : false;
+   Bool_t do_fitPeak = fitPeak=="true" ? true : false;
+   Bool_t do_resolutionPlot = resolutionPlot=="true" ? true : false;
+   Bool_t do_scalePlot = scalePlot=="true" ? true : false;
+   Bool_t do_efficiencyPlot = efficiencyPlot=="true" ? true : false;
+   Bool_t do_efficiencyPlotOnly = efficiencyPlotOnly=="true" ? true : false;
+   Bool_t do_ratioPlot = ratioPlot=="true" ? true : false;
+
+ 
+   // we get the file names from the txt file produced by the AnalyserLauncher 
    vector<string> fileName;
 
    string item;
@@ -133,6 +151,7 @@ void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Boo
    else if(fileName[0].find("0.1to200GeV") != std::string::npos){
       do_0p1to200GeV = true;
    }
+
    else{
       cout << "Didn't find energy range" << endl;
       cout << "Aborting" << endl;
@@ -162,6 +181,7 @@ void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Boo
 
    FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
+
    // define the different Et and Eta slots
    vector<TString> ETranges;
    if(do_0to20GeV){
@@ -178,7 +198,7 @@ void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Boo
    else if(do_0p1to200GeV){
       if(!do_fineBinning_energy){
          ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
-      }
+     }
       else{
          ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
       }
@@ -467,10 +487,10 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
    TFile* inputFile = 0;
    TString name_tmp = fileName.c_str();
-   if(do_EB==true){
+   if(do_EB){
       inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EB.root");
    }
-   else if(do_EE==true){
+   else if(do_EE){
       inputFile = TFile::Open("../Analyzer/outputfiles/" + name_tmp + "_EE.root");
    }
 
@@ -597,7 +617,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
          // fit the PDF to the data
          RooFitResult *result;
-         if(do_CBfit==true){
+         if(do_CBfit){
             if(do_fitAll){
                result = CBpdf->fitTo(*rdh);
             }
@@ -620,7 +640,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
                result = doubleCBpdf->fitTo(*rdh, Range("peak"));
             }      
          }
-         else if(do_BGfit==true){
+         else if(do_BGfit){
             if(do_fitAll){
                result = BGpdf->fitTo(*rdh);
             }
@@ -632,31 +652,31 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
 
          // plot the fit 		
-         if(do_CBfit==true){
+         if(do_CBfit){
             CBpdf->plotOn(frame,LineColor(4),RooFit::Name("CBpdf"),Components("CBpdf"));
          }
-         if(do_doubleCBfit==true){
+         if(do_doubleCBfit){
             doubleCBpdf->plotOn(frame,LineColor(4),RooFit::Name("doubleCBpdf"),Components("doubleCBpdf"));
          }
-         else if(do_BGfit==true){
+         else if(do_BGfit){
             BGpdf->plotOn(frame,LineColor(4),RooFit::Name("BGpdf"),Components("BGpdf"));
          }
 
 
          // and write the fit parameters
-         if(do_CBfit==true){
+         if(do_CBfit){
             CBpdf->paramOn(frame,   
                   Layout(0.2, 0.4, 0.8),
                   Format("NEU",AutoPrecision(1))
                   );
          }
-         else if(do_doubleCBfit==true){
+         else if(do_doubleCBfit){
             doubleCBpdf->paramOn(frame,   
                   Layout(0.2, 0.4, 0.8),
                   Format("NEU",AutoPrecision(1))
                   );
          }
-         else if(do_BGfit==true){
+         else if(do_BGfit){
             BGpdf->paramOn(frame,   
                   Layout(0.2, 0.4, 0.8),
                   Format("NEU",AutoPrecision(1))
@@ -691,13 +711,13 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
          // we compute the chisquare
          Double_t chisquare;
-         if(do_CBfit==true){
+         if(do_CBfit){
             chisquare = frame->chiSquare("CBpdf","data");
          }
-         else if(do_doubleCBfit==true){
+         else if(do_doubleCBfit){
             chisquare = frame->chiSquare("doubleCBpdf","data");
          }
-         else if(do_BGfit==true){
+         else if(do_BGfit){
             chisquare = frame->chiSquare("BGpdf","data");
          }
 
@@ -708,13 +728,13 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
          label_2->SetTextSize(0.03);
          label_2->SetTextFont(42);
          label_2->SetTextAlign(11);
-         if(do_CBfit==true){
+         if(do_CBfit){
             label_2->AddText("CrystalBall PDF");
          }
-         else if(do_doubleCBfit==true){
+         else if(do_doubleCBfit){
             label_2->AddText("Double-Sided CrystalBall PDF");
          }
-         else if(do_BGfit==true){
+         else if(do_BGfit){
             label_2->AddText("Bifurcated gaussian PDF");
          }
          TString chi2 = to_string(chisquare);
