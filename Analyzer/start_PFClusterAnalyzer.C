@@ -25,6 +25,11 @@ void start_PFClusterAnalyzer(TString inFileName, TString inDirectory, string mat
 
 
    TString inFile = inDirectory + inFileName + ".root";
+   TFile* fileOpen = TFile::Open(inFile);
+   if(!fileOpen){
+      cout << "Aborting" << endl;
+      exit(11);
+   }
 
    TChain * c = new TChain("recosimdumper/caloTree");
    c->Add(inFile);
