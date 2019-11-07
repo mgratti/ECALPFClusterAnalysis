@@ -167,8 +167,8 @@ void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Boo
 
    //implement here do_EB, do_EE
    
-   Bool_t do_EB = true;
-   Bool_t do_EE = false;
+   Bool_t do_EB = false;
+   Bool_t do_EE = true;
 
    // implement the energy range here
 

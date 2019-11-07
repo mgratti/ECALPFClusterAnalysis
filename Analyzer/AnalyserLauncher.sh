@@ -9,16 +9,19 @@ doPlotter=true
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh1.0_seed3.0_V01_v63_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh1.0_seed3.0_V01_v63_n30000"
+                        "photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
+                        "photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seed3.0_V02_vMerged_n30000"
+                        "photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh0.5_seedRef_V04_vMerged_n30000"
+                        "photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seed3.0_V02_vMerged_n30000"
                        )
+
+# Enter the location of the dumped files
+inDirectory="/work/anlyon/dumpedFiles/"
 
 # Choose one of the following matching strategies
 doMatching_numberOfHits=false
-doMatching_simFraction=false
-doMatching_deltaR=true
+doMatching_simFraction=true
+doMatching_deltaR=false
 
 
 
@@ -27,7 +30,7 @@ doMatching_deltaR=true
 ######################
 
 # Enter the location of the dumped files
-inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
+#inDirectory="/work/anlyon/dumpedFiles/"
 
 ######################
 # Plotter parameters
@@ -166,16 +169,6 @@ fi
 echo "Done"
 
 #implement security things, like for do_ratioPlot there are at least two files
-
-
-
-
-
-
-
-
-
-
 
 
 
