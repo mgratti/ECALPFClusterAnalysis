@@ -1,4 +1,11 @@
 #!/bin/bash
+# run locally: 
+# source AnalyserLauncher.sh
+
+# to run on the batch:
+# sbatch -p wn --account=cn-test -o logs/analyser.log -e logs/analyser.log --job-name=analyser --ntasks=10 AnalyserLauncher.sh
+
+
 
 #----------- USER'S DECISION BOARD --------------//
 
@@ -10,9 +17,9 @@ doPlotter=true
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
                         "photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seed3.0_V02_vMerged_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh0.5_seedRef_V04_vMerged_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seed3.0_V02_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seed3.0_V02_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh0.5_seedRef_V04_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seed3.0_V02_vMerged_n30000"
                        )
 
 # Enter the location of the dumped files
@@ -43,7 +50,7 @@ do_efficiencyPlot=true
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency plot, turn this option to true
-do_efficiencyPlotOnly=false
+do_efficiencyPlotOnly=true
 
 # If you want to produce the ratio plot between the two first files that you inserted, turn this option to true
 do_ratioPlot=false
@@ -108,7 +115,6 @@ if [ "$doMatching_deltaR" = true ] ; then
    matchingMethod="deltaR"
 fi
 
-echo $matchingMethod
 
 for iFile in ${FilesArray[@]}; do
    if [ "$doAnalyser" = true ] ; then

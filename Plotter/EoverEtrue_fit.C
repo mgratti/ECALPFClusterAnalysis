@@ -44,66 +44,6 @@ using namespace std;
    */
 
 
-
-//////////////////////////////////////////////////////////////////////
-//                    User's decision board                         //
-
-// enter the file names
-//vector<string> fileName;
-//fileName.push_back("histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_V01_v31_n15000_simFraction_oldDumper");
-//fileName.push_back("histo_photon_Et1to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V01_v310_n15000_simFraction");
-/*
-// enter the number of k events
-Int_t kEvents = 300;
-
-
-// choose which energy range you are using (choose only one)
-Bool_t do_0to20GeV    = false;
-Bool_t do_0to100GeV   = true;
-Bool_t do_0p1to200GeV = false;
-
-// choose between endcap and/or barrel
-Bool_t do_EB = true;
-Bool_t do_EE = false;
-
-// choose which Etrue definition you want to use (choose only one)
-Bool_t use_energy    = false;
-Bool_t use_simEnergy = true;
-
-// choose whether you want to bin in ET or energy
-Bool_t do_binningEt = false;
-Bool_t do_binningEn = true;
-
-// choose whether to use a finner binning or not
-Bool_t do_fineBinning_energy = true;
-Bool_t do_fineBinning_eta    = false;
-
-
-// choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
-Bool_t do_CBfit       = false; 
-Bool_t do_doubleCBfit = true;
-Bool_t do_BGfit       = false;
-
-// choose between fitting the whole distribution or the peak only
-Bool_t do_fitAll  = true;
-Bool_t do_fitPeak = false;
-
-// choose which plots to produce
-Bool_t do_resolutionPlot = true;
-Bool_t do_scalePlot      = true;
-Bool_t do_efficiencyPlot = true;
-
-
-// choose whether to produce only the efficiency plot or not
-Bool_t do_efficiencyPlotOnly = false;
-
-// turn this option on to produce ratio plot (with two inputFiles)
-Bool_t do_ratioPlot = true;
-*/
-//////////////////////////////////////////////////////////////////////
-
-
-
 // will be used to retrieve that boundaries of the ranges
 struct Edges{
    Float_t first;
@@ -148,7 +88,6 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
 
 // main function
-//void EoverEtrue_fit(vector<TString> fileName){
 void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Bool_t use_simEnergy, Bool_t do_binningEt, Bool_t do_CBfit, Bool_t do_doubleCBfit, Bool_t do_BGfit, Bool_t do_fitPeak, Bool_t do_resolutionPlot, Bool_t do_scalePlot, Bool_t do_efficiencyPlot, Bool_t do_efficiencyPlotOnly, Bool_t do_ratioPlot){
    vector<string> fileName;
 
@@ -165,19 +104,52 @@ void EoverEtrue_fit(Bool_t do_fineBinning_energy, Bool_t do_fineBinning_eta, Boo
       cout << "Couldn't open the file listing the production label to be analysed!" << endl;
    }
 
-   //implement here do_EB, do_EE
-   
    Bool_t do_EB = false;
-   Bool_t do_EE = true;
+   Bool_t do_EE = false;
 
-   // implement the energy range here
+   if(fileName[0].find("EB") != std::string::npos){
+      do_EB = true;
+   }
+   else if(fileName[0].find("EE") != std::string::npos){
+      do_EE = true;
+   }
+   else{
+      cout << "Didn't find 'EB' nor 'EE' in the file" << endl;
+      cout << "Aborting" << endl;
+      exit(11);
+   }
+
 
    Bool_t do_0to20GeV = false;
-   Bool_t do_0to100GeV = true;
+   Bool_t do_0to100GeV = false;
    Bool_t do_0p1to200GeV = false;
 
-   // implement the number of events
-   Int_t kEvents = 300;
+   if(fileName[0].find("0to20GeV") != std::string::npos){
+      do_0to20GeV = true;
+   }
+   else if(fileName[0].find("0to100GeV") != std::string::npos){
+      do_0to100GeV = true;
+   }
+   else if(fileName[0].find("0.1to200GeV") != std::string::npos){
+      do_0p1to200GeV = true;
+   }
+   else{
+      cout << "Didn't find energy range" << endl;
+      cout << "Aborting" << endl;
+      exit(11);
+   }
+
+   
+   Int_t kEvents = 150;
+   if(fileName[0].find("30000") != std::string::npos){
+      if(do_EB){
+         kEvents = 300;
+      }
+      else if(do_EE){
+         kEvents = 600;
+      }
+   }
+
 
    Bool_t use_energy = false; 
    if(!use_simEnergy) use_energy = true;
@@ -918,7 +890,6 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
 
       else if(whichPlot=="Resolution" || whichPlot=="Scale"){
          quantity = map_quantity[ETranges[indexB]][ETAranges[indexA]];
-         cout << "resolution: " << quantity << endl;
          error = map_quantity_error[ETranges[indexB]][ETAranges[indexA]][0];
          if(quantity!=0){
             int thisPoint = graph->GetN();
@@ -1140,10 +1111,8 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
-      cout << "before graph1" << endl;
       TGraphAsymmErrors* graph1;
       graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEnergy"); 
-      cout << "after graph1" << endl;
 
       if(do_ratioPlot){
          pad1->cd();
@@ -1162,9 +1131,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       leg1 -> Draw("same");
 
       if(do_ratioPlot){
-         cout << "before graph2" << endl;
          TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEnergy"); 
-         cout << "after graph2" << endl;
          pad2->cd();
          if(kk==0){
             graph2->Draw("A*");
@@ -1174,9 +1141,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
          leg1->Draw("same");
 
-         cout << "before graph3" << endl;
          TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEnergy"); 
-         cout << "after graph3" << endl;
          pad3->cd();
          if(kk==0){
             graph3->Draw("A*");
