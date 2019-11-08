@@ -350,6 +350,10 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    }
    outputdir += "/";
 
+   if(do_ratioPlot){
+      outputdir += "ratio/" + fileName[1] + "/";
+   }
+
    // create the output directory
    system(Form("mkdir -p %s", outputdir.c_str()));
 
@@ -1263,10 +1267,6 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       label_thrs_down->Draw("same");
    }
 
-   if(do_ratioPlot){
-      outputdir += "ratio/";
-      system(Form("mkdir -p %s", outputdir.c_str()));
-   }
 
    TString dir = outputdir.c_str();
    TString nameSave;
