@@ -78,18 +78,18 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
 // produce the efficiency plots
-void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, TString);
+void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, vector<TString>);
 
-TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, TString matching, string what);
+TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
 
 
-TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, TString matching, string what);
+TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
 
 
 
 // main function
 void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString simEnergy, TString binningEt, TString CBfit, TString doubleCBfit, TString BGfit, TString fitPeak, TString resolutionPlot, TString scalePlot, TString efficiencyPlot, TString efficiencyPlotOnly, TString ratioPlot){
- 
+
    // we fetch argurments of the function
    Bool_t do_fineBinning_energy = fineBinning_energy=="true" ? true : false;
    Bool_t do_fineBinning_eta = fineBinning_eta=="true" ? true : false;
@@ -105,7 +105,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    Bool_t do_efficiencyPlotOnly = efficiencyPlotOnly=="true" ? true : false;
    Bool_t do_ratioPlot = ratioPlot=="true" ? true : false;
 
- 
+
    // we get the file names from the txt file produced by the AnalyserLauncher 
    vector<string> fileName;
 
@@ -158,7 +158,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       exit(11);
    }
 
-   
+
    Int_t kEvents = 150;
    if(fileName[0].find("30000") != std::string::npos){
       if(do_EB){
@@ -198,7 +198,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    else if(do_0p1to200GeV){
       if(!do_fineBinning_energy){
          ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
-     }
+      }
       else{
          ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
       }
@@ -355,16 +355,19 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
 
    // we get the matching strategy from the fileName
-   TString matching;
-   if(fileName[0].find("numberOfHits") != std::string::npos){
-      matching = "numberOfHits";
+   vector<TString> matching;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++ iFile){
+      if(fileName[iFile].find("numberOfHits") != std::string::npos){
+         matching.push_back("numberOfHits");
+      }
+      else if(fileName[iFile].find("simFraction") != std::string::npos){
+         matching.push_back("simFraction");
+      }
+      else if(fileName[iFile].find("deltaR") != std::string::npos){
+         matching.push_back("deltaR");
+      }
    }
-   else if(fileName[0].find("simFraction") != std::string::npos){
-      matching = "simFraction";
-   }
-   else if(fileName[0].find("deltaR") != std::string::npos){
-      matching = "deltaR";
-   }
+
 
    // we perform the fit
    FitParameters fitParameters_EB;
@@ -824,7 +827,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
 
 
-TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_quantity, map<TString, map<TString, vector<Float_t>>> map_quantity_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, TString matching, string what){
+TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_quantity, map<TString, map<TString, vector<Float_t>>> map_quantity_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what){
    TString label = fileName.c_str();
    TString filename;
    if(do_EB){
@@ -952,7 +955,7 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
 
 
 
-TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, TString matching, string what){
+TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what){
 
    TString label1 = fileName1.c_str();
    TString filename1; 
@@ -1102,7 +1105,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
 
 
-void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, TString matching){
+void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching){
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1;
@@ -1132,7 +1135,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       TGraphAsymmErrors* graph1;
-      graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEnergy"); 
+      graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy"); 
 
       if(do_ratioPlot){
          pad1->cd();
@@ -1151,7 +1154,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       leg1 -> Draw("same");
 
       if(do_ratioPlot){
-         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEnergy"); 
+         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy"); 
          pad2->cd();
          if(kk==0){
             graph2->Draw("A*");
@@ -1161,7 +1164,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
          leg1->Draw("same");
 
-         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEnergy"); 
+         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy"); 
          pad3->cd();
          if(kk==0){
             graph3->Draw("A*");
@@ -1196,8 +1199,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_info_up->SetTextAlign(11);
    TString nEvents = to_string(kEvents);
    label_info_up->AddText(nEvents + "k Events");
-   //label_info_up->AddText("Matching: " + matching);
-   label_info_up->AddText("simFraction Matching");
+   label_info_up->AddText(matching[0] + " matching");
    if(do_ratioPlot){
       pad1->cd();
    }
@@ -1210,7 +1212,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_info_down->SetTextFont(42);
    label_info_down->SetTextAlign(11);
    label_info_down->AddText(nEvents + "k Events");
-   label_info_down->AddText("#Delta R Matching");
+   label_info_down->AddText(matching[1] +  " matching");
    if(do_ratioPlot){
       pad2->cd();
       label_info_down->Draw("same");
@@ -1283,7 +1285,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
 
    for(unsigned int kk(0); kk<ETranges.size(); ++kk){
-      TGraphAsymmErrors* graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEta"); 
+      TGraphAsymmErrors* graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
       if(do_ratioPlot){
          pad1->cd();
       }
@@ -1301,7 +1303,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       leg2 -> Draw("same");
 
       if(do_ratioPlot){
-         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEta"); 
+         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
          pad2->cd();
          if(kk==0){
             graph2->Draw("A*");
@@ -1311,7 +1313,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
          leg2->Draw("same");
 
-         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, "vsEta"); 
+         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
          pad3->cd();
          if(kk==0){
             graph3->Draw("A*");

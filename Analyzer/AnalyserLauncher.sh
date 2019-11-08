@@ -16,11 +16,19 @@ doPlotter=true
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seed3.0_V02_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh0.5_seedRef_V04_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seed3.0_V02_vMerged_n30000"
-                       )
+                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_V03_vMerged_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh0.5_seedRef_V04_v02_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seed3.0_V02_v02_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_V03_v02_n30000"
+                      )
 
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
@@ -31,13 +39,6 @@ doMatching_simFraction=true
 doMatching_deltaR=false
 
 
-
-######################
-# Analyser parameters
-######################
-
-# Enter the location of the dumped files
-#inDirectory="/work/anlyon/dumpedFiles/"
 
 ######################
 # Plotter parameters
@@ -60,7 +61,7 @@ do_fineBinning_energy=true
 do_fineBinning_eta=true
 
 # do you want to enable pop-up plots?
-do_popUpPlot=false
+do_popUpPlot=true
 
 
 # -----  2. Advanced parameters ----- #
@@ -165,7 +166,7 @@ if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
    for iFile in ${FilesArray[@]}; do
       fileNameforPlotter="histo_"$iFile
       if [ "$doMatching_numberOfHits" = true ] ; then
-         2fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
+         fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
       fi
       if [ "$doMatching_simFraction" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_simFraction"

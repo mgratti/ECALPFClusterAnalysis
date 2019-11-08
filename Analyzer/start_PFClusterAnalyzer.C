@@ -58,7 +58,6 @@ void start_PFClusterAnalyzer(TString inFileName, TString inDirectory, string mat
    }
    TString outFile = outDirectory + outFileName + ".root";
 
-   cout << "commented process line" << endl;
-   //c->Process("PFClusterAnalyzer.C+", outFile);
+   c->Process("PFClusterAnalyzer.C+", outFile);
 }
 
