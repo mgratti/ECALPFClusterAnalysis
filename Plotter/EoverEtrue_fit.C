@@ -78,7 +78,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
 // produce the efficiency plots
-void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, vector<TString>, vector<TString>, vector<TString>);
+void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
 
 TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
 
@@ -391,6 +391,16 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
    }
 
+   // we retrieve whether it was crytal dependent or ring dependent
+   vector<TString> dependency;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++ iFile){
+      if(fileName[iFile].find("thrRing") != std::string::npos){
+         dependency.push_back("#eta-ring dependent");
+      }
+      else{
+         dependency.push_back("crystal dependent");
+      }
+   }
 
    // we perform the fit
    FitParameters fitParameters_EB;
@@ -456,17 +466,17 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
    // we get the resolution, scale and efficiency plots
    if(do_resolutionPlot && !do_efficiencyPlotOnly){
-      producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs);
+      producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs, dependency);
    }
 
    if(do_scalePlot && !do_efficiencyPlotOnly){
-      producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs);
+      producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs, dependency);
    }
 
    if(do_efficiencyPlot || do_efficiencyPlotOnly){
       vector<map<TString, map<TString, Float_t>>> map_dummy(2);
       vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(2);
-      producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs);
+      producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs, dependency);
    }
 
 }
@@ -1128,7 +1138,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
 
 
-void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs){
+void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1;
@@ -1247,8 +1257,13 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_thrs_up->SetTextSize(0.028);
    label_thrs_up->SetTextFont(42);
    label_thrs_up->SetTextAlign(11);
-   label_thrs_up->AddText(pfrechit_thrs[0]);
-   label_thrs_up->AddText(seeding_thrs[0]);
+   label_thrs_up->AddText(pfrechit_thrs[0] + " " + dependency[0]);
+   if(seeding_thrs[0]=="seedRef"){
+      label_thrs_up->AddText(seeding_thrs[0]);
+   }
+   else{
+      label_thrs_up->AddText(seeding_thrs[0] + " " + dependency[0]);
+   }
    if(do_ratioPlot){
       pad1->cd();
    }
@@ -1260,8 +1275,13 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_thrs_down->SetTextSize(0.028);
    label_thrs_down->SetTextFont(42);
    label_thrs_down->SetTextAlign(11);
-   label_thrs_down->AddText(pfrechit_thrs[1]);
-   label_thrs_down->AddText(seeding_thrs[1]);
+   label_thrs_down->AddText(pfrechit_thrs[1] + " " + dependency[1]);
+   if(seeding_thrs[1]=="seedRef"){
+      label_thrs_down->AddText(seeding_thrs[1]);
+   }
+   else{
+      label_thrs_down->AddText(seeding_thrs[1] + " " + dependency[1]);
+   }
    if(do_ratioPlot){
       pad2->cd();
       label_thrs_down->Draw("same");

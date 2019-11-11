@@ -16,19 +16,26 @@ doPlotter=true
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_thrRing_V05_v02_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seed3.0_V02_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh0.5_seedRef_V04_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seed3.0_V02_vMerged_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000_simFraction"
+                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000_deltaR"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_V03_vMerged_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
                         "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh0.5_seedRef_V04_v02_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seed3.0_V02_v02_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_V03_v02_n30000"
-                      )
+                     )
 
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
@@ -45,9 +52,9 @@ doMatching_deltaR=false
 ######################
 
 # ----- 1.  What do you want to plot? ----- #
-do_resolutionPlot=false
-do_scalePlot=false
-do_efficiencyPlot=false
+do_resolutionPlot=true
+do_scalePlot=true
+do_efficiencyPlot=true
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency plot, turn this option to true
@@ -188,6 +195,12 @@ if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
    rm file.txt
  
 fi
+
+#dir="../Plotter/myPlots/fits/histo_photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000_simFraction_EtaEnBinned_doubleCB_simEnergy/efficiency_vs_energy.png"
+
+#tar -czvf ${dir}.tar.gz ${dir}
+
+#scp ${dir}.tar.gz anlyon@lxplus.cern.ch:/eos/user/a/anlyon/www/ECAL_DPG/
 
 echo "Done"
 
