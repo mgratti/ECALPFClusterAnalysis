@@ -18,18 +18,19 @@ doPlotter=true
 declare -a FilesArray=(
                         "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_thrRing_V05_v02_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seed3.0_V02_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh0.5_seedRef_V04_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seed3.0_V02_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000_simFraction"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000_deltaR"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_V03_vMerged_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh0.5_seedRef_V04_v02_n30000"
@@ -42,8 +43,8 @@ inDirectory="/work/anlyon/dumpedFiles/"
 
 # Choose one of the following matching strategies
 doMatching_numberOfHits=false
-doMatching_simFraction=true
-doMatching_deltaR=false
+doMatching_simFraction=false
+doMatching_deltaR=true
 
 
 
@@ -68,7 +69,7 @@ do_fineBinning_energy=true
 do_fineBinning_eta=true
 
 # do you want to enable pop-up plots?
-do_popUpPlot=true
+do_popUpPlot=false
 
 
 

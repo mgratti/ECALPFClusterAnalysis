@@ -122,6 +122,13 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       cout << "Couldn't open the file listing the production label to be analysed!" << endl;
    }
 
+
+   if(do_ratioPlot==true && fileName.size()<2){
+      cout << " WARNING - Please enter two file names in order to produce the ratio plot" << endl;
+      cout << "Proceeding to regular plotting" << endl;
+      do_ratioPlot=false;
+   }
+
    Bool_t do_EB = false;
    Bool_t do_EE = false;
 
@@ -1106,7 +1113,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    }
 
    if(whichPlot=="Efficiency"){
-      graph->GetYaxis()->SetRangeUser(0.9, 1.1);
+      graph->GetYaxis()->SetRangeUser(0.8, 1.1);
    }
    else if(whichPlot=="Scale"){
       graph->GetYaxis()->SetRangeUser(0.8, 1.3);
