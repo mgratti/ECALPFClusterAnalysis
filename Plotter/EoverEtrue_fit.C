@@ -330,11 +330,11 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    color[4]=kMagenta;
    color[5]=kViolet;
    color[6]=kAzure;
-   color[7]=kBlue;
-   color[8]=kBlack;
+   //color[7]=kBlue;
+   color[7]=kBlack;
 
    // define the output directory
-   string outputdir = "myPlots/fits/" + fileName[0];
+   string outputdir = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[0];
    //string outputdir = "myPlots/fits/test";
    if(do_binningEt){
       outputdir += "_EtaEtBinned";
@@ -1113,13 +1113,13 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    }
 
    if(whichPlot=="Efficiency"){
-      graph->GetYaxis()->SetRangeUser(0.8, 1.1);
+      graph->GetYaxis()->SetRangeUser(0.98, 1.02);
    }
    else if(whichPlot=="Scale"){
-      graph->GetYaxis()->SetRangeUser(0.8, 1.3);
+      graph->GetYaxis()->SetRangeUser(0.98, 1.02);
    }
    else{
-      graph->GetYaxis()->SetRangeUser(0, 2);
+      graph->GetYaxis()->SetRangeUser(0.98, 1.02);
    } 
    graph->GetYaxis()->SetTitleSize(0.055);
    graph->GetYaxis()->SetTitleOffset(1.2);

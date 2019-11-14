@@ -10,13 +10,14 @@
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=false
-doPlotter=true
+doAnalyser=true
+doPlotter=false
 
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
+                         "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"                         
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_thrRing_V05_v02_n30000"
@@ -39,8 +40,8 @@ declare -a FilesArray=(
                      )
 
 # Enter the location of the dumped files
-inDirectory="/work/anlyon/dumpedFiles/"
-
+#inDirectory="/work/anlyon/dumpedFiles/"
+inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
 # Choose one of the following matching strategies
 doMatching_numberOfHits=false
 doMatching_simFraction=false
@@ -59,10 +60,14 @@ do_efficiencyPlot=true
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency plot, turn this option to true
-do_efficiencyPlotOnly=true
+do_efficiencyPlotOnly=false
 
-# If you want to produce the ratio plot between the two first files that you inserted, turn this option to true
+# If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
 do_ratioPlot=true
+
+# If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true
+do_useDifMatching=false
+
 
 # choose whether to use a finner binning or not
 do_fineBinning_energy=true
@@ -174,14 +179,16 @@ done
 if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
    for iFile in ${FilesArray[@]}; do
       fileNameforPlotter="histo_"$iFile
-      if [ "$doMatching_numberOfHits" = true ] ; then
-         fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
-      fi
-      if [ "$doMatching_simFraction" = true ] ; then
-         fileNameforPlotter=$fileNameforPlotter"_simFraction"
-      fi
-      if [ "$doMatching_deltaR" = true ] ; then
-         fileNameforPlotter=$fileNameforPlotter"_deltaR"
+      if [ "$do_useDifMatching" = false ] ; then
+         if [ "$doMatching_numberOfHits" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
+         fi
+         if [ "$doMatching_simFraction" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_simFraction"
+         fi
+         if [ "$doMatching_deltaR" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_deltaR"
+         fi
       fi
       echo $fileNameforPlotter >> file.txt
    done
