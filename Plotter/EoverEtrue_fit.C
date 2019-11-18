@@ -212,11 +212,10 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    }
    vector<TString> ETAranges_EB;
    if(!do_fineBinning_eta){
-      //ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
-      ETAranges_EB = {"0p00_0p40", "0p40_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
+      ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
    }
    else{
-      ETAranges_EB = {"0p00_0p20", "0p20_0p40", "0p40_0p60", "0p60_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
+      ETAranges_EB = {"0p00_0p40", "0p40_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
    }
 
 

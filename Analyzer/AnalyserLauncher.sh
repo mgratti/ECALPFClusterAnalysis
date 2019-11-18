@@ -10,17 +10,17 @@
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=true
-doPlotter=false
+doAnalyser=false
+doPlotter=true
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrXtal_testProd_n1000"
+                        #"photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrXtal_testProd_n1000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"                         
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000_simFraction"                         
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000_deltaR"                         
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
+                        "photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_thrRing_V05_v02_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
