@@ -835,6 +835,8 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
          // save output
          canv->SaveAs(outputdir + fileName + "_EoverEtrue_fit_Et_" + ETranges[i] + "_Eta_" + ETAranges[j] + ".png");
+         canv->SaveAs(outputdir + fileName + "_EoverEtrue_fit_Et_" + ETranges[i] + "_Eta_" + ETAranges[j] + ".pdf");
+
 
          //delete canv;
 
@@ -1308,6 +1310,8 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
    c1->cd();
    c1->SaveAs(dir + nameSave + "_vs_energy.png");
+   c1->SaveAs(dir + nameSave + "_vs_energy.pdf");
+
 
 
    // we then produce the plot of the efficiency as a function of eta for different energy ranges
@@ -1397,6 +1401,8 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    c2->cd();
 
    c2->SaveAs(dir + nameSave + "_vs_eta.png");
+   c2->SaveAs(dir + nameSave + "_vs_eta.pdf");
+
 
    delete c1;
    delete c2;
