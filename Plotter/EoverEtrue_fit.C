@@ -372,7 +372,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
          matching.push_back("numberOfHits");
       }
       else if(fileName[iFile].find("simFraction") != std::string::npos){
-         matching.push_back("simFraction");
+         matching.push_back("simFraction_min1");
       }
       else if(fileName[iFile].find("deltaR") != std::string::npos){
          matching.push_back("deltaR");
