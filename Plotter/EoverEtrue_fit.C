@@ -224,7 +224,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
    }
    else{
-      ETAranges_EE = {"1p48_1p57", "1p57_1p65", "1p65_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
+      ETAranges_EE = {"1p48_1p64", "1p64_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
    }
 
 
@@ -292,8 +292,12 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    ETAvalue["1p00_1p44"].second = 1.44;
    ETAvalue["1p48_1p57"].first = 1.479;
    ETAvalue["1p48_1p57"].second = 1.566;
+   ETAvalue["1p48_1p64"].first = 1.479;
+   ETAvalue["1p48_1p64"].second = 1.64;
    ETAvalue["1p57_1p65"].first = 1.566;
    ETAvalue["1p57_1p65"].second = 1.653;
+   ETAvalue["1p64_1p85"].first = 1.64;
+   ETAvalue["1p64_1p85"].second = 1.85;
    ETAvalue["1p65_1p85"].first = 1.653;
    ETAvalue["1p65_1p85"].second = 1.85;
    ETAvalue["1p85_2p00"].first = 1.85;
