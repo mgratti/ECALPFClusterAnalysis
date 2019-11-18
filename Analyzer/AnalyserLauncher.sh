@@ -10,8 +10,8 @@
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=true
-doPlotter=false
+doAnalyser=false
+doPlotter=true
 
 
 # Enter the production label of the files that you want to analyse
@@ -32,8 +32,12 @@ declare -a FilesArray=(
                         #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000_deltaR"
                         #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_V03_vMerged_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000_MysimFraction"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000_simFraction"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_DumperdeltaR"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_MydeltaR"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh0.5_seedRef_V04_v02_n30000"
@@ -46,8 +50,8 @@ inDirectory="/work/anlyon/dumpedFiles/"
 #inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
 # Choose one of the following matching strategies
 doMatching_numberOfHits=false
-doMatching_simFraction=true
-doMatching_deltaR=false
+doMatching_simFraction=false
+doMatching_deltaR=true
 
 
 
@@ -68,8 +72,10 @@ do_efficiencyPlotOnly=true
 do_ratioPlot=true
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true
-do_useDifMatching=false
+do_useDifMatching=true
 
+# If you want to compare to the ref matching (deltaR)
+#do_compareToRef=false
 
 # choose whether to use a finner binning or not
 do_fineBinning_energy=true
@@ -181,17 +187,17 @@ done
 if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
    for iFile in ${FilesArray[@]}; do
       fileNameforPlotter="histo_"$iFile
-      #if [ "$do_useDifMatching" = false ] ; then
-      #   if [ "$doMatching_numberOfHits" = true ] ; then
-      #      fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
-      #   fi
-      #   if [ "$doMatching_simFraction" = true ] ; then
-      #      fileNameforPlotter=$fileNameforPlotter"_simFraction"
-      #   fi
-      #   if [ "$doMatching_deltaR" = true ] ; then
-      #      fileNameforPlotter=$fileNameforPlotter"_deltaR"
-      #   fi
-      #fi
+      if [ "$do_useDifMatching" = false ] ; then
+         if [ "$doMatching_numberOfHits" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
+         fi
+         if [ "$doMatching_simFraction" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_simFraction"
+         fi
+         if [ "$doMatching_deltaR" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_deltaR"
+         fi
+      fi
       echo $fileNameforPlotter >> file.txt
    done
 

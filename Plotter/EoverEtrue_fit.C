@@ -1113,7 +1113,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    }
 
    if(whichPlot=="Efficiency"){
-      graph->GetYaxis()->SetRangeUser(0.997, 1.003);
+      graph->GetYaxis()->SetRangeUser(0.9, 1.1);
    }
    else if(whichPlot=="Scale"){
       graph->GetYaxis()->SetRangeUser(0.98, 1.02);
