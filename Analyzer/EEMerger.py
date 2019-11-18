@@ -1,3 +1,6 @@
+#usage:
+# python EEmerger.py --f1 file1.root --f2 file2.root
+
 import sys 
 import os
 import glob
