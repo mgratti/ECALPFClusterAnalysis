@@ -43,9 +43,9 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderValue<Long64_t> eventId = {fReader, "eventId"};
       TTreeReaderValue<Int_t> lumiId = {fReader, "lumiId"};
       TTreeReaderValue<Int_t> runId = {fReader, "runId"};
-      TTreeReaderValue<Float_t> pu_nTrueInt = {fReader, "pu_nTrueInt"};
-      TTreeReaderValue<Int_t> pu_nPU = {fReader, "pu_nPU"};
-      TTreeReaderValue<Double_t> rho = {fReader, "rho"};
+      //TTreeReaderValue<Float_t> pu_nTrueInt = {fReader, "pu_nTrueInt"};
+      //TTreeReaderValue<Int_t> pu_nPU = {fReader, "pu_nPU"};
+      //TTreeReaderValue<Double_t> rho = {fReader, "rho"};
       TTreeReaderArray<int> genParticle_id = {fReader, "genParticle_id"};
       TTreeReaderArray<float> genParticle_energy = {fReader, "genParticle_energy"};
       TTreeReaderArray<float> genParticle_pt = {fReader, "genParticle_pt"};
@@ -60,45 +60,52 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<int> caloParticle_simIeta = {fReader, "caloParticle_simIeta"};
       TTreeReaderArray<int> caloParticle_simIphi = {fReader, "caloParticle_simIphi"};
       TTreeReaderArray<int> caloParticle_simIz = {fReader, "caloParticle_simIz"};
-      TTreeReaderArray<vector<map<int,float> >> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
-      //TTreeReaderArray<vector<float>> pfClusterHit_eta = {fReader, "pfClusterHit_eta"};
-      //TTreeReaderArray<vector<float>> pfClusterHit_phi = {fReader, "pfClusterHit_phi"};
-      //TTreeReaderArray<vector<int>> pfClusterHit_ieta = {fReader, "pfClusterHit_ieta"};
-      //TTreeReaderArray<vector<int>> pfClusterHit_iphi = {fReader, "pfClusterHit_iphi"};
-      //TTreeReaderArray<vector<int>> pfClusterHit_iz = {fReader, "pfClusterHit_iz"};
-      TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_energy = {fReader, "pfClusterHit_noCaloPart_energy"};
-      TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_eta = {fReader, "pfClusterHit_noCaloPart_eta"};
-      TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_phi = {fReader, "pfClusterHit_noCaloPart_phi"};
-      TTreeReaderArray<vector<int>> pfClusterHit_noCaloPart_ieta = {fReader, "pfClusterHit_noCaloPart_ieta"};
-      TTreeReaderArray<vector<int>> pfClusterHit_noCaloPart_iphi = {fReader, "pfClusterHit_noCaloPart_iphi"};
-      TTreeReaderArray<vector<int>> pfClusterHit_noCaloPart_iz = {fReader, "pfClusterHit_noCaloPart_iz"};
+      TTreeReaderArray<vector<int>> caloParticle_pfCluster_dR_simScore_MatchedIndex = {fReader, "caloParticle_pfCluster_dR_simScore_MatchedIndex"};
+      TTreeReaderArray<vector<int>> caloParticle_pfCluster_sim_fraction_MatchedIndex = {fReader, "caloParticle_pfCluster_sim_fraction_MatchedIndex"};
+      TTreeReaderArray<vector<int>> caloParticle_pfCluster_sim_fraction_min1_MatchedIndex = {fReader, "caloParticle_pfCluster_sim_fraction_min1_MatchedIndex"};
+      TTreeReaderArray<vector<float>> pfCluster_sim_fraction_min1 = {fReader, "pfCluster_sim_fraction_min1"};
+      TTreeReaderArray<vector<float>> pfCluster_dR_simScore = {fReader, "pfCluster_dR_simScore"};
+      TTreeReaderArray<int> pfCluster_sim_fraction_min1_MatchedIndex = {fReader, "pfCluster_sim_fraction_min1_MatchedIndex"};
+      TTreeReaderArray<int> pfCluster_dR_simScore_MatchedIndex = {fReader, "pfCluster_dR_simScore_MatchedIndex"};
+      TTreeReaderArray<vector<float>> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
+      TTreeReaderArray<vector<float>> pfClusterHit_eta = {fReader, "pfClusterHit_eta"};
+      TTreeReaderArray<vector<float>> pfClusterHit_phi = {fReader, "pfClusterHit_phi"};
+      TTreeReaderArray<vector<int>> pfClusterHit_ieta = {fReader, "pfClusterHit_ieta"};
+      TTreeReaderArray<vector<int>> pfClusterHit_iphi = {fReader, "pfClusterHit_iphi"};
+      TTreeReaderArray<vector<int>> pfClusterHit_iz = {fReader, "pfClusterHit_iz"};
+      //TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_energy = {fReader, "pfClusterHit_noCaloPart_energy"};
+      //TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_eta = {fReader, "pfClusterHit_noCaloPart_eta"};
+      //TTreeReaderArray<vector<float>> pfClusterHit_noCaloPart_phi = {fReader, "pfClusterHit_noCaloPart_phi"};
+      //TTreeReaderArray<vector<int>> pfClusterHit_noCaloPart_ieta = {fReader, "pfClusterHit_noCaloPart_ieta"};
+      //TTreeReaderArray<vector<int>> pfClusterHit_noCaloPart_iphi = {fReader, "pfClusterHit_noCaloPart_iphi"};
+      //TTreeReaderArray<vector<int>> pfClusterHit_noCaloPart_iz = {fReader, "pfClusterHit_noCaloPart_iz"};
       TTreeReaderArray<float> pfCluster_energy = {fReader, "pfCluster_energy"};
       TTreeReaderArray<float> pfCluster_eta = {fReader, "pfCluster_eta"};
       TTreeReaderArray<float> pfCluster_phi = {fReader, "pfCluster_phi"};
       TTreeReaderArray<int> pfCluster_ieta = {fReader, "pfCluster_ieta"};
       TTreeReaderArray<int> pfCluster_iphi = {fReader, "pfCluster_iphi"};
       TTreeReaderArray<int> pfCluster_iz = {fReader, "pfCluster_iz"};
-      TTreeReaderArray<vector<map<int,float> >> superClusterHit_energy = {fReader, "superClusterHit_energy"};
-      TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_energy = {fReader, "superClusterHit_noCaloPart_energy"};
-      TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_eta = {fReader, "superClusterHit_noCaloPart_eta"};
-      TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_phi = {fReader, "superClusterHit_noCaloPart_phi"};
-      TTreeReaderArray<vector<int>> superClusterHit_noCaloPart_ieta = {fReader, "superClusterHit_noCaloPart_ieta"};
-      TTreeReaderArray<vector<int>> superClusterHit_noCaloPart_iphi = {fReader, "superClusterHit_noCaloPart_iphi"};
-      TTreeReaderArray<vector<int>> superClusterHit_noCaloPart_iz = {fReader, "superClusterHit_noCaloPart_iz"};
-      TTreeReaderArray<float> superCluster_energy = {fReader, "superCluster_energy"};
-      TTreeReaderArray<float> superCluster_eta = {fReader, "superCluster_eta"};
-      TTreeReaderArray<float> superCluster_phi = {fReader, "superCluster_phi"};
-      TTreeReaderArray<int> superCluster_ieta = {fReader, "superCluster_ieta"};
-      TTreeReaderArray<int> superCluster_iphi = {fReader, "superCluster_iphi"};
-      TTreeReaderArray<int> superCluster_iz = {fReader, "superCluster_iz"};
-      TTreeReaderArray<float> superCluster_r9 = {fReader, "superCluster_r9"};
-      TTreeReaderArray<float> superCluster_sigmaIetaIeta = {fReader, "superCluster_sigmaIetaIeta"};
-      TTreeReaderArray<float> superCluster_sigmaIetaIphi = {fReader, "superCluster_sigmaIetaIphi"};
-      TTreeReaderArray<float> superCluster_sigmaIphiIphi = {fReader, "superCluster_sigmaIphiIphi"};
-      TTreeReaderArray<float> superCluster_full5x5_r9 = {fReader, "superCluster_full5x5_r9"};
-      TTreeReaderArray<float> superCluster_full5x5_sigmaIetaIeta = {fReader, "superCluster_full5x5_sigmaIetaIeta"};
-      TTreeReaderArray<float> superCluster_full5x5_sigmaIetaIphi = {fReader, "superCluster_full5x5_sigmaIetaIphi"};
-      TTreeReaderArray<float> superCluster_full5x5_sigmaIphiIphi = {fReader, "superCluster_full5x5_sigmaIphiIphi"};
+      //TTreeReaderArray<vector<map<int,float> >> superClusterHit_energy = {fReader, "superClusterHit_energy"};
+      //TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_energy = {fReader, "superClusterHit_noCaloPart_energy"};
+      //TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_eta = {fReader, "superClusterHit_noCaloPart_eta"};
+      //TTreeReaderArray<vector<float>> superClusterHit_noCaloPart_phi = {fReader, "superClusterHit_noCaloPart_phi"};
+      //TTreeReaderArray<vector<int>> superClusterHit_noCaloPart_ieta = {fReader, "superClusterHit_noCaloPart_ieta"};
+      //TTreeReaderArray<vector<int>> superClusterHit_noCaloPart_iphi = {fReader, "superClusterHit_noCaloPart_iphi"};
+      //TTreeReaderArray<vector<int>> superClusterHit_noCaloPart_iz = {fReader, "superClusterHit_noCaloPart_iz"};
+      //TTreeReaderArray<float> superCluster_energy = {fReader, "superCluster_energy"};
+      //TTreeReaderArray<float> superCluster_eta = {fReader, "superCluster_eta"};
+      //TTreeReaderArray<float> superCluster_phi = {fReader, "superCluster_phi"};
+      //TTreeReaderArray<int> superCluster_ieta = {fReader, "superCluster_ieta"};
+      //TTreeReaderArray<int> superCluster_iphi = {fReader, "superCluster_iphi"};
+      //TTreeReaderArray<int> superCluster_iz = {fReader, "superCluster_iz"};
+      //TTreeReaderArray<float> superCluster_r9 = {fReader, "superCluster_r9"};
+      //TTreeReaderArray<float> superCluster_sigmaIetaIeta = {fReader, "superCluster_sigmaIetaIeta"};
+      //TTreeReaderArray<float> superCluster_sigmaIetaIphi = {fReader, "superCluster_sigmaIetaIphi"};
+      //TTreeReaderArray<float> superCluster_sigmaIphiIphi = {fReader, "superCluster_sigmaIphiIphi"};
+      //TTreeReaderArray<float> superCluster_full5x5_r9 = {fReader, "superCluster_full5x5_r9"};
+      //TTreeReaderArray<float> superCluster_full5x5_sigmaIetaIeta = {fReader, "superCluster_full5x5_sigmaIetaIeta"};
+      //TTreeReaderArray<float> superCluster_full5x5_sigmaIetaIphi = {fReader, "superCluster_full5x5_sigmaIetaIphi"};
+      //TTreeReaderArray<float> superCluster_full5x5_sigmaIphiIphi = {fReader, "superCluster_full5x5_sigmaIphiIphi"};
  
       // non reader members 
       // -- non root members
@@ -349,6 +356,9 @@ class PFClusterAnalyzer : public TSelector {
       vector<int> getMatchedIndices_score(const vector<MatchingMap>& matchingMap, unsigned int icP);
       vector<int> getMatchedIndices_numberOfHits(const TTreeReaderArray<vector<map<int,float>>>& pfClusterHit_energy, unsigned int icP);
       vector<int> getMatchedIndices_deltaR(const TTreeReaderArray<float>& pfCluster_energy, const TTreeReaderArray<float>& pfCluster_eta, const TTreeReaderArray<float>& pfCluster_phi, unsigned int icP, float deltaRThreshold);
+      
+      vector<int> getMatchedIndices(vector<int> input_vector, unsigned int icP, const TTreeReaderArray<vector<float>>& score);
+
 
       
       ClassDef(PFClusterAnalyzer,0);

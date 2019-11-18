@@ -32,7 +32,7 @@ void start_PFClusterAnalyzer(TString inFileName, TString inDirectory, string mat
       exit(11);
    }
 
-   TChain * c = new TChain("recosimdumper/caloTree");
+   TChain * c = new TChain("deepclusteringdumper/caloTree");
    c->Add(inFile);
 
 
