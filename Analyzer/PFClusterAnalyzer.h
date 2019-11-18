@@ -55,16 +55,19 @@ class PFClusterAnalyzer : public TSelector {
       TTreeReaderArray<float> caloParticle_genEnergy = {fReader, "caloParticle_genEnergy"};
       TTreeReaderArray<float> caloParticle_simEnergy = {fReader, "caloParticle_simEnergy"};
       TTreeReaderArray<float> caloParticle_genPt = {fReader, "caloParticle_genPt"};
+      TTreeReaderArray<float> caloParticle_simPt = {fReader, "caloParticle_simPt"};
       TTreeReaderArray<float> caloParticle_genEta = {fReader, "caloParticle_genEta"};
+      TTreeReaderArray<float> caloParticle_simEta = {fReader, "caloParticle_simEta"};
       TTreeReaderArray<float> caloParticle_genPhi = {fReader, "caloParticle_genPhi"};
+      TTreeReaderArray<float> caloParticle_simPhi = {fReader, "caloParticle_simPhi"};
       TTreeReaderArray<int> caloParticle_simIeta = {fReader, "caloParticle_simIeta"};
       TTreeReaderArray<int> caloParticle_simIphi = {fReader, "caloParticle_simIphi"};
       TTreeReaderArray<int> caloParticle_simIz = {fReader, "caloParticle_simIz"};
       TTreeReaderArray<vector<int>> caloParticle_pfCluster_dR_simScore_MatchedIndex = {fReader, "caloParticle_pfCluster_dR_simScore_MatchedIndex"};
       TTreeReaderArray<vector<int>> caloParticle_pfCluster_sim_fraction_MatchedIndex = {fReader, "caloParticle_pfCluster_sim_fraction_MatchedIndex"};
       TTreeReaderArray<vector<int>> caloParticle_pfCluster_sim_fraction_min1_MatchedIndex = {fReader, "caloParticle_pfCluster_sim_fraction_min1_MatchedIndex"};
-      TTreeReaderArray<vector<float>> pfCluster_sim_fraction_min1 = {fReader, "pfCluster_sim_fraction_min1"};
-      TTreeReaderArray<vector<float>> pfCluster_dR_simScore = {fReader, "pfCluster_dR_simScore"};
+      TTreeReaderArray<vector<double>> pfCluster_sim_fraction_min1 = {fReader, "pfCluster_sim_fraction_min1"};
+      TTreeReaderArray<vector<double>> pfCluster_dR_simScore = {fReader, "pfCluster_dR_simScore"};
       TTreeReaderArray<int> pfCluster_sim_fraction_min1_MatchedIndex = {fReader, "pfCluster_sim_fraction_min1_MatchedIndex"};
       TTreeReaderArray<int> pfCluster_dR_simScore_MatchedIndex = {fReader, "pfCluster_dR_simScore_MatchedIndex"};
       TTreeReaderArray<vector<float>> pfClusterHit_energy = {fReader, "pfClusterHit_energy"};
@@ -232,7 +235,10 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_caloParticle_et_EB;
       TH1F* h_caloParticle_genEta_EB;
       TH1F* h_caloParticle_genPhi_EB;
+      TH1F* h_caloParticle_simEta_EB;
       TH2F* h_caloParticle_genPhi_vs_eta_ifNoPFCluster_EB;
+      TH1F* h_caloParticle_simPhi_EB;
+      TH2F* h_caloParticle_simPhi_vs_eta_ifNoPFCluster_EB;
       
       TH1F* h_caloParticle_size_EE;
       TH1F* h_caloParticle_genEnergy_EE;
@@ -240,6 +246,9 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_caloParticle_et_EE;
       TH1F* h_caloParticle_genEta_EE;
       TH1F* h_caloParticle_genPhi_EE;
+      TH1F* h_caloParticle_simEta_EE;
+      TH1F* h_caloParticle_simPhi_EE;
+
 
 
       TH1F* h_caloParticle_EEM_size;
