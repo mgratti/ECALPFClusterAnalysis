@@ -616,7 +616,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
             mean_min = 0.7;
             mean_max = 1.2;
             sigma_init = 0.027;
-            sigma_max = 0.07;
+            sigma_max = 0.16;
             alpha_1_init = 3.0;
             alpha_2_init = -2.0;
             n_1_init = 5;
@@ -951,7 +951,7 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
          error = quantity*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity);
-         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);
+         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error, error);
       }
 
 
@@ -1017,7 +1017,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
       filename2 = "../Analyzer/outputfiles/" + label2 + "_EE.root";
    }
 
-   Float_t x, quantity1, quantity2, error;
+   Float_t x, quantity1, quantity2, error, error1, error2;
    TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
    graph->SetTitle("Ratio");
 
@@ -1100,15 +1100,19 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
          quantity1 = hist_num1->GetEntries()/hist_deno1->GetEntries();
          quantity2 = hist_num2->GetEntries()/hist_deno2->GetEntries();
-         error = 0.0;// efficiency*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
+         error1 = quantity1*(sqrt(hist_num1->GetEntries())/hist_num1->GetEntries() + sqrt(hist_deno1->GetEntries())/hist_deno1->GetEntries());
+         error2 = quantity2*(sqrt(hist_num2->GetEntries())/hist_num2->GetEntries() + sqrt(hist_deno2->GetEntries())/hist_deno2->GetEntries());
+         error = 0; // quantity1/quantity2*(error1/quantity1 + error2/quantity2);
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity1/quantity2);
-         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);
+         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error, error);
       }
       else if(whichPlot=="Resolution" || whichPlot=="Scale"){
          quantity1 = map_quantity[0][ETranges[indexB]][ETAranges[indexA]];
          quantity2 = map_quantity[1][ETranges[indexB]][ETAranges[indexA]];
-         error = 0;//map_quantity_error[ETranges[ii]][ETAranges[kk]][0];
+         error1 = map_quantity_error[0][ETranges[indexB]][ETAranges[indexA]][0];
+         error2 = map_quantity_error[1][ETranges[indexB]][ETAranges[indexA]][0];
+         error = quantity1/quantity2*(error1/quantity1 + error2/quantity2);
          if(quantity1!=0 && quantity2!=0){
             int thisPoint = graph->GetN();
             graph->SetPoint(thisPoint, x, quantity1/quantity2);
@@ -1118,13 +1122,13 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    }
 
    if(whichPlot=="Efficiency"){
-      graph->GetYaxis()->SetRangeUser(0.9, 1.1);
+      graph->GetYaxis()->SetRangeUser(0.98, 1.01);
    }
    else if(whichPlot=="Scale"){
       graph->GetYaxis()->SetRangeUser(0.98, 1.02);
    }
    else{
-      graph->GetYaxis()->SetRangeUser(0.98, 1.02);
+      graph->GetYaxis()->SetRangeUser(0.9, 1.1);
    } 
    graph->GetYaxis()->SetTitleSize(0.055);
    graph->GetYaxis()->SetTitleOffset(1.2);

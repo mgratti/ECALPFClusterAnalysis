@@ -15,43 +15,25 @@ doPlotter=true
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        #"photon_Et1to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrXtal_testProd_n1000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"                         
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000_simFraction"                         
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000_deltaR"                         
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_thrRing_V05_vMerged_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_thrRing_V05_v02_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrh0.5_seedRef_V04_vMerged_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seed3.0_V02_vMerged_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrh0.5_seedRef_V04_vMerged_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seed3.0_V02_vMerged_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000_simFraction"
-                        #"photon_E0.1to200GeV_closeEcal_EE_noPU_pfrhRef_seedRef_V03_vMerged_n30000_deltaR"
-                        #"photon_E0.1to200GeV_closeEcal_EE_wPU_pfrhRef_seedRef_V03_vMerged_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrh0.5_seedRef_V04_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seed3.0_V02_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000_MysimFraction"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000_simFraction"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_DumperdeltaR"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_MydeltaR"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
-                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh0.5_seedRef_V04_v02_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seed3.0_V02_v02_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrhRef_seedRef_V03_v02_n30000"
-                     )
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
+                      )
 
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
 #inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
 # Choose one of the following matching strategies
 doMatching_numberOfHits=false
-doMatching_simFraction=true
-doMatching_deltaR=false
+doMatching_simFraction=false
+doMatching_deltaR=true
 
 
 
@@ -66,13 +48,13 @@ do_efficiencyPlot=true
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency plot, turn this option to true
-do_efficiencyPlotOnly=false
+do_efficiencyPlotOnly=true
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
-do_ratioPlot=false
+do_ratioPlot=true
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true
-do_useDifMatching=false
+do_useDifMatching=true
 
 # If you want to compare to the ref matching (deltaR)
 #do_compareToRef=false
@@ -82,7 +64,7 @@ do_fineBinning_energy=true
 do_fineBinning_eta=true
 
 # do you want to enable pop-up plots?
-do_popUpPlot=true
+do_popUpPlot=false
 
 
 
