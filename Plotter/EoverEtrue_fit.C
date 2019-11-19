@@ -28,6 +28,7 @@
 #include "TSystem.h"
 #include "TLine.h"
 #include "TPaveText.h"
+#include "TEfficiency.h"
 
 #include <iostream>
 #include <iomanip>
@@ -884,6 +885,8 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
 
 
    Float_t x, quantity, error;
+   TEfficiency* eff_error;
+
    TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
    if(printTitle){
       graph->SetTitle(whichPlot);
@@ -945,13 +948,20 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
             hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[indexA] + "_En" + ETranges[indexB] + "_forEfficiency")->Clone("hist_num");
             hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_simEnergy_Eta" + ETAranges[indexA] + "_En" + ETranges[indexB])->Clone("hist_deno");
          }
-
+         
+         Float_t error_tmp(0);
          quantity = hist_num->GetEntries()/hist_deno->GetEntries();
-         //cout << "efficiency: " << quantity << endl;
-         error = quantity*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
+         //cout << "efficiency: " << quantity << endl;i
+         if(TEfficiency::CheckConsistency(*hist_num,*hist_deno)){
+            eff_error = new TEfficiency(*hist_num, *hist_deno);
+         }
+         for(int i(0); i<hist_num->GetNbinsX(); ++i){
+            error_tmp += eff_error->GetEfficiencyErrorLow(i);
+         }
+         error = error_tmp;
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity);
-         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error, error);
+         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);
       }
 
 
@@ -1018,6 +1028,9 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    }
 
    Float_t x, quantity1, quantity2, error, error1, error2;
+   TEfficiency* eff_error1;
+   TEfficiency* eff_error2;
+
    TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
    graph->SetTitle("Ratio");
 
@@ -1100,12 +1113,25 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
          quantity1 = hist_num1->GetEntries()/hist_deno1->GetEntries();
          quantity2 = hist_num2->GetEntries()/hist_deno2->GetEntries();
-         error1 = quantity1*(sqrt(hist_num1->GetEntries())/hist_num1->GetEntries() + sqrt(hist_deno1->GetEntries())/hist_deno1->GetEntries());
-         error2 = quantity2*(sqrt(hist_num2->GetEntries())/hist_num2->GetEntries() + sqrt(hist_deno2->GetEntries())/hist_deno2->GetEntries());
-         error = 0; // quantity1/quantity2*(error1/quantity1 + error2/quantity2);
+         float error_tmp1(0.), error_tmp2(0.); 
+         if(TEfficiency::CheckConsistency(*hist_num1,*hist_deno1)){
+            eff_error1 = new TEfficiency(*hist_num1, *hist_deno1);
+         }
+         for(int i(0); i<hist_num1->GetNbinsX(); ++i){
+            error_tmp1 += eff_error1->GetEfficiencyErrorLow(i);
+         }
+         error1 = error_tmp1;
+         if(TEfficiency::CheckConsistency(*hist_num2,*hist_deno2)){
+            eff_error2 = new TEfficiency(*hist_num2, *hist_deno2);
+         }
+         for(int i(0); i<hist_num2->GetNbinsX(); ++i){
+            error_tmp2 += eff_error2->GetEfficiencyErrorLow(i);
+         }
+         error2 = error_tmp2;
+         error = quantity1/quantity2*(error1/quantity1 + error2/quantity2);
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity1/quantity2);
-         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error, error);
+         graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);
       }
       else if(whichPlot=="Resolution" || whichPlot=="Scale"){
          quantity1 = map_quantity[0][ETranges[indexB]][ETAranges[indexA]];
@@ -1122,7 +1148,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    }
 
    if(whichPlot=="Efficiency"){
-      graph->GetYaxis()->SetRangeUser(0.98, 1.01);
+      graph->GetYaxis()->SetRangeUser(0.9, 1.1);
    }
    else if(whichPlot=="Scale"){
       graph->GetYaxis()->SetRangeUser(0.98, 1.02);
