@@ -79,7 +79,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
 // produce the efficiency plots
-void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
+void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, vector<TString>, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
 
 TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
 
@@ -383,6 +383,17 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       }
    }
 
+   // we get the pileUp tag from the fileName
+   vector<TString> PUtag;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+      if(fileName[iFile].find("noPU") != std::string::npos){
+         PUtag.push_back("noPU");
+      }
+      else if(fileName[iFile].find("wPU") != std::string::npos){
+         PUtag.push_back("wPU");
+      }
+   }
+
    // we get the thresholds from the fileName
    vector<TString> pfrechit_thrs;
    vector<TString> seeding_thrs;
@@ -477,17 +488,17 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
    // we get the resolution, scale and efficiency plots
    if(do_resolutionPlot && !do_efficiencyPlotOnly){
-      producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs, dependency);
+      producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
    }
 
    if(do_scalePlot && !do_efficiencyPlotOnly){
-      producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs, dependency);
+      producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
    }
 
    if(do_efficiencyPlot || do_efficiencyPlotOnly){
       vector<map<TString, map<TString, Float_t>>> map_dummy(2);
       vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(2);
-      producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, pfrechit_thrs, seeding_thrs, dependency);
+      producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
    }
 
 }
@@ -1148,13 +1159,13 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    }
 
    if(whichPlot=="Efficiency"){
-      graph->GetYaxis()->SetRangeUser(0.9, 1.1);
+      graph->GetYaxis()->SetRangeUser(0.98, 1.02);
    }
    else if(whichPlot=="Scale"){
       graph->GetYaxis()->SetRangeUser(0.98, 1.02);
    }
    else{
-      graph->GetYaxis()->SetRangeUser(0.9, 1.1);
+      graph->GetYaxis()->SetRangeUser(0.8, 1.2);
    } 
    graph->GetYaxis()->SetTitleSize(0.055);
    graph->GetYaxis()->SetTitleOffset(1.2);
@@ -1180,7 +1191,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 
 
 
-void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
+void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching, vector<TString> PUtag, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
 
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1;
@@ -1250,7 +1261,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       }
    }
 
-   TPaveText* label = new TPaveText(0.7,0.85,0.9,0.88,"brNDC");
+   TPaveText* label = new TPaveText(0.7,0.85,0.8,0.88,"brNDC");
    label->SetBorderSize(0);
    label->SetFillColor(kWhite);
    label->SetTextSize(0.025);
@@ -1273,7 +1284,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_info_up->SetTextFont(42);
    label_info_up->SetTextAlign(11);
    TString nEvents = to_string(kEvents);
-   label_info_up->AddText(nEvents + "k Events");
+   label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
    label_info_up->AddText(matching[0] + " matching");
    if(do_ratioPlot){
       pad1->cd();
@@ -1286,7 +1297,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_info_down->SetTextSize(0.028);
    label_info_down->SetTextFont(42);
    label_info_down->SetTextAlign(11);
-   label_info_down->AddText(nEvents + "k Events");
+   label_info_down->AddText(nEvents + "k Events, " + PUtag[1]);
    label_info_down->AddText(matching[1] +  " matching");
    if(do_ratioPlot){
       pad2->cd();
@@ -1406,7 +1417,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
       }
    }
-   TPaveText* label2 = new TPaveText(0.7,0.85,0.9,0.88,"brNDC");
+   TPaveText* label2 = new TPaveText(0.7,0.85,0.8,0.88,"brNDC");
    label2->SetBorderSize(0);
    label2->SetFillColor(kWhite);
    label2->SetTextSize(0.025);
