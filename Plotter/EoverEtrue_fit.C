@@ -135,6 +135,12 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       do_ratioPlot=false;
    }
 
+   if(do_scanThrs==true && fileName.size()<2){
+      cout << "WARNING - Please enter at least two file names in order to proceed to the thresholds scan" << endl;
+      cout << "Proceeding to regular plotting" << endl;
+      do_scanThrs=false;
+   }
+
    Bool_t do_EB = false;
    Bool_t do_EE = false;
 
@@ -214,6 +220,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       }
       else{
          ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
+         //ETranges = {"1_5", "100_120"};
       }
    }
    vector<TString> ETAranges_EB;
@@ -231,6 +238,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    }
    else{
       ETAranges_EE = {"1p48_1p64", "1p64_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
+      //ETAranges_EE = {"1p48_1p64"};
    }
 
 
@@ -512,7 +520,12 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       if(fileName.size()>0){
          for(unsigned int iFile(1); iFile<fileName.size(); ++iFile){
             if(PUtag[iFile]!=PUtag[0]){
-               cout << "You introduced a file with wrong PU tag in the list!" << endl;
+               cout << "You introduced in the list a file with wrong PU tag!" << endl;
+               cout << "Aborting" << endl;
+               exit(11);
+            }
+            if(matching[iFile]!=matching[0]){
+               cout << "You introduced in the list a file with a different matching strategy!" << endl;
                cout << "Aborting" << endl;
                exit(11);
             }
@@ -603,36 +616,48 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
          RooDataHist* rdh = new RooDataHist("rdh", "rdh", *EoverEtrue, dmhist);
 
 
+         float input_mean = dmhist->GetMean();
+         float input_sigma = dmhist->GetStdDev();
+
+         TString mean_tmp =to_string(input_mean);
+         TString sigma_tmp = to_string(input_sigma);
+
          //Define the PDF to fit: 
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         float mean_init;
-         float mean_min;
-         float mean_max;
+         float mean_init = dmhist->GetMean();
+         float mean_min = 0.8*dmhist->GetMean();
+         float mean_max = 1.2*dmhist->GetMean();
 
-         float sigma_init;
-         float sigma_min = 0.;
-         float sigma_max;
+         float sigma_init; 
+         float sigma_min = 0;
+         float sigma_max; 
 
-         float alpha_1_init;
-         float alpha_1_min = -50;
-         float alpha_1_max = 50;
+        if(mean_init<1.96){
+            sigma_init = dmhist->GetStdDev();
+            sigma_max = 1.8*dmhist->GetStdDev();
+         }
+         else{
+            sigma_init = dmhist->GetStdDev()/4;
+            sigma_max = 1.8*dmhist->GetStdDev()/4;
+         }
+         float alpha_1_init = 10;
+         float alpha_1_min = -10;
+         float alpha_1_max = 10;
 
-         float alpha_2_init;
-         float alpha_2_min = -15;
-         float alpha_2_max = 15;
+         float alpha_2_init = 1;
+         float alpha_2_min = -10;
+         float alpha_2_max = 10;
 
-         float n_1_init;
          float n_1_min = 0;
          float n_1_max = 50;
 
-         float n_2_init;
          float n_2_min = 0;
          float n_2_max = 15;
 
 
-         if(ETvalue[ETranges[i]].second <= 30){
+         /*if(ETvalue[ETranges[i]].second <= 30){
             mean_init = 1.7;
             mean_min = 0.7;
             mean_max = 1.2;
@@ -654,7 +679,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
             n_1_init = 5;
             n_2_init = 1;
          }
-
+         */
          RooRealVar *mean   = new RooRealVar("mean","mean", mean_init, mean_min, mean_max);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma", sigma_init, sigma_min, sigma_max);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
@@ -664,10 +689,11 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
 
          // double crystal ball (same gaussian body but different exponential tails)
-         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", alpha_1_init, alpha_1_min, alpha_2_max);
-         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", n_1_init, n_1_min, n_1_max);
-         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", alpha_2_init, alpha_2_min, alpha_2_max);
-         RooRealVar *n_2      = new RooRealVar("n_2", "n_2", n_2_init, n_2_min, n_2_max);
+         RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 1., alpha_1_min, alpha_2_max);
+         RooRealVar *n_1      = new RooRealVar("n_1", "n_1", n_1_min, n_1_max);
+         RooRealVar *alpha_2  = new RooRealVar("alpha_2", "alpha_2", 1., alpha_2_min, alpha_2_max);
+         RooRealVar *n_2      = new RooRealVar("n_2", "n_2", n_2_min, n_2_max);
+
 
          RooCBShape *CBpdf_1 = new RooCBShape("CBpdf_1", "CBpdf_1", *EoverEtrue, *mean, *sigma, *alpha_1, *n_1);
          RooCBShape *CBpdf_2 = new RooCBShape("CBpdf_2", "CBpdf_2", *EoverEtrue, *mean, *sigma, *alpha_2, *n_2);
@@ -700,12 +726,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
                result = CBpdf->fitTo(*rdh);
             }
             else if(do_fitPeak){
-               if(use_energy){
-                  EoverEtrue->setRange("peak",  0.6, 1.1);
-               }
-               else if(use_simEnergy){
-                  EoverEtrue->setRange("peak",  0.9, 1.4);
-               }
+               EoverEtrue->setRange("peak", input_mean-4*input_sigma, input_mean+4*input_sigma);
                result = CBpdf->fitTo(*rdh, Range("peak"));
             }      
          }
@@ -714,7 +735,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
                result = doubleCBpdf->fitTo(*rdh);
             }
             else if(do_fitPeak){
-               EoverEtrue->setRange("peak",  0.9, 1.1);
+               EoverEtrue->setRange("peak", input_mean-4*input_sigma, input_mean+4*input_sigma);
                result = doubleCBpdf->fitTo(*rdh, Range("peak"));
             }      
          }
@@ -723,7 +744,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
                result = BGpdf->fitTo(*rdh);
             }
             else if(do_fitPeak){
-               EoverEtrue->setRange("peak",  0.6, 1.1);
+               EoverEtrue->setRange("peak", input_mean-4*input_sigma, input_mean+4*input_sigma);
                result = BGpdf->fitTo(*rdh, Range("peak"));
             }      
          }
@@ -778,7 +799,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
          label->SetTextFont(42);
          label->SetTextAlign(11);
          TString kevt = to_string(kEvents);
-         label->AddText(kevt + "k events");
+         label->AddText(kevt + "k events " + mean_tmp + "  " + sigma_tmp);
          if(do_binningEt){
             label->AddText(getString(ETvalue[ETranges[i]].first, 0) + " < E_{T} < " + getString(ETvalue[ETranges[i]].second, 0) + "  GeV");
          }

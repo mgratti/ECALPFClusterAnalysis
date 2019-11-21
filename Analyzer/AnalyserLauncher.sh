@@ -17,18 +17,18 @@ doPlotter=true
 declare -a FilesArray=(
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrh0.5_seedRef_V04_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seed3.0_V02_v03_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
+                        "photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000_simFraction"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000_deltaR"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000_simFraction"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000_deltaR"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000_simFraction"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000_deltaR"
                      )
@@ -48,13 +48,13 @@ doMatching_deltaR=false
 ######################
 
 # ----- 1.  What do you want to plot? ----- #
-do_resolutionPlot=true
-do_scalePlot=true
-do_efficiencyPlot=true
+do_resolutionPlot=false
+do_scalePlot=false
+do_efficiencyPlot=false
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency plot, turn this option to true
-do_efficiencyPlotOnly=true
+do_efficiencyPlotOnly=false
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
 do_ratioPlot=false
@@ -63,14 +63,14 @@ do_ratioPlot=false
 do_useDifMatching=false
 
 # If you want to scan over the different thresholds, turn this option to true
-do_scanThrs=true
+do_scanThrs=false
 
 # choose whether to use a finner binning or not
 do_fineBinning_energy=true
 do_fineBinning_eta=true
 
 # do you want to enable pop-up plots?
-do_popUpPlot=true
+do_popUpPlot=false
 
 
 
@@ -85,7 +85,7 @@ use_simEnergy=true
 do_binningEt=false
 
 # This function turned to true fits the peak only, otherwise fits the whole distribution
-do_fitPeak=false
+do_fitPeak=true
 
 # choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 do_CBfit=false
