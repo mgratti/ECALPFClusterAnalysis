@@ -28,7 +28,7 @@ declare -a FilesArray=(
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_deltaR"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000_simFraction"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000_deltaR"
                      )
@@ -57,13 +57,13 @@ do_efficiencyPlot=true
 do_efficiencyPlotOnly=true
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
-do_ratioPlot=true
+do_ratioPlot=false
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true
 do_useDifMatching=false
 
-# If you want to compare to the ref matching (deltaR)
-#do_compareToRef=false
+# If you want to scan over the different thresholds, turn this option to true
+do_scanThrs=true
 
 # choose whether to use a finner binning or not
 do_fineBinning_energy=true
@@ -142,7 +142,7 @@ for iFile in ${FilesArray[@]}; do
       echo "#############################################################################################"
       root -l -q "start_PFClusterAnalyzer.C+(\"$iFile\", \"$inDirectory\", \"$matchingMethod\")"
    fi
-   if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = false ] ; then
+   if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = false ] && [ "$do_scanThrs" = false ] ; then
       fileNameforPlotter="histo_"$iFile
       if [ "$doMatching_numberOfHits" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
@@ -162,17 +162,17 @@ for iFile in ${FilesArray[@]}; do
       echo "#############################################################################################"
       
       if [ "$do_popUpPlot" = false ] ; then       
-         root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
+         root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\")"
       fi 
       if [ "$do_popUpPlot" = true ] ; then
-         root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
+         root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\")"
       fi 
       rm file.txt
    fi
  
 done
 
-if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
+if [ "$doPlotter" = true ] && ([ "$do_ratioPlot" = true ] || [ "$do_scanThrs" = true ]) ; then
    for iFile in ${FilesArray[@]}; do
       fileNameforPlotter="histo_"$iFile
       if [ "$do_useDifMatching" = false ] ; then
@@ -190,10 +190,10 @@ if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = true ] ; then
    done
 
    if [ "$do_popUpPlot" = false ] ; then     
-      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
+      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\")"
    fi
    if [ "$do_popUpPlot" = true ] ; then
-      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\")"
+      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\")"
    fi 
 
    rm file.txt
