@@ -232,7 +232,7 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_caloParticle_size_EB;
       TH1F* h_caloParticle_genEnergy_EB;
       TH1F* h_caloParticle_simEnergy_EB;
-      TH1F* h_caloParticle_et_EB;
+      TH1F* h_caloParticle_simEt_EB;
       TH1F* h_caloParticle_genEta_EB;
       TH1F* h_caloParticle_genPhi_EB;
       TH1F* h_caloParticle_simEta_EB;
@@ -243,7 +243,7 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_caloParticle_size_EE;
       TH1F* h_caloParticle_genEnergy_EE;
       TH1F* h_caloParticle_simEnergy_EE;
-      TH1F* h_caloParticle_et_EE;
+      TH1F* h_caloParticle_simEt_EE;
       TH1F* h_caloParticle_genEta_EE;
       TH1F* h_caloParticle_genPhi_EE;
       TH1F* h_caloParticle_simEta_EE;
@@ -254,79 +254,30 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_caloParticle_EEM_size;
       TH1F* h_caloParticle_EEM_energy;
       TH1F* h_caloParticle_EEM_simEnergy;
-      TH1F* h_caloParticle_EEM_et;
+      TH1F* h_caloParticle_EEM_simEt;
       TH1F* h_caloParticle_EEM_eta;
       TH1F* h_caloParticle_EEM_phi;
 
       TH1F* h_caloParticle_EBM_size;
       TH1F* h_caloParticle_EBM_energy;
       TH1F* h_caloParticle_EBM_simEnergy;
-      TH1F* h_caloParticle_EBM_et;
+      TH1F* h_caloParticle_EBM_simEt;
       TH1F* h_caloParticle_EBM_eta;
       TH1F* h_caloParticle_EBM_phi;
 
       TH1F* h_caloParticle_EBP_size;
       TH1F* h_caloParticle_EBP_energy;
       TH1F* h_caloParticle_EBP_simEnergy;
-      TH1F* h_caloParticle_EBP_et;
+      TH1F* h_caloParticle_EBP_simEt;
       TH1F* h_caloParticle_EBP_eta;
       TH1F* h_caloParticle_EBP_phi;
 
       TH1F* h_caloParticle_EEP_size;
       TH1F* h_caloParticle_EEP_energy;
       TH1F* h_caloParticle_EEP_simEnergy;
-      TH1F* h_caloParticle_EEP_et;
+      TH1F* h_caloParticle_EEP_simEt;
       TH1F* h_caloParticle_EEP_eta;
       TH1F* h_caloParticle_EEP_phi;
-
-
-      //superCluster
-      TH1F* h_superCluster_energy_EB;
-      TH1F* h_superCluster_energy_EE;
-      TH1F* h_superCluster_eta_EB;
-      TH1F* h_superCluster_eta_EE;
-      TH1F* h_superCluster_phi_EB;
-      TH1F* h_superCluster_phi_EE;
-      TH1F* h_superCluster_r9_EB;
-      TH1F* h_superCluster_r9_EE;
-      TH1F* h_superCluster_sigmaIetaIeta_EB;
-      TH1F* h_superCluster_sigmaIetaIeta_EE;
-      TH1F* h_superCluster_sigmaIetaIphi_EB;
-      TH1F* h_superCluster_sigmaIetaIphi_EE;
-      TH1F* h_superCluster_sigmaIphiIphi_EB;
-      TH1F* h_superCluster_sigmaIphiIphi_EE;
-      TH1F* h_superCluster_full5x5_r9_EB;
-      TH1F* h_superCluster_full5x5_r9_EE;
-      TH1F* h_superCluster_full5x5_sigmaIetaIeta_EB;
-      TH1F* h_superCluster_full5x5_sigmaIetaIeta_EE;
-      TH1F* h_superCluster_full5x5_sigmaIetaIphi_EB;
-      TH1F* h_superCluster_full5x5_sigmaIetaIphi_EE;
-      TH1F* h_superCluster_full5x5_sigmaIphiIphi_EB;
-      TH1F* h_superCluster_full5x5_sigmaIphiIphi_EE;
-
-
-      TH1F* h_superCluster_caloMatched_energy_EB;
-      TH1F* h_superCluster_caloMatched_energy_EE;
-      TH1F* h_superCluster_caloMatched_eta_EB;
-      TH1F* h_superCluster_caloMatched_eta_EE;
-      TH1F* h_superCluster_caloMatched_phi_EB;
-      TH1F* h_superCluster_caloMatched_phi_EE;
-      TH1F* h_superCluster_caloMatched_r9_EB;
-      TH1F* h_superCluster_caloMatched_r9_EE;
-      TH1F* h_superCluster_caloMatched_sigmaIetaIeta_EB;
-      TH1F* h_superCluster_caloMatched_sigmaIetaIeta_EE;
-      TH1F* h_superCluster_caloMatched_sigmaIetaIphi_EB;
-      TH1F* h_superCluster_caloMatched_sigmaIetaIphi_EE;
-      TH1F* h_superCluster_caloMatched_sigmaIphiIphi_EB;
-      TH1F* h_superCluster_caloMatched_sigmaIphiIphi_EE;
-      TH1F* h_superCluster_caloMatched_full5x5_r9_EB;
-      TH1F* h_superCluster_caloMatched_full5x5_r9_EE;
-      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EB;
-      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIeta_EE;
-      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EB;
-      TH1F* h_superCluster_caloMatched_full5x5_sigmaIetaIphi_EE;
-      TH1F* h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EB;
-      TH1F* h_superCluster_caloMatched_full5x5_sigmaIphiIphi_EE;
 
 
 

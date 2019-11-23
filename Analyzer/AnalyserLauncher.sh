@@ -10,14 +10,16 @@
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=false
-doPlotter=true
+doAnalyser=true
+doPlotter=false
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrh0.5_seedRef_V04_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seed3.0_V02_v03_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
+                        "photon_E0.1to200GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_V03_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEfar_noPU_pfrhRef_seedRef_V03_V05_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000_simFraction"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000_deltaR"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000"
@@ -38,8 +40,8 @@ inDirectory="/work/anlyon/dumpedFiles/"
 #inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
 # Choose one of the following matching strategies
 doMatching_numberOfHits=false
-doMatching_simFraction=true
-doMatching_deltaR=false
+doMatching_simFraction=false
+doMatching_deltaR=true
 
 
 
@@ -121,7 +123,8 @@ fi
 echo "Start" 
 
 if [ "$doMatching_numberOfHits" = true ] ; then
-   matchingMethod="numberOfHits"
+   #matchingMethod="numberOfHits"
+   matchingMethod="simFraction"
 fi
 if [ "$doMatching_simFraction" = true ] ; then
    matchingMethod="simFraction"
