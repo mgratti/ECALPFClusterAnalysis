@@ -511,7 +511,6 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       vector<map<TString, map<TString, Float_t>>> map_dummy(2);
       vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(2);
       producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
-      cout << "je suis ici" << endl;
    }
 
    if(do_scanThrs){
@@ -1003,7 +1002,7 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
 
          Float_t error_tmp(0);
          quantity = hist_num->GetEntries()/hist_deno->GetEntries();
-         //cout << "efficiency: " << quantity << endl;i
+         cout << "efficiency: " << ETAranges[indexA] << " " << ETranges[indexB] << " "  << quantity << endl;
          if(TEfficiency::CheckConsistency(*hist_num,*hist_deno)){
             eff_error = new TEfficiency(*hist_num, *hist_deno);
          }

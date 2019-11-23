@@ -11,21 +11,21 @@
 
 # What do you want to do? 
 doAnalyser=true
-doPlotter=false
+doPlotter=true
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrh0.5_seedRef_V04_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seed3.0_V02_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_V03_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_V03_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEfar_noPU_pfrhRef_seedRef_V03_V05_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000_simFraction"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000_deltaR"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000_simFraction"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000_deltaR"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000_simFraction"
@@ -40,8 +40,8 @@ inDirectory="/work/anlyon/dumpedFiles/"
 #inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
 # Choose one of the following matching strategies
 doMatching_numberOfHits=false
-doMatching_simFraction=false
-doMatching_deltaR=true
+doMatching_simFraction=true
+doMatching_deltaR=false
 
 
 
@@ -56,7 +56,7 @@ do_efficiencyPlot=false
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency plot, turn this option to true
-do_efficiencyPlotOnly=false
+do_efficiencyPlotOnly=true
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
 do_ratioPlot=false
