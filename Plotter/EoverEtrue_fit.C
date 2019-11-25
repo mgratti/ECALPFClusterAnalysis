@@ -88,7 +88,7 @@ void produceScanPlots(TString, vector<string>, vector<map<TString, map<TString, 
 TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
 
 
-TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
+TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, int iFile, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
 
 
 
@@ -633,7 +633,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
          float sigma_min = 0;
          float sigma_max; 
 
-        if(mean_init<1.96){
+         if(mean_init<1.96){
             sigma_init = dmhist->GetStdDev();
             sigma_max = 1.8*dmhist->GetStdDev();
          }
@@ -657,28 +657,28 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
 
          /*if(ETvalue[ETranges[i]].second <= 30){
-            mean_init = 1.7;
-            mean_min = 0.7;
-            mean_max = 1.2;
-            sigma_init = 0.07;
-            sigma_max = 0.16;
-            alpha_1_init = 10.;
-            alpha_2_init = 1.;
-            n_1_init = 1.;
-            n_2_init = 1.;
-         }
-         else{
-            mean_init = 1.015;
-            mean_min = 0.7;
-            mean_max = 1.2;
-            sigma_init = 0.027;
-            sigma_max = 0.16;
-            alpha_1_init = 3.0;
-            alpha_2_init = -2.0;
-            n_1_init = 5;
-            n_2_init = 1;
-         }
-         */
+           mean_init = 1.7;
+           mean_min = 0.7;
+           mean_max = 1.2;
+           sigma_init = 0.07;
+           sigma_max = 0.16;
+           alpha_1_init = 10.;
+           alpha_2_init = 1.;
+           n_1_init = 1.;
+           n_2_init = 1.;
+           }
+           else{
+           mean_init = 1.015;
+           mean_min = 0.7;
+           mean_max = 1.2;
+           sigma_init = 0.027;
+           sigma_max = 0.16;
+           alpha_1_init = 3.0;
+           alpha_2_init = -2.0;
+           n_1_init = 5;
+           n_2_init = 1;
+           }
+           */
          RooRealVar *mean   = new RooRealVar("mean","mean", mean_init, mean_min, mean_max);
          RooRealVar *sigma  = new RooRealVar("sigma","sigma", sigma_init, sigma_min, sigma_max);
          RooRealVar *alpha  = new RooRealVar("alpha", "alpha", 1., 0, 2.);
@@ -1002,7 +1002,7 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
 
          Float_t error_tmp(0);
          quantity = hist_num->GetEntries()/hist_deno->GetEntries();
-         cout << "efficiency: " << ETAranges[indexA] << " " << ETranges[indexB] << " "  << quantity << endl;
+         //cout << "efficiency: " << quantity << endl;
          if(TEfficiency::CheckConsistency(*hist_num,*hist_deno)){
             eff_error = new TEfficiency(*hist_num, *hist_deno);
          }
@@ -1013,6 +1013,8 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity);
          graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);
+
+         inputFile->Close();
       }
 
 
@@ -1061,7 +1063,7 @@ TGraphAsymmErrors* getGraph(TString whichPlot, string fileName, map<TString, map
 
 
 
-TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what){
+TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fileName2, int iFile, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what){
 
    TString label1 = fileName1.c_str();
    TString filename1; 
@@ -1083,7 +1085,15 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
    TEfficiency* eff_error2;
 
    TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
-   graph->SetTitle("Ratio");
+   if(whichPlot=="Resolution"){
+      graph->SetTitle("Resolution - Ratio");
+   }
+   else if(whichPlot=="Scale"){
+      graph->SetTitle("Scale - Ratio");
+   }
+   else if(whichPlot=="Efficiency"){
+      graph->SetTitle("Efficiency - Ratio");
+   }
 
    unsigned int size(0);
    if(what=="vsEnergy"){
@@ -1117,6 +1127,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
          indexB = kk;
       }
 
+      vector<float> range_candidate;
 
       if(whichPlot=="Efficiency"){
          TFile* inputFile1 = TFile::Open(filename1);
@@ -1183,20 +1194,27 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity1/quantity2);
          graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);
+         range_candidate.push_back(quantity1/quantity2);
+
+         inputFile1->Close();
+         inputFile2->Close();
       }
       else if(whichPlot=="Resolution" || whichPlot=="Scale"){
          quantity1 = map_quantity[0][ETranges[indexB]][ETAranges[indexA]];
-         quantity2 = map_quantity[1][ETranges[indexB]][ETAranges[indexA]];
+         quantity2 = map_quantity[iFile][ETranges[indexB]][ETAranges[indexA]];
          error1 = map_quantity_error[0][ETranges[indexB]][ETAranges[indexA]][0];
-         error2 = map_quantity_error[1][ETranges[indexB]][ETAranges[indexA]][0];
+         error2 = map_quantity_error[iFile][ETranges[indexB]][ETAranges[indexA]][0];
          error = quantity1/quantity2*(error1/quantity1 + error2/quantity2);
          if(quantity1!=0 && quantity2!=0){
             int thisPoint = graph->GetN();
             graph->SetPoint(thisPoint, x, quantity1/quantity2);
             graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error, error);
+            range_candidate.push_back(quantity1/quantity2);
          }   
       }
    }
+
+
 
    if(whichPlot=="Efficiency"){
       graph->GetYaxis()->SetRangeUser(0.98, 1.02);
@@ -1229,6 +1247,7 @@ TGraphAsymmErrors* getRatioGraph(TString whichPlot, string fileName1, string fil
 }
 
 
+
 void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching, vector<TString> PUtag, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
 
    // we first produce the plot of the efficiency as a function of the energy at fixed eta ranges
@@ -1237,15 +1256,17 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
       TLegend* leg1 = new TLegend(0.55, 0.65, 0.9, 0.83);
 
-      c1->cd();
+      TCanvas* cr = new TCanvas("cr", "cr", 700, 600);
+      TLegend* legr = new TLegend(0.55, 0.65, 0.9, 0.83);
+
+      //c1->cd();
 
       for(unsigned int ll(0); ll<fileName.size(); ++ll){
          TGraphAsymmErrors* graph1;
          graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy"); 
          graph1->SetLineColor(color[ll]);
          graph1->SetMarkerColor(color[ll]);
-
-
+         c1->cd();
          if(ll==0){
             graph1->Draw("A*");
          }
@@ -1264,6 +1285,40 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          leg1 -> SetFillColorAlpha(0, 0);
          leg1 -> SetBorderSize(0);
          leg1 -> Draw("same");
+
+         cr->cd();
+         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[0], fileName[ll], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy"); 
+         graph_ratio->SetLineColor(color[ll]);
+         graph_ratio->SetMarkerColor(color[ll]);
+         if(ll==0){
+            graph_ratio->Draw("A*");
+         }
+         else{
+            graph_ratio->Draw("*, same");
+         }
+
+         if(seeding_thrs[ll]=="seedRef"){
+            if(ll==0){
+               legr -> AddEntry(graph_ratio, "ref: " + pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll]);
+            }
+            else{
+               legr -> AddEntry(graph_ratio, pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll]);
+            }
+         }
+         else{
+            if(ll==0){
+               legr -> AddEntry(graph_ratio, "ref: " + pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll] + " " + dependency[ll]);
+            }
+            else{
+               legr -> AddEntry(graph_ratio, pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll] + " " + dependency[ll]);
+            }
+         }
+         legr -> SetTextSize(0.025);
+         legr -> SetLineColor(0);
+         legr -> SetFillColorAlpha(0, 0);
+         legr -> SetBorderSize(0);
+         legr -> Draw("same");
+
       }
 
 
@@ -1274,6 +1329,9 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       label->SetTextFont(42);
       label->SetTextAlign(11);
       label->AddText("#eta bin: " + ETAranges[kk]);
+      c1->cd();
+      label->Draw("same");
+      cr->cd();
       label->Draw("same");
 
       TPaveText* label_info_up = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
@@ -1285,8 +1343,10 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       TString nEvents = to_string(kEvents);
       label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
       label_info_up->AddText(matching[0] + " matching");
+      c1->cd();
       label_info_up->Draw("same");
-
+      cr->cd();
+      label_info_up->Draw("same");
 
       TString dir = outputdir.c_str();
       TString nameSave;
@@ -1305,6 +1365,12 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       c1->SaveAs(dir + nameSave + "_vs_energy.png");
       c1->SaveAs(dir + nameSave + "_vs_energy.pdf");
       delete c1;
+
+      cr->cd();
+      cr->SaveAs(dir + nameSave + "_vs_energy_ratioScan.png");
+      cr->SaveAs(dir + nameSave + "_vs_energy_ratioScan.pdf");
+      delete cr;
+
    }
 
    // we then produce the plot of the efficiency as a function of eta at fixed energy
@@ -1313,14 +1379,17 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
       TLegend* leg1 = new TLegend(0.55, 0.65, 0.9, 0.83);
 
-      c1->cd();
+      TCanvas* cr = new TCanvas("cr", "cr", 700, 600);
+      TLegend* legr = new TLegend(0.55, 0.65, 0.9, 0.83);
+
 
       for(unsigned int ll(0); ll<fileName.size(); ++ll){
          TGraphAsymmErrors* graph1;
          graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
          graph1->SetLineColor(color[ll]);
          graph1->SetMarkerColor(color[ll]);
-
+   
+         c1->cd();
 
          if(ll==0){
             graph1->Draw("A*");
@@ -1340,7 +1409,41 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          leg1 -> SetFillColorAlpha(0, 0);
          leg1 -> SetBorderSize(0);
          leg1 -> Draw("same");
-      }
+ 
+         cr->cd();
+         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[0], fileName[ll], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
+         graph_ratio->SetLineColor(color[ll]);
+         graph_ratio->SetMarkerColor(color[ll]);
+         if(ll==0){
+            graph_ratio->Draw("A*");
+         }
+         else{
+            graph_ratio->Draw("*, same");
+         }
+
+         if(seeding_thrs[ll]=="seedRef"){
+            if(ll==0){
+               legr -> AddEntry(graph_ratio, "ref: " + pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll]);
+            }
+            else{
+               legr -> AddEntry(graph_ratio, pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll]);
+            }
+         }
+         else{
+            if(ll==0){
+               legr -> AddEntry(graph_ratio, "ref: " + pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll] + " " + dependency[ll]);
+            }
+            else{
+               legr -> AddEntry(graph_ratio, pfrechit_thrs[ll] + " " + dependency[ll] + " - " + seeding_thrs[ll] + " " + dependency[ll]);
+            }
+         }
+         legr -> SetTextSize(0.025);
+         legr -> SetLineColor(0);
+         legr -> SetFillColorAlpha(0, 0);
+         legr -> SetBorderSize(0);
+         legr -> Draw("same");
+
+     }
 
 
       TPaveText* label = new TPaveText(0.63,0.85,0.8,0.88,"brNDC");
@@ -1350,6 +1453,9 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       label->SetTextFont(42);
       label->SetTextAlign(11);
       label->AddText("Energy bin: " + ETranges[kk]);
+      c1->cd();
+      label->Draw("same");
+      cr->cd();
       label->Draw("same");
 
       TPaveText* label_info_up = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
@@ -1361,6 +1467,9 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       TString nEvents = to_string(kEvents);
       label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
       label_info_up->AddText(matching[0] + " matching");
+      c1->cd();
+      label_info_up->Draw("same");
+      cr->cd();
       label_info_up->Draw("same");
 
 
@@ -1381,6 +1490,11 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       c1->SaveAs(dir + nameSave + "_vs_eta.png");
       c1->SaveAs(dir + nameSave + "_vs_eta.pdf");
       delete c1;
+ 
+      cr->cd();
+      cr->SaveAs(dir + nameSave + "_vs_eta_ratioScan.png");
+      cr->SaveAs(dir + nameSave + "_vs_eta_ratioScan.pdf");
+      delete cr;
    }
 
 
@@ -1453,207 +1567,212 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
          leg1->Draw("same");
 
-         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy"); 
-         pad3->cd();
-         if(kk==0){
-            graph3->Draw("A*");
-         }
-         else{
-            graph3->Draw("*, same");
-         }
+         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], 1,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy"); 
+
+         //cout << graph3->GetMaximum() << endl;
+
       }
    }
+   //      pad3->cd();
+   //      if(kk==0){
+   //         graph3->Draw("A*");
+   //      }
+   //      else{
+   //         graph3->Draw("*, same");
+   //      }
+   //     }
+   //  }
 
-   TPaveText* label = new TPaveText(0.7,0.85,0.8,0.88,"brNDC");
-   label->SetBorderSize(0);
-   label->SetFillColor(kWhite);
-   label->SetTextSize(0.025);
-   label->SetTextFont(42);
-   label->SetTextAlign(11);
-   label->AddText("#eta bins: ");
-   if(do_ratioPlot){
-      pad1->cd();
-   }
+TPaveText* label = new TPaveText(0.7,0.85,0.8,0.88,"brNDC");
+label->SetBorderSize(0);
+label->SetFillColor(kWhite);
+label->SetTextSize(0.025);
+label->SetTextFont(42);
+label->SetTextAlign(11);
+label->AddText("#eta bins: ");
+if(do_ratioPlot){
+   pad1->cd();
+}
+label->Draw("same");
+if(do_ratioPlot){
+   pad2->cd();
    label->Draw("same");
-   if(do_ratioPlot){
-      pad2->cd();
-      label->Draw("same");
-   }
+}
 
-   TPaveText* label_info_up = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
-   label_info_up->SetBorderSize(0);
-   label_info_up->SetFillColor(kWhite);
-   label_info_up->SetTextSize(0.028);
-   label_info_up->SetTextFont(42);
-   label_info_up->SetTextAlign(11);
-   TString nEvents = to_string(kEvents);
-   label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
-   label_info_up->AddText(matching[0] + " matching");
+TPaveText* label_info_up = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
+label_info_up->SetBorderSize(0);
+label_info_up->SetFillColor(kWhite);
+label_info_up->SetTextSize(0.028);
+label_info_up->SetTextFont(42);
+label_info_up->SetTextAlign(11);
+TString nEvents = to_string(kEvents);
+label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
+label_info_up->AddText(matching[0] + " matching");
+if(do_ratioPlot){
+   pad1->cd();
+}
+label_info_up->Draw("same");
+
+TPaveText* label_info_down = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
+label_info_down->SetBorderSize(0);
+label_info_down->SetFillColor(kWhite);
+label_info_down->SetTextSize(0.028);
+label_info_down->SetTextFont(42);
+label_info_down->SetTextAlign(11);
+label_info_down->AddText(nEvents + "k Events, " + PUtag[1]);
+label_info_down->AddText(matching[1] +  " matching");
+if(do_ratioPlot){
+   pad2->cd();
+   label_info_down->Draw("same");
+}
+
+TPaveText* label_thrs_up = new TPaveText(0.15,0.60,0.45,0.72,"brNDC");
+label_thrs_up->SetBorderSize(0);
+label_thrs_up->SetFillColor(kWhite);
+label_thrs_up->SetTextSize(0.028);
+label_thrs_up->SetTextFont(42);
+label_thrs_up->SetTextAlign(11);
+label_thrs_up->AddText(pfrechit_thrs[0] + " " + dependency[0]);
+if(seeding_thrs[0]=="seedRef"){
+   label_thrs_up->AddText(seeding_thrs[0]);
+}
+else{
+   label_thrs_up->AddText(seeding_thrs[0] + " " + dependency[0]);
+}
+if(do_ratioPlot){
+   pad1->cd();
+}
+label_thrs_up->Draw("same");
+
+TPaveText* label_thrs_down = new TPaveText(0.15,0.60,0.45,0.72,"brNDC");
+label_thrs_down->SetBorderSize(0);
+label_thrs_down->SetFillColor(kWhite);
+label_thrs_down->SetTextSize(0.028);
+label_thrs_down->SetTextFont(42);
+label_thrs_down->SetTextAlign(11);
+label_thrs_down->AddText(pfrechit_thrs[1] + " " + dependency[1]);
+if(seeding_thrs[1]=="seedRef"){
+   label_thrs_down->AddText(seeding_thrs[1]);
+}
+else{
+   label_thrs_down->AddText(seeding_thrs[1] + " " + dependency[1]);
+}
+if(do_ratioPlot){
+   pad2->cd();
+   label_thrs_down->Draw("same");
+}
+
+
+TString dir = outputdir.c_str();
+TString nameSave;
+if(whichPlot=="Resolution"){
+   nameSave = "resolution";
+}
+else if(whichPlot=="Scale"){
+   nameSave = "scale";
+}
+else if(whichPlot=="Efficiency"){
+   nameSave = "efficiency";
+}
+
+c1->cd();
+c1->SaveAs(dir + nameSave + "_vs_energy.png");
+c1->SaveAs(dir + nameSave + "_vs_energy.pdf");
+
+
+
+// we then produce the plot of the efficiency as a function of eta for different energy ranges
+TCanvas* c2;
+if(!do_ratioPlot){
+   c2 = new TCanvas("c2", "c2", 700, 600);
+}
+else{
+   c2 = new TCanvas("c2", "c2", 700, 1000);
+}
+TLegend* leg2 = new TLegend(0.7, 0.55, 0.9, 0.85);
+
+c2->cd();
+
+if(do_ratioPlot){
+   pad1->Draw();
+   pad2->Draw();
+   pad3->Draw();
+}
+
+
+for(unsigned int kk(0); kk<ETranges.size(); ++kk){
+   TGraphAsymmErrors* graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
    if(do_ratioPlot){
       pad1->cd();
    }
-   label_info_up->Draw("same");
+   if(kk==0){
+      graph1->Draw("A*");
+   }
+   else{
+      graph1->Draw("*, same");
+   }
+   leg2 -> AddEntry(graph1, ETranges[kk]);
+   leg2 -> SetTextSize(0.025);
+   leg2 -> SetLineColor(0);
+   leg2 -> SetFillColorAlpha(0, 0);
+   leg2 -> SetBorderSize(0);
+   leg2 -> Draw("same");
 
-   TPaveText* label_info_down = new TPaveText(0.15,0.73,0.45,0.85,"brNDC");
-   label_info_down->SetBorderSize(0);
-   label_info_down->SetFillColor(kWhite);
-   label_info_down->SetTextSize(0.028);
-   label_info_down->SetTextFont(42);
-   label_info_down->SetTextAlign(11);
-   label_info_down->AddText(nEvents + "k Events, " + PUtag[1]);
-   label_info_down->AddText(matching[1] +  " matching");
    if(do_ratioPlot){
+      TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
       pad2->cd();
-      label_info_down->Draw("same");
-   }
-
-   TPaveText* label_thrs_up = new TPaveText(0.15,0.60,0.45,0.72,"brNDC");
-   label_thrs_up->SetBorderSize(0);
-   label_thrs_up->SetFillColor(kWhite);
-   label_thrs_up->SetTextSize(0.028);
-   label_thrs_up->SetTextFont(42);
-   label_thrs_up->SetTextAlign(11);
-   label_thrs_up->AddText(pfrechit_thrs[0] + " " + dependency[0]);
-   if(seeding_thrs[0]=="seedRef"){
-      label_thrs_up->AddText(seeding_thrs[0]);
-   }
-   else{
-      label_thrs_up->AddText(seeding_thrs[0] + " " + dependency[0]);
-   }
-   if(do_ratioPlot){
-      pad1->cd();
-   }
-   label_thrs_up->Draw("same");
-
-   TPaveText* label_thrs_down = new TPaveText(0.15,0.60,0.45,0.72,"brNDC");
-   label_thrs_down->SetBorderSize(0);
-   label_thrs_down->SetFillColor(kWhite);
-   label_thrs_down->SetTextSize(0.028);
-   label_thrs_down->SetTextFont(42);
-   label_thrs_down->SetTextAlign(11);
-   label_thrs_down->AddText(pfrechit_thrs[1] + " " + dependency[1]);
-   if(seeding_thrs[1]=="seedRef"){
-      label_thrs_down->AddText(seeding_thrs[1]);
-   }
-   else{
-      label_thrs_down->AddText(seeding_thrs[1] + " " + dependency[1]);
-   }
-   if(do_ratioPlot){
-      pad2->cd();
-      label_thrs_down->Draw("same");
-   }
-
-
-   TString dir = outputdir.c_str();
-   TString nameSave;
-   if(whichPlot=="Resolution"){
-      nameSave = "resolution";
-   }
-   else if(whichPlot=="Scale"){
-      nameSave = "scale";
-   }
-   else if(whichPlot=="Efficiency"){
-      nameSave = "efficiency";
-   }
-
-   c1->cd();
-   c1->SaveAs(dir + nameSave + "_vs_energy.png");
-   c1->SaveAs(dir + nameSave + "_vs_energy.pdf");
-
-
-
-   // we then produce the plot of the efficiency as a function of eta for different energy ranges
-   TCanvas* c2;
-   if(!do_ratioPlot){
-      c2 = new TCanvas("c2", "c2", 700, 600);
-   }
-   else{
-      c2 = new TCanvas("c2", "c2", 700, 1000);
-   }
-   TLegend* leg2 = new TLegend(0.7, 0.55, 0.9, 0.85);
-
-   c2->cd();
-
-   if(do_ratioPlot){
-      pad1->Draw();
-      pad2->Draw();
-      pad3->Draw();
-   }
-
-
-   for(unsigned int kk(0); kk<ETranges.size(); ++kk){
-      TGraphAsymmErrors* graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
-      if(do_ratioPlot){
-         pad1->cd();
-      }
       if(kk==0){
-         graph1->Draw("A*");
+         graph2->Draw("A*");
       }
       else{
-         graph1->Draw("*, same");
+         graph2->Draw("*, same");
       }
-      leg2 -> AddEntry(graph1, ETranges[kk]);
-      leg2 -> SetTextSize(0.025);
-      leg2 -> SetLineColor(0);
-      leg2 -> SetFillColorAlpha(0, 0);
-      leg2 -> SetBorderSize(0);
-      leg2 -> Draw("same");
+      leg2->Draw("same");
 
-      if(do_ratioPlot){
-         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
-         pad2->cd();
-         if(kk==0){
-            graph2->Draw("A*");
-         }
-         else{
-            graph2->Draw("*, same");
-         }
-         leg2->Draw("same");
-
-         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
-         pad3->cd();
-         if(kk==0){
-            graph3->Draw("A*");
-         }
-         else{
-            graph3->Draw("*, same");
-         }
+      TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], 1, map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta"); 
+      pad3->cd();
+      if(kk==0){
+         graph3->Draw("A*");
+      }
+      else{
+         graph3->Draw("*, same");
       }
    }
-   TPaveText* label2 = new TPaveText(0.7,0.85,0.8,0.88,"brNDC");
-   label2->SetBorderSize(0);
-   label2->SetFillColor(kWhite);
-   label2->SetTextSize(0.025);
-   label2->SetTextFont(42);
-   label2->SetTextAlign(11);
-   if(do_binningEt){
-      label2->AddText("E_{T} bins: ");
-   }
-   else{
-      label2->AddText("Energy bins: ");
-   }
-   if(do_ratioPlot){
-      pad1->cd();
-   }
+}
+TPaveText* label2 = new TPaveText(0.7,0.85,0.8,0.88,"brNDC");
+label2->SetBorderSize(0);
+label2->SetFillColor(kWhite);
+label2->SetTextSize(0.025);
+label2->SetTextFont(42);
+label2->SetTextAlign(11);
+if(do_binningEt){
+   label2->AddText("E_{T} bins: ");
+}
+else{
+   label2->AddText("Energy bins: ");
+}
+if(do_ratioPlot){
+   pad1->cd();
+}
+label2->Draw("same");
+label_info_up->Draw("same");
+label_thrs_up->Draw("same");
+if(do_ratioPlot){
+   pad2->cd();
    label2->Draw("same");
-   label_info_up->Draw("same");
-   label_thrs_up->Draw("same");
-   if(do_ratioPlot){
-      pad2->cd();
-      label2->Draw("same");
-      label_info_down->Draw("same");
-      label_thrs_down->Draw("same");
-   }
+   label_info_down->Draw("same");
+   label_thrs_down->Draw("same");
+}
 
 
-   c2->cd();
+c2->cd();
 
-   c2->SaveAs(dir + nameSave + "_vs_eta.png");
-   c2->SaveAs(dir + nameSave + "_vs_eta.pdf");
+c2->SaveAs(dir + nameSave + "_vs_eta.png");
+c2->SaveAs(dir + nameSave + "_vs_eta.pdf");
 
 
-   delete c1;
-   delete c2;
+delete c1;
+delete c2;
 }
 
 

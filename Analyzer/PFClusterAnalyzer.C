@@ -972,7 +972,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
    //fake rate defined as 1 - (N_caloMatched_PFClusters / N_tot_PFClusters)
    if(flag_doEB){
-      float N_tot = pfCluster_energy.GetSize();
+      float N_tot(0.); // = pfCluster_energy.GetSize();
+      //for(unsigned int iPFCl(0); iPFCl<pfCluster_energy.GetSize(); ++ iPFCl){
+
       //h_PFClusters_caloMatched_fakeRate_EB->Fill(1-N_pfCl/N_tot);
    }
    else if(flag_doEE){
