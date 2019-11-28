@@ -165,7 +165,7 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_et_EB;
       TH1F* h_PFClusters_caloMatched_eta_EB;
       TH1F* h_PFClusters_caloMatched_phi_EB;
-      //TH1F* h_PFClusters_caloMatched_fakeRate_EB;
+      TH1F* h_PFClusters_caloMatched_fakeRate_EB;
       TH1F* h_PFClusters_caloMatched_eOverEtrue_EB;
       TH1F* h_PFClusters_caloMatched_eOverEtrue_simEnergy_EB; 
       TH2F* h_PFClusters_caloMatched_nRecHit_vs_energy_EB;
@@ -182,8 +182,8 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_et_EE;
       TH1F* h_PFClusters_caloMatched_eta_EE;
       TH1F* h_PFClusters_caloMatched_phi_EE;
-      //TH1F* h_PFClusters_caloMatched_fakeRate_EE;
-      //TH1F* h_PFClusters_caloMatched_fakeRate2_EE;
+      TH1F* h_PFClusters_caloMatched_fakeRate_EE;
+      TH1F* h_PFClusters_caloMatched_fakeRate2_EE;
       TH1F* h_PFClusters_caloMatched_eOverEtrue_EE;
       TH1F* h_PFClusters_caloMatched_eOverEtrue_simEnergy_EE; 
       TH2F* h_PFClusters_caloMatched_nRecHit_vs_energy_EE;
