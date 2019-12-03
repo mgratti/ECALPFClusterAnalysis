@@ -80,11 +80,13 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    flag_doEE = false;
    //turns flag_doEB/flag_doEE on depending on the outputFile
    std::string fileName = option.Data();
-   if(fileName.find("EB") != std::string::npos){
+   if(fileName.find("_EB") != std::string::npos){
       flag_doEB = true;
+      cout << "turning on EB flag" << endl;
    }
-   else if(fileName.find("EE") != std::string::npos){
+   else if(fileName.find("_EE") != std::string::npos){
       flag_doEE = true;
+      cout << "turning on EE flag" << endl;
    }
 
 
@@ -483,7 +485,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //if(entry>10){ throw std::invalid_argument("aborting");}
+   //if(entry>1){ throw std::invalid_argument("aborting");}
 
    //cout << endl << endl << "EVENT " << entry << endl;
 
@@ -507,7 +509,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       //matchingMap_caloParticle_PFCluster = PFClusterAnalyzer::getMapCaloParticleCluster(pfCluster_energy, caloParticle_genEnergy, caloParticle_simEnergy, simHit_energy, pfClusterHit_energy);
    }
 
-
+   //needed the fake rate computation
+   map<TString, map<TString, float>> N_PFtot_binned;
+   map<TString, map<TString, float>> N_PFmatched_binned;
 
    for (unsigned int icP=0; icP<caloParticle_genEnergy.GetSize(); icP++){
 
@@ -669,6 +673,22 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       //} // end loop pfClusterHits
 
 
+      map<TString, map<TString, float>> N_PFtot_binned_tmp;
+      map<TString, map<TString, float>> N_PFmatched_binned_tmp;
+  
+      for(TString Eta_key: Eta_keys){
+         for(TString Et_key: Et_keys){
+            for(int iPFCl(0); iPFCl<pfCluster_energy.GetSize(); iPFCl++){
+               if(pfCluster_energy[iPFCl]>=Et_edges[Et_key].first && pfCluster_energy[iPFCl]<Et_edges[Et_key].second 
+                     && std::abs(pfCluster_eta[iPFCl])>=Eta_edges[Eta_key].first && std::abs(pfCluster_eta[iPFCl])<Eta_edges[Eta_key].second){
+                  ++N_PFtot_binned_tmp[Eta_key][Et_key];
+            }
+          }
+          //if(N_PFtot_binned_tmp[Eta_key][Et_key]!=0) cout << Eta_key << " " << Et_key << " " << N_PFtot_binned_tmp[Eta_key][Et_key] << endl;
+          N_PFtot_binned[Eta_key][Et_key] = 0;
+          N_PFtot_binned[Eta_key][Et_key] = N_PFtot_binned_tmp[Eta_key][Et_key];
+       }
+    }
 
       //we loop on all the PFClusters associated to the same PFClusterHit and sum the energy, eta, phi
       double filling_energy=0;
@@ -859,6 +879,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                }
             }
 
+
             //we fill the caloMatched histograms binned in eta and ET
             for(TString Eta_key: Eta_keys){
                for(TString Et_key: Et_keys){
@@ -901,12 +922,15 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                   if(caloParticle_simEnergy[icP]>=Et_edges[Et_key].first && caloParticle_simEnergy[icP]<Et_edges[Et_key].second 
                         && std::abs(caloParticle_simEta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_simEta[icP])<Eta_edges[Eta_key].second){
                      h_PFclusters_caloMatched_eOverEtrue_simEnergy_EtaEnBinned[Eta_key][Et_key]->Fill(filling_energy / caloParticle_simEnergy[icP]);
-
-                     //for efficiency calculation get the number of PfClusters_caloMatched with 0.4 < E/Etrue < 1.4
-                     //if(filling_energy / caloParticle_simEnergy[icP] > 0.4 && filling_energy / caloParticle_simEnergy[icP] < 1.4){
-                     //   h_PFclusters_caloMatched_size_EtaEnBinned_simEnergy_forEfficiency[Eta_key][Et_key]->Fill(1.);
-                     //}
                   }
+
+                  if(pfCluster_energy[iMatched]>=Et_edges[Et_key].first && pfCluster_energy[iMatched]<Et_edges[Et_key].second 
+                     && std::abs(pfCluster_eta[iMatched])>=Eta_edges[Eta_key].first && std::abs(pfCluster_eta[iMatched])<Eta_edges[Eta_key].second){
+                        ++N_PFmatched_binned_tmp[Eta_key][Et_key];
+                  }
+                  N_PFmatched_binned[Eta_key][Et_key] = 0;
+                  N_PFmatched_binned[Eta_key][Et_key] = N_PFmatched_binned_tmp[Eta_key][Et_key];
+                  //if(N_PFmatched_binned[Eta_key][Et_key]!=0) cout << Eta_key << " " << Et_key << " " << N_PFmatched_binned[Eta_key][Et_key] << endl;
                }
             }
 
@@ -921,7 +945,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       }// end of loop on matched indices
 
 
-      // we get the numbe of caloParticle having at least one matched pfcluster for efficiency computation
+      // we get the number of caloParticle having at least one matched pfcluster for efficiency computation
       if(vector_matched_indices.size()>0){
          if(vector_matched_indices[0]!=-1){
             for(TString Eta_key: Eta_keys){
@@ -971,10 +995,20 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    } // end loop calo particles
 
    //fake rate defined as 1 - (N_caloMatched_PFClusters / N_tot_PFClusters)
+   for(TString Eta_key: Eta_keys){
+         for(TString Et_key: Et_keys){
+           if(N_PFtot_binned[Eta_key][Et_key]!=0){
+              //cout << Eta_key << " " << Et_key << " " << " Ntot: " << N_PFtot_binned[Eta_key][Et_key] << " Nmatched: " << N_PFmatched_binned[Eta_key][Et_key]  << " fake rate: " << 1-N_PFmatched_binned[Eta_key][Et_key] / N_PFtot_binned[Eta_key][Et_key]<< endl;
+              h_PFclusters_caloMatched_fakeRate_EtaEnBinned[Eta_key][Et_key]->Fill(1-N_PFmatched_binned[Eta_key][Et_key]/N_PFtot_binned[Eta_key][Et_key]);
+        }
+      }
+   }
+
+
+   // integrated fake rate:
    if(flag_doEB){
       float N_tot = pfCluster_energy.GetSize();
       h_PFClusters_caloMatched_fakeRate_EB->Fill(1-N_pfCl/N_tot);
-      //cout << "inclusive: " << N_pfCl << " " << N_tot << " " << 1-N_pfCl/N_tot << endl;
    }
    else if(flag_doEE){
       float N_tot = pfCluster_energy.GetSize();
@@ -990,45 +1024,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       h_PFClusters_caloMatched_size_EE->Fill(N_pfCl);
    }
 
-   //if(pfCluster_energy.GetSize()>10) cout << pfCluster_energy.GetSize() << endl;
-
-   map<TString, map<TString, int>> N_PFtot_binned;
-   map<TString, map<TString, int>> N_PFmatched_binned;
-   for(TString Eta_key: Eta_keys){
-      for(TString Et_key: Et_keys){
-         for(int iPFCl(0); iPFCl<pfCluster_energy.GetSize(); iPFCl++){
-            if(pfCluster_energy[iPFCl]>=Et_edges[Et_key].first && pfCluster_energy[iPFCl]<Et_edges[Et_key].second 
-                  && std::abs(pfCluster_eta[iPFCl])>=Eta_edges[Eta_key].first && std::abs(pfCluster_eta[iPFCl])<Eta_edges[Eta_key].second){
-               ++N_PFtot_binned[Eta_key][Et_key];
-               if(pfCluster_sim_fraction_min1_MatchedIndex[iPFCl]!=-1){
-                  ++N_PFmatched_binned[Eta_key][Et_key];
-               }
-            }
-         }
-      }
-   }
-
-   for(TString Eta_key: Eta_keys){
-      for(TString Et_key: Et_keys){
-         if(N_PFtot_binned[Eta_key][Et_key]!=0){
-            //cout << N_PFmatched_binned[Eta_key][Et_key] << " " << N_PFtot_binned[Eta_key][Et_key] << " " << 1-N_PFmatched_binned[Eta_key][Et_key]/N_PFtot_binned[Eta_key][Et_key] << endl;
-            h_PFclusters_caloMatched_fakeRate_EtaEnBinned[Eta_key][Et_key]->Fill(1-N_PFmatched_binned[Eta_key][Et_key]/N_PFtot_binned[Eta_key][Et_key]);
-         }
-      }
-   }
-
-   for(TString Eta_key: Eta_keys){
-      for(TString Et_key: Et_keys){
-         if(N_PFtot_binned[Eta_key][Et_key]!=0){
-            //cout << "PFtot: " << N_PFtot_binned[Eta_key][Et_key] << " PFmatched: " << N_PFmatched_binned[Eta_key][Et_key] << endl;
-         }
-      }
-   }
-
-   //cout << "size indices: " << pfCluster_sim_fraction_min1_MatchedIndex.GetSize() << endl;
-   for(int i(0); i<pfCluster_energy.GetSize(); ++i){
-      //if(pfCluster_sim_fraction_min1_MatchedIndex[i]==-1)cout << pfCluster_sim_fraction_min1_MatchedIndex[i] << endl;
-   }
+   
    // Loop over PFclusters to retrieve energy not associated to any caloparticle
    /*if(entry<N_perEvent_plots){
      for (unsigned int iPFCl=0; iPFCl<pfCluster_energy.GetSize(); iPFCl++){
@@ -1074,9 +1070,6 @@ void PFClusterAnalyzer::Terminate()
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
 }
-
-
-
 
 
 

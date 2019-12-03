@@ -156,10 +156,10 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    Bool_t do_EB = false;
    Bool_t do_EE = false;
 
-   if(fileName[0].find("EB") != std::string::npos){
+   if(fileName[0].find("_EB") != std::string::npos){
       do_EB = true;
    }
-   else if(fileName[0].find("EE") != std::string::npos){
+   else if(fileName[0].find("_EE") != std::string::npos){
       do_EE = true;
    }
    else{
@@ -179,7 +179,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    else if(fileName[0].find("0to100GeV") != std::string::npos){
       do_0to100GeV = true;
    }
-   else if(fileName[0].find("0.1to200GeV") != std::string::npos){
+   else if((fileName[0].find("0.1to200GeV") != std::string::npos) || (fileName[0].find("0to200GeV") != std::string::npos)){
       do_0p1to200GeV = true;
    }
    else{
@@ -230,8 +230,8 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
          ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
       }
       else{
-         //ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
-         ETranges = {"80_100"};
+         ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
+         //ETranges = {"80_100"};
       }
    }
    vector<TString> ETAranges_EB;
@@ -1239,13 +1239,13 @@ PlottingTools getRatioGraph(TString whichPlot, string fileName1, string fileName
 
 
    if(whichPlot=="Efficiency"){
-      graph->GetYaxis()->SetRangeUser(0.98, 1.02);
+      graph->GetYaxis()->SetRangeUser(0.9, 12);
    }
    else if(whichPlot=="Scale"){
       graph->GetYaxis()->SetRangeUser(0.98, 1.02);
    }
    else{
-      graph->GetYaxis()->SetRangeUser(0.8, 1.2);
+      graph->GetYaxis()->SetRangeUser(0.93, 1.2);
    } 
    graph->GetYaxis()->SetTitleSize(0.055);
    graph->GetYaxis()->SetTitleOffset(1.2);
@@ -1802,7 +1802,8 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    c1->cd();
    c1->SaveAs(dir + nameSave + "_vs_energy.png");
    c1->SaveAs(dir + nameSave + "_vs_energy.pdf");
-
+   c1->SaveAs(dir + nameSave + "_vs_energy.C");
+ 
 
 
    // we then produce the plot of the efficiency as a function of eta for different energy ranges
@@ -1908,7 +1909,8 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
    c2->SaveAs(dir + nameSave + "_vs_eta.png");
    c2->SaveAs(dir + nameSave + "_vs_eta.pdf");
-
+   c2->SaveAs(dir + nameSave + "_vs_eta.C");
+ 
 
    delete c1;
    delete c2;

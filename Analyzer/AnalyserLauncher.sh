@@ -10,22 +10,27 @@
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=false
-doPlotter=true
+doAnalyser=true
+doPlotter=false
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrh0.5_seedRef_V04_v03_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seed3.0_V02_v03_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrh0.5_seedRef_V04_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seed3.0_V02_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_V03_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEfar_noPU_pfrhRef_seedRef_V03_V05_n30000"
-                        "photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000"
+                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000"
                         #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000_simFraction"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
-                     )
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T1_v2_t0_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T1_v1_t0_n30000"
+                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtal_old2021_n1000"
+                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2021_new2021_n1000"
+                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_new2023_n1000"
+                        )
 
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
@@ -48,16 +53,16 @@ do_efficiencyPlot=true
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency plot, turn this option to true
-do_efficiencyPlotOnly=true
+do_efficiencyPlotOnly=false
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
-do_ratioPlot=false
+do_ratioPlot=true
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true
 do_useDifMatching=false
 
 # If you want to scan over the different thresholds, turn this option to true
-do_scanThrs=true
+do_scanThrs=false
 
 # choose whether to use a finner binning or not
 do_fineBinning_energy=true
@@ -82,7 +87,7 @@ do_binningEt=false
 do_fitPeak=true
 
 # Choose whether setting the Yranges by hand or set it to automatic
-do_autoScale=true
+do_autoScale=false
 
 # Choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 do_CBfit=false

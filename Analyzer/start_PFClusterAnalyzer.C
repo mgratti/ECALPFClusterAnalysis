@@ -50,10 +50,10 @@ void start_PFClusterAnalyzer(TString inFileName, TString inDirectory, string mat
       outFileName += "_deltaR";
    }
 
-   if(inFileName.Contains("EB")){
+   if(inFileName.Contains("_EB")){
       outFileName += "_EB";
    }
-   else if(inFileName.Contains("EE")){
+   else if(inFileName.Contains("_EE")){
       outFileName += "_EE";
    }
    TString outFile = outDirectory + outFileName + ".root";
