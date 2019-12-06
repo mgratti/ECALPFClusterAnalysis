@@ -15,28 +15,34 @@ doPlotter=true
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrh0.5_seedRef_V04_v03_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seed3.0_V02_v03_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_V03_v03_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_V03_v03_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EEfar_noPU_pfrhRef_seedRef_V03_V05_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000"
-                        #"photon_E0.1to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrRing_V05_v03_n30000_simFraction"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrRing_V05_v01_n30000"
                         #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T1_v2_t0_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T1_v1_t0_n30000"
-                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtal_old2021_n1000"
-                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2021_new2021_n1000"
-                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_new2023_n1000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed1.0_thrXtalEBXtalEE_y2023_T2_v2_t11_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t12_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t13_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t14_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t22_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t23_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t24_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t33_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t34_n30000"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t44_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v1_t0_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed1.0_thrRingEBXtalEE_y2023_T2_v1_t11_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed2.0_thrRingEBXtalEE_y2023_T2_v1_t12_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t13_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t14_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed2.0_thrRingEBXtalEE_y2023_T1_v1_t22_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t23_n30000"
+                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t24_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t33_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t34_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t44_n30000"
                         )
 
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
 #inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
 # Choose one of the following matching strategies
-doMatching_numberOfHits=false
 doMatching_simFraction=true
 doMatching_deltaR=false
 
@@ -47,27 +53,23 @@ doMatching_deltaR=false
 ######################
 
 # ----- 1.  What do you want to plot? ----- #
-do_resolutionPlot=false
-do_scalePlot=false
+do_resolutionPlot=true
+do_scalePlot=true
 do_efficiencyPlot=true
 do_fakeRatePlot=true
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency and fakeRate plot, turn this option to true
-do_efficiencyPlotOnly=true
+do_efficiencyPlotOnly=false
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
 do_ratioPlot=true
 
-# If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true
+# If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true. Requires do_ratioPlot to be set to true
 do_useDifMatching=false
 
 # If you want to scan over the different thresholds, turn this option to true
-do_scanThrs=false
-
-# choose whether to use a finner binning or not
-do_fineBinning_energy=true
-do_fineBinning_eta=true
+do_scanThrs=true
 
 # do you want to enable pop-up plots?
 do_popUpPlot=false
@@ -83,6 +85,11 @@ use_simEnergy=true
 
 # Choose whether you want to bin in ET or energy
 do_binningEt=false
+
+# choose whether to use a finner binning or not
+do_fineBinning_energy=true
+do_fineBinning_eta=true
+
 
 # This function turned to true fits the peak only, otherwise fits the whole distribution
 do_fitPeak=true
