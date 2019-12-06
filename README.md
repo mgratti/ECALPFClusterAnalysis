@@ -43,7 +43,7 @@ If you want to run the Plotter:
 - `do_efficiencyPlotOnly`: the previous options will run the fit, which can be time consuming. If you only want to see the efficiency plot (which doesn't need the fit), turn this option to True. No need to turn to False the previous options. 
 NB: if `do_fakeRatePlot`is also set to True, then the fakeRate plots are also going to be produced (they don't rely on the fit neither).
 - `do_ratioPlot`: makes the ratio between two files
-- `do_useDifMatching`: (requires `do_ratioPlot=true) makes the ratio between samples with different matching. In this case, write the inputfilename with the matching name appended.
+- `do_useDifMatching`: (requires `do_ratioPlot=true`) makes the ratio between samples with different matching. In this case, write the inputfilename with the matching name appended.
 - `do_scanThrs`: produces the plots looping on all the fileNames, at fixed energy or eta 
 - `do_popUpPlot`: do you want to see the plot while the code is running? 
 
