@@ -1359,7 +1359,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
             vector_range1.push_back(range_graph1[i]);
          }
 
-         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[0], fileName[ll], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").range; 
+         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").range; 
 
          for(unsigned int i(0); i<range_graphR.size(); ++i){
             vector_rangeR.push_back(range_graphR[i]);
@@ -1403,7 +1403,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          leg1 -> Draw("same");
 
          cr->cd();
-         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[0], fileName[ll], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
+         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
 
          if(do_autoScale){
             graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.05*(max_rangeR-min_rangeR));
@@ -1512,7 +1512,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
             vector_range1.push_back(range_graph1[i]);
          }
 
-         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[0], fileName[ll], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").range; 
+         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").range; 
 
          for(unsigned int i(0); i<range_graphR.size(); ++i){
             vector_rangeR.push_back(range_graphR[i]);
@@ -1559,7 +1559,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          leg1 -> Draw("same");
 
          cr->cd();
-         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[0], fileName[ll], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph; 
+         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph; 
 
          if(do_autoScale){
             graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.05*(max_rangeR-min_rangeR));
