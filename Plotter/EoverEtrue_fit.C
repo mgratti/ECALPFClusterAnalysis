@@ -1406,7 +1406,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
 
          if(do_autoScale){
-            graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.05*(max_rangeR-min_rangeR));
+            graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.8*(max_rangeR-min_rangeR));
          }
 
          graph_ratio->SetLineColor(color[ll]);
@@ -1562,7 +1562,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph; 
 
          if(do_autoScale){
-            graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.05*(max_rangeR-min_rangeR));
+            graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.8*(max_rangeR-min_rangeR));
          }
 
          graph_ratio->SetLineColor(color[ll]);
