@@ -17,14 +17,14 @@ doPlotter=true
 declare -a FilesArray=(
                         #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T1_v2_t0_n30000"
                         "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed1.0_thrXtalEBXtalEE_y2023_T2_v2_t11_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t12_n30000"
+                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t12_n30000"
                         #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t13_n30000"
                         #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t14_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t22_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t23_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t24_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t33_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t34_n30000"
+                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t22_n30000"
+                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t23_n30000"
+                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t24_n30000"
+                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t33_n30000"
+                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t34_n30000"
                         #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t44_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v1_t0_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed1.0_thrRingEBXtalEE_y2023_T2_v1_t11_n30000"
@@ -69,7 +69,7 @@ do_ratioPlot=false
 do_useDifMatching=false
 
 # If you want to scan over the different thresholds, turn this option to true
-do_scanThrs=false
+do_scanThrs=true
 
 # do you want to enable pop-up plots?
 do_popUpPlot=false
@@ -95,7 +95,7 @@ do_fineBinning_eta=true
 do_fitPeak=true
 
 # Choose whether setting the Yranges by hand or set it to automatic
-do_autoScale=false
+do_autoScale=true
 
 # Choose one of the following fit (Crystal Ball, double-sided Crystal Ball or Bifurcated Gaussian)
 do_CBfit=false

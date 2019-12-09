@@ -957,7 +957,7 @@ PlottingTools getGraph(TString whichPlot, string fileName, map<TString, map<TStr
    Float_t x, quantity, error;
    TEfficiency* eff_error;
 
-   vector<float> range_candidate;
+   vector<float> range_candidate(10);
 
    TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
    if(printTitle){
@@ -1021,7 +1021,9 @@ PlottingTools getGraph(TString whichPlot, string fileName, map<TString, map<TStr
          }
 
          Float_t error_tmp(0);
-         quantity = hist_num->GetEntries()/hist_deno->GetEntries();
+         if(hist_deno->GetEntries()!=0){
+            quantity = hist_num->GetEntries()/hist_deno->GetEntries();
+         }
          //cout << "efficiency: " << quantity << endl;
          range_candidate.push_back(quantity);
          if(TEfficiency::CheckConsistency(*hist_num,*hist_deno)){
@@ -1062,6 +1064,7 @@ PlottingTools getGraph(TString whichPlot, string fileName, map<TString, map<TStr
 
       else if(whichPlot=="Resolution" || whichPlot=="Scale"){
          quantity = map_quantity[ETranges[indexB]][ETAranges[indexA]];
+         //cout << "quantity: " << quantity << endl;
          range_candidate.push_back(quantity);
          error = map_quantity_error[ETranges[indexB]][ETAranges[indexA]][0];
          if(quantity!=0){
@@ -1101,7 +1104,7 @@ PlottingTools getGraph(TString whichPlot, string fileName, map<TString, map<TStr
    PlottingTools output;
    output.graph = graph;
    output.range = range_candidate;
-
+   
    return output;
 }
 
@@ -1128,7 +1131,7 @@ PlottingTools getRatioGraph(TString whichPlot, string fileName1, string fileName
    TEfficiency* eff_error1;
    TEfficiency* eff_error2;
 
-   vector<float> range_candidate;
+   vector<float> range_candidate(10);
 
    TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
    if(whichPlot=="Resolution"){
@@ -1331,7 +1334,7 @@ PlottingTools getRatioGraph(TString whichPlot, string fileName1, string fileName
    PlottingTools output;
    output.graph = graph;
    output.range = range_candidate;
-
+   
    return output;
 
 }
@@ -1366,12 +1369,21 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          }
       }
 
-      float max_range1 = *max_element(vector_range1.begin(), vector_range1.end());
-      float min_range1 = *min_element(vector_range1.begin(), vector_range1.end());
+      float max_range1;
+      float min_range1; 
 
-      float max_rangeR = *max_element(vector_rangeR.begin(), vector_rangeR.end());
-      float min_rangeR = *min_element(vector_rangeR.begin(), vector_rangeR.end());
+      if(vector_range1.size()!=0){
+         max_range1 = *max_element(vector_range1.begin(), vector_range1.end());
+         min_range1 = *min_element(vector_range1.begin(), vector_range1.end());
+      }
 
+      float max_rangeR;
+      float min_rangeR; 
+
+      if(vector_rangeR.size()!=0){
+         max_rangeR = *max_element(vector_rangeR.begin(), vector_rangeR.end());
+         min_rangeR = *min_element(vector_rangeR.begin(), vector_rangeR.end());
+      }
 
       for(unsigned int ll(0); ll<fileName.size(); ++ll){
          TGraphAsymmErrors* graph1;
@@ -1706,7 +1718,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
    float max_range1 = *max_element(vector_range1.begin(), vector_range1.end());
    float min_range1 = *min_element(vector_range1.begin(), vector_range1.end());
-   
+
    float max_range2; 
    float min_range2;
    float max_rangeR;
@@ -1718,6 +1730,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       max_rangeR = *max_element(vector_rangeR.begin(), vector_rangeR.end());
       min_rangeR = *min_element(vector_rangeR.begin(), vector_rangeR.end());
    }
+
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       TGraphAsymmErrors* graph1;
