@@ -656,7 +656,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
          if(mean_init<1.96){
             sigma_init = dmhist->GetStdDev();
-            sigma_max = 1.8*dmhist->GetStdDev();
+            sigma_max = 1.6*dmhist->GetStdDev();
          }
          else{
             sigma_init = dmhist->GetStdDev()/4;
@@ -1706,7 +1706,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
    float max_range1 = *max_element(vector_range1.begin(), vector_range1.end());
    float min_range1 = *min_element(vector_range1.begin(), vector_range1.end());
-
+   
    float max_range2; 
    float min_range2;
    float max_rangeR;
@@ -1718,7 +1718,6 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       max_rangeR = *max_element(vector_rangeR.begin(), vector_rangeR.end());
       min_rangeR = *min_element(vector_rangeR.begin(), vector_rangeR.end());
    }
-
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       TGraphAsymmErrors* graph1;
@@ -1742,7 +1741,6 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       leg1 -> SetFillColorAlpha(0, 0);
       leg1 -> SetBorderSize(0);
       leg1 -> Draw("same");
-
       if(do_ratioPlot){
          TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
          if(do_autoScale){
@@ -1772,7 +1770,6 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
       }
    }
-
    TPaveText* label = new TPaveText(0.7,0.85,0.8,0.88,"brNDC");
    label->SetBorderSize(0);
    label->SetFillColor(kWhite);
@@ -1809,9 +1806,9 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_info_down->SetTextSize(0.028);
    label_info_down->SetTextFont(42);
    label_info_down->SetTextAlign(11);
-   label_info_down->AddText(nEvents + "k Events, " + PUtag[1]);
-   label_info_down->AddText(matching[1] +  " matching");
    if(do_ratioPlot){
+      label_info_down->AddText(nEvents + "k Events, " + PUtag[1]);
+      label_info_down->AddText(matching[1] +  " matching");
       pad2->cd();
       label_info_down->Draw("same");
    }
@@ -1840,14 +1837,14 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_thrs_down->SetTextSize(0.028);
    label_thrs_down->SetTextFont(42);
    label_thrs_down->SetTextAlign(11);
-   label_thrs_down->AddText(pfrechit_thrs[1] + " " + dependency[1]);
-   if(seeding_thrs[1]=="seedRef"){
-      label_thrs_down->AddText(seeding_thrs[1]);
-   }
-   else{
-      label_thrs_down->AddText(seeding_thrs[1] + " " + dependency[1]);
-   }
    if(do_ratioPlot){
+      label_thrs_down->AddText(pfrechit_thrs[1] + " " + dependency[1]);
+      if(seeding_thrs[1]=="seedRef"){
+         label_thrs_down->AddText(seeding_thrs[1]);
+      }
+      else{
+       label_thrs_down->AddText(seeding_thrs[1] + " " + dependency[1]);
+    }  
       pad2->cd();
       label_thrs_down->Draw("same");
    }
