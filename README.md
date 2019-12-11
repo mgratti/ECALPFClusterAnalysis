@@ -47,7 +47,16 @@ NB: if `do_fakeRatePlot`is also set to True, then the fakeRate plots are also go
 - `do_scanThrs`: produces the plots looping on all the fileNames, at fixed energy or eta 
 - `do_popUpPlot`: do you want to see the plot while the code is running? 
 
+### Validator
 
+Before launching a new production with significant changes, it is worth to check the basic distributions compared to previous productions.
+This tool will produce comparison plots of basic distrbucions, starting from two outputs of the Analyzer.
+
+Example of usage:
+```
+cd Validation
+python validate.py -f1 /work/mratti/validation/histo_photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2021_new2021_n1000_simFraction_EE.root -f2 /work/mratti/validation/histo_photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_new2023_n1000_simFraction_EE.root -l1 new_2021 -l2 new_2023 -o 2021_vs_2023 --doNorm --doLog --rebin 2
+```
 
 
 
