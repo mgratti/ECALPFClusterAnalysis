@@ -36,14 +36,14 @@ declare -a FilesArray=(
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v1_t0_n30000"
                         "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed1.0_thrRingEBXtalEE_y2023_T2_v1_t11_n30000"
                         "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed2.0_thrRingEBXtalEE_y2023_T2_v1_t12_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t13_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t14_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed2.0_thrRingEBXtalEE_y2023_T1_v1_t22_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t23_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t24_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t33_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t34_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t44_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t13_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t14_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed2.0_thrRingEBXtalEE_y2023_T1_v1_t22_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t23_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t24_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t33_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t34_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t44_n30000"
                         )
 
 # Enter the location of the dumped files
@@ -59,13 +59,13 @@ doMatching_deltaR=false
 # Plotter parameters
 ######################
 
-do_writeFiles=true
+do_writeFiles=false
 
 # ----- 1.  What do you want to plot? ----- #
 do_resolutionPlot=true
 do_scalePlot=true
 do_efficiencyPlot=true
-do_fakeRatePlot=true
+do_fakeRatePlot=false
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency and fakeRate plot, turn this option to true
@@ -78,10 +78,10 @@ do_ratioPlot=false
 do_useDifMatching=false
 
 # If you want to scan over the different thresholds, turn this option to true
-do_scanThrs=true
+do_scanThrs=false
 
 # do you want to enable pop-up plots?
-do_popUpPlot=false
+do_popUpPlot=true
 
 
 
@@ -173,7 +173,7 @@ for iFile in ${FilesArray[@]}; do
       if [ "$doMatching_deltaR" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_deltaR"
       fi
-      echo $fileNameforPlotter >> file.txt
+      echo $fileNameforPlotter >> fileSamples.txt
       echo "#############################################################################################"
       echo "# " 
       echo "   Running Plotter on"
@@ -187,7 +187,7 @@ for iFile in ${FilesArray[@]}; do
       if [ "$do_popUpPlot" = true ] ; then
          root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\", \"$do_writeFiles\")"
       fi 
-      rm file.txt
+      rm fileSamples.txt
    fi
  
 done
@@ -206,7 +206,7 @@ if [ "$doPlotter" = true ] && ([ "$do_ratioPlot" = true ] || [ "$do_scanThrs" = 
             fileNameforPlotter=$fileNameforPlotter"_deltaR"
          fi
       fi
-      echo $fileNameforPlotter >> file.txt
+      echo $fileNameforPlotter >> fileSamples.txt
    done
 
    if [ "$do_popUpPlot" = false ] ; then     
@@ -216,7 +216,7 @@ if [ "$doPlotter" = true ] && ([ "$do_ratioPlot" = true ] || [ "$do_scanThrs" = 
       root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\", \"$do_writeFiles\")"
    fi 
 
-   rm file.txt
+   rm fileSamples.txt
  
 fi
 
