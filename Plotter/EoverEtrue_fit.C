@@ -92,10 +92,10 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 TString getString(Float_t num, int decimal = 0);
 // produce the resolution and scale plots
 // produce the efficiency plots
-void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, Bool_t do_autoScale, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, vector<TString>, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
+void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t, vector<Bool_t>, vector<Bool_t>, Bool_t, Bool_t, Bool_t do_autoScale, vector<TString>, vector<TString>, vector<vector<TString>>, vector<vector<TString>>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, vector<Int_t>, vector<TString>, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
 
 
-void produceScanPlots(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t,  Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, Int_t, vector<TString>, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
+void produceScanPlots(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t, vector<Bool_t>, vector<Bool_t>, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, vector<vector<TString>>, vector<vector<TString>>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, vector<Int_t>, vector<TString>, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
 
 
 PlottingTools getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
@@ -137,7 +137,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    vector<string> fileName;
 
    string item;
-   ifstream myfile ("file.txt");
+   ifstream myfile ("fileSamples.txt");
    if(myfile.is_open()){
       while(getline(myfile, item)){
          cout << item << endl;
@@ -162,49 +162,65 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       do_scanThrs=false;
    }
 
-   Bool_t do_EB = false;
-   Bool_t do_EE = false;
+   vector<Bool_t> do_EB;
+   vector<Bool_t> do_EE;
 
-   if(fileName[0].find("_EB") != std::string::npos){
-      do_EB = true;
-   }
-   else if(fileName[0].find("_EE") != std::string::npos){
-      do_EE = true;
-   }
-   else{
-      cout << "Didn't find 'EB' nor 'EE' in the file" << endl;
-      cout << "Aborting" << endl;
-      exit(11);
-   }
-
-
-   Bool_t do_0to20GeV = false;
-   Bool_t do_0to100GeV = false;
-   Bool_t do_0p1to200GeV = false;
-
-   if(fileName[0].find("0to20GeV") != std::string::npos){
-      do_0to20GeV = true;
-   }
-   else if(fileName[0].find("0to100GeV") != std::string::npos){
-      do_0to100GeV = true;
-   }
-   else if((fileName[0].find("0.1to200GeV") != std::string::npos) || (fileName[0].find("0to200GeV") != std::string::npos)){
-      do_0p1to200GeV = true;
-   }
-   else{
-      cout << "Didn't find energy range" << endl;
-      cout << "Aborting" << endl;
-      exit(11);
-   }
-
-
-   Int_t kEvents = 150;
-   if(fileName[0].find("30000") != std::string::npos){
-      if(do_EB){
-         kEvents = 300;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+      if(fileName[iFile].find("_EB") != std::string::npos){
+         do_EB.push_back(true);
+         do_EE.push_back(false);
       }
-      else if(do_EE){
-         kEvents = 600;
+      else if(fileName[iFile].find("_EE") != std::string::npos){
+         do_EE.push_back(true);
+         do_EB.push_back(false);
+      }  
+      else{
+         cout << "Didn't find 'EB' nor 'EE' in the file" << endl;
+         cout << "Aborting" << endl;
+         exit(11);
+      }
+   }
+
+   vector<Bool_t> do_0to20GeV;
+   vector<Bool_t> do_0to100GeV;
+   vector<Bool_t> do_0p1to200GeV;
+
+   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+      if(fileName[iFile].find("0to20GeV") != std::string::npos){
+         do_0to20GeV.push_back(true);
+         do_0to100GeV.push_back(false);
+         do_0p1to200GeV.push_back(false);
+      }
+      else if(fileName[iFile].find("0to100GeV") != std::string::npos){
+         do_0to20GeV.push_back(false);
+         do_0to100GeV.push_back(true);
+         do_0p1to200GeV.push_back(false);
+      }
+      else if((fileName[iFile].find("0.1to200GeV") != std::string::npos) || (fileName[0].find("0to200GeV") != std::string::npos)){
+         do_0to20GeV.push_back(false);
+         do_0to100GeV.push_back(false);
+         do_0p1to200GeV.push_back(true);
+      }
+      else{
+         cout << "Didn't find energy range" << endl;
+         cout << "Aborting" << endl;
+         exit(11);
+      }
+   }
+
+
+   vector<Int_t> kEvents;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+      if(fileName[iFile].find("30000") != std::string::npos){
+         if(do_EB[iFile]){
+            kEvents.push_back(300);
+         }
+         else if(do_EE[iFile]){
+            kEvents.push_back(600);
+         }
+      }
+      else{
+         kEvents.push_back(150);
       }
    }
 
@@ -222,27 +238,30 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
 
    // define the different Et and Eta slots
-   vector<TString> ETranges;
-   if(do_0to20GeV){
-      ETranges = {"1_5", "5_10", "10_15", "15_20"};
+   vector<vector<TString>> ETranges;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+      if(do_0to20GeV[iFile]){
+         ETranges.push_back({"1_5", "5_10", "10_15", "15_20"});
+      }
+      else if(do_0to100GeV[iFile]){
+         if(!do_fineBinning_energy){
+            ETranges.push_back({"1_20", "20_40", "40_60", "60_80", "80_100"});
+         }
+         else{
+            ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
+         }
+      }
+      else if(do_0p1to200GeV[iFile]){
+         if(!do_fineBinning_energy){
+            ETranges.push_back({"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
+         }
+         else{
+            ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
+            //ETranges = {"80_100"};
+         }
+      }
    }
-   else if(do_0to100GeV){
-      if(!do_fineBinning_energy){
-         ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100"};
-      }
-      else{
-         ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"};
-      }
-   }
-   else if(do_0p1to200GeV){
-      if(!do_fineBinning_energy){
-         ETranges = {"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
-      }
-      else{
-         ETranges = {"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"};
-         //ETranges = {"80_100"};
-      }
-   }
+
    vector<TString> ETAranges_EB;
    if(!do_fineBinning_eta){
       ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
@@ -469,131 +488,114 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
    vector<TString> input;
 
-   vector<TString> ETAranges;
-   if(do_EB){
-      ETAranges = ETAranges_EB;
-      if(do_EE){
-         ETAranges.insert(ETAranges.end(), ETAranges_EE.begin(), ETAranges_EE.end());
+   vector<vector<TString>> ETAranges;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+      if(do_EB[iFile]){
+         ETAranges.push_back(ETAranges_EB);
+      }
+      else{
+         ETAranges.push_back(ETAranges_EE);
       }
    }
-   else{
-      ETAranges = ETAranges_EE;
-   }
-
 
    if(do_writeFiles){
-      if(do_EB){
-         for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-            ifstream file("samples/" + fileName[iFile] + ".txt");
+      for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+         ifstream file("samples/" + fileName[iFile] + ".txt");
 
-            if(!file.is_open()){
-               fitParameters_EB = performFit(fileName[iFile], outputdir, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
-               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, ETranges, ETAranges);
+         if(!file.is_open()){
+            if(do_EB[iFile]){
+               fitParameters_EB = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
+               cout << "finished the fit" << endl;
+               cout << "checking" << endl;
+               cout << "ETranges " << ETranges[iFile].size() <<  endl;
+               cout << "ETAranges " << ETAranges[iFile].size() << endl; 
+               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, ETranges[iFile], ETAranges[iFile]);
+            }
+            else{
+               fitParameters_EE = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
+               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, ETranges[iFile], ETAranges[iFile]);
             }
          }
-      }
-      if(do_EE){
-         for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-            ifstream file("samples/" + fileName[iFile] + ".txt");
-
-            if(!file.is_open()){
-               fitParameters_EE = performFit(fileName[iFile], outputdir, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
-               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, ETranges, ETAranges);
-            }
+         else{
+            cout << "Sample file " << fileName[iFile] << " already processed" << endl;
+            cout << "--> Skipping " << endl;
          }
       }
    }
+
+
 
    if(!do_writeFiles){
       if(!do_efficiencyPlotOnly){
-         if(do_EB){
-            //if(!do_ratioPlot){
-            //   fitParameters_EB = performFit(fileName[0], outputdir, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
-            //  sigma.push_back(fitParameters_EB.map_sigma);
-            //   sigma_error.push_back(fitParameters_EB.map_sigma_error);
-            //   mean.push_back(fitParameters_EB.map_mean);
-            //   mean_error.push_back(fitParameters_EB.map_mean_error);
-            //}
-            //else{
-            for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-               fitParameters_EB = performFit(fileName[iFile], outputdir, kEvents, ETranges, ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
+         for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+            if(do_EB[iFile]){
+               fitParameters_EB = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
                sigma.push_back(fitParameters_EB.map_sigma);
                sigma_error.push_back(fitParameters_EB.map_sigma_error);
                mean.push_back(fitParameters_EB.map_mean);
                mean_error.push_back(fitParameters_EB.map_mean_error);
                chisquare.push_back(fitParameters_EB.map_chisquare);
             }
-            // }
-         }
-         if(do_EE){
-            //if(!do_ratioPlot){
-            //   fitParameters_EE = performFit(fileName[0], outputdir, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
-            //   sigma.push_back(fitParameters_EE.map_sigma);
-            //   sigma_error.push_back(fitParameters_EE.map_sigma_error);
-            //   mean.push_back(fitParameters_EE.map_mean);
-            //   mean_error.push_back(fitParameters_EE.map_mean_error);
-            //}
-            //else{
-            for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-               fitParameters_EE = performFit(fileName[iFile], outputdir, kEvents, ETranges, ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
+            else{
+               fitParameters_EE = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
                sigma.push_back(fitParameters_EE.map_sigma);
                sigma_error.push_back(fitParameters_EE.map_sigma_error);
                mean.push_back(fitParameters_EE.map_mean);
                mean_error.push_back(fitParameters_EE.map_mean_error);
                chisquare.push_back(fitParameters_EE.map_chisquare);
             }
-            //}
-         }
-      }
-
-
-      // we get the resolution, scale and efficiency plots
-      if(do_resolutionPlot && !do_efficiencyPlotOnly && !do_scanThrs){
-         producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
-      }
-
-      if(do_scalePlot && !do_efficiencyPlotOnly && !do_scanThrs){
-         producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
-      }
-
-      if((do_efficiencyPlot || do_efficiencyPlotOnly) && !do_scanThrs){
-         vector<map<TString, map<TString, Float_t>>> map_dummy(2);
-         vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(2);
-         producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
-         if(do_fakeRatePlot){
-            producePlot("FakeRate", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
-         }
-      }
-
-      if(do_scanThrs){
-         if(fileName.size()>0){
-            for(unsigned int iFile(1); iFile<fileName.size(); ++iFile){
-               if(PUtag[iFile]!=PUtag[0]){
-                  cout << "You introduced in the list a file with wrong PU tag!" << endl;
-                  cout << "Aborting" << endl;
-                  exit(11);
-               }
-               if(matching[iFile]!=matching[0]){
-                  cout << "You introduced in the list a file with a different matching strategy!" << endl;
-                  cout << "Aborting" << endl;
-                  exit(11);
-               }
-            }
-         }
-         if(do_resolutionPlot && !do_efficiencyPlotOnly){
-            produceScanPlots("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
-         }
-         if(do_scalePlot && !do_efficiencyPlotOnly){
-            produceScanPlots("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
-         }
-         if(do_efficiencyPlot || do_efficiencyPlotOnly){
-            vector<map<TString, map<TString, Float_t>>> map_dummy(999);
-            vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(999);
-            produceScanPlots("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
          }
       }
    }
+
+
+   // we get the resolution, scale and efficiency plots
+   if(do_resolutionPlot && !do_efficiencyPlotOnly && !do_scanThrs){
+      producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+   }
+
+   if(do_scalePlot && !do_efficiencyPlotOnly && !do_scanThrs){
+      producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+   }
+
+   if((do_efficiencyPlot || do_efficiencyPlotOnly) && !do_scanThrs){
+      vector<map<TString, map<TString, Float_t>>> map_dummy(2);
+      vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(2);
+      producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      if(do_fakeRatePlot){
+         producePlot("FakeRate", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      }
+   }
+
+   if(do_scanThrs){
+      if(fileName.size()>0){
+         for(unsigned int iFile(1); iFile<fileName.size(); ++iFile){
+            if(PUtag[iFile]!=PUtag[0]){
+               cout << "You introduced in the list a file with wrong PU tag!" << endl;
+               cout << "Aborting" << endl;
+               exit(11);
+            }
+            if(matching[iFile]!=matching[0]){
+               cout << "You introduced in the list a file with a different matching strategy!" << endl;
+               cout << "Aborting" << endl;
+               exit(11);
+            }
+         }
+      }
+      if(do_resolutionPlot && !do_efficiencyPlotOnly){
+         produceScanPlots("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      }
+      if(do_scalePlot && !do_efficiencyPlotOnly){
+         produceScanPlots("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      }
+      if(do_efficiencyPlot || do_efficiencyPlotOnly){
+         vector<map<TString, map<TString, Float_t>>> map_dummy(999);
+         vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(999);
+         produceScanPlots("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      }
+   }
 }
+//}
 
 
 
@@ -983,6 +985,7 @@ FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vecto
 
 void getFile(string fileName, Bool_t do_EB, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, map<TString, map<TString, Float_t>> map_mean, map<TString, map<TString, vector<Float_t>>> map_mean_error, map<TString, map<TString, Float_t>> map_chisquare, vector<TString> ETranges, vector<TString> ETAranges){
 
+   cout << "entering getFile function" << endl;
    ofstream outFile("/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
    outFile << "ETranges ETAranges chi2 resolution scale efficiency" << endl;
    TString label = fileName.c_str();
@@ -1601,11 +1604,11 @@ PlottingTools getRatioGraph(TString whichPlot, string fileName1, string fileName
 
 
 
-void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, Bool_t do_autoScale, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching, vector<TString> PUtag, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
+void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, vector<Bool_t> do_EB, vector<Bool_t> do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, Bool_t do_autoScale, vector<TString> ETAranges_EB, vector<TString> ETAranges_EE, vector<vector<TString>> ETranges, vector<vector<TString>> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, vector<Int_t> kEvents, vector<TString> matching, vector<TString> PUtag, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
 
    // we first produce the plot of the efficiency as a function of the energy at fixed eta ranges
 
-   for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
+   for(unsigned int kk(0); kk<ETAranges[0].size(); ++kk){
       TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);
       TLegend* leg1 = new TLegend(0.55, 0.65, 0.9, 0.83);
 
@@ -1616,13 +1619,13 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       vector<float> vector_range1;
       vector<float> vector_rangeR;
       for(unsigned int ll(0); ll<fileName.size(); ++ll){
-         vector<float> range_graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").range; 
+         vector<float> range_graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEnergy").range; 
 
          for(unsigned int i(0); i<range_graph1.size(); ++i){
             vector_range1.push_back(range_graph1[i]);
          }
 
-         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").range; 
+         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEnergy").range; 
 
          for(unsigned int i(0); i<range_graphR.size(); ++i){
             vector_rangeR.push_back(range_graphR[i]);
@@ -1647,7 +1650,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
 
       for(unsigned int ll(0); ll<fileName.size(); ++ll){
          TGraphAsymmErrors* graph1;
-         graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
+         graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEnergy").graph; 
          if(do_autoScale){
             graph1->GetYaxis()->SetRangeUser(min_range1-0.05*(max_range1-min_range1), max_range1+0.8*(max_range1-min_range1));
          }
@@ -1675,7 +1678,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          leg1 -> Draw("same");
 
          cr->cd();
-         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
+         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEnergy").graph; 
 
          if(do_autoScale){
             graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.8*(max_rangeR-min_rangeR));
@@ -1721,7 +1724,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       label->SetTextSize(0.025);
       label->SetTextFont(42);
       label->SetTextAlign(11);
-      label->AddText("#eta bin: " + ETAranges[kk]);
+      label->AddText("#eta bin: " + ETAranges[0][kk]);
       c1->cd();
       label->Draw("same");
       cr->cd();
@@ -1733,7 +1736,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       label_info_up->SetTextSize(0.028);
       label_info_up->SetTextFont(42);
       label_info_up->SetTextAlign(11);
-      TString nEvents = to_string(kEvents);
+      TString nEvents = to_string(kEvents[0]);
       label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
       label_info_up->AddText(matching[0] + " matching");
       c1->cd();
@@ -1752,7 +1755,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       else if(whichPlot=="Efficiency"){
          nameSave = "efficiency_";
       }
-      nameSave += "eta_" + ETAranges[kk];
+      nameSave += "eta_" + ETAranges[0][kk];
 
       c1->cd();
       c1->SaveAs(dir + nameSave + "_vs_energy.png");
@@ -1778,13 +1781,13 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       vector<float> vector_range1;
       vector<float> vector_rangeR;
       for(unsigned int ll(0); ll<fileName.size(); ++ll){
-         vector<float> range_graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").range; 
+         vector<float> range_graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEta").range; 
 
          for(unsigned int i(0); i<range_graph1.size(); ++i){
             vector_range1.push_back(range_graph1[i]);
          }
 
-         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").range; 
+         vector<float> range_graphR= getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEta").range; 
 
          for(unsigned int i(0); i<range_graphR.size(); ++i){
             vector_rangeR.push_back(range_graphR[i]);
@@ -1800,7 +1803,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
 
       for(unsigned int ll(0); ll<fileName.size(); ++ll){
          TGraphAsymmErrors* graph1;
-         graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph;
+         graph1 = getGraph(whichPlot, fileName[ll], map_quantity[ll], map_quantity_error[ll], kk, true, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEta").graph;
 
          if(do_autoScale){
             graph1->GetYaxis()->SetRangeUser(min_range1-0.05*(max_range1-min_range1), max_range1+0.8*(max_range1-min_range1));
@@ -1831,7 +1834,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
          leg1 -> Draw("same");
 
          cr->cd();
-         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph; 
+         TGraphAsymmErrors* graph_ratio = getRatioGraph(whichPlot, fileName[ll], fileName[0], ll,  map_quantity, map_quantity_error, kk, do_EB[ll], do_EE[ll], do_binningEt, use_simEnergy, ETranges[ll], ETAranges[ll], ETvalue, ETAvalue, color, "vsEta").graph; 
 
          if(do_autoScale){
             graph_ratio->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.8*(max_rangeR-min_rangeR));
@@ -1877,7 +1880,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       label->SetTextSize(0.025);
       label->SetTextFont(42);
       label->SetTextAlign(11);
-      label->AddText("Energy bin: " + ETranges[kk]);
+      label->AddText("Energy bin: " + ETranges[0][kk]);
       c1->cd();
       label->Draw("same");
       cr->cd();
@@ -1889,7 +1892,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       label_info_up->SetTextSize(0.028);
       label_info_up->SetTextFont(42);
       label_info_up->SetTextAlign(11);
-      TString nEvents = to_string(kEvents);
+      TString nEvents = to_string(kEvents[0]);
       label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
       label_info_up->AddText(matching[0] + " matching");
       c1->cd();
@@ -1909,7 +1912,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
       else if(whichPlot=="Efficiency"){
          nameSave = "efficiency_";
       }
-      nameSave += "E_" + ETranges[kk];
+      nameSave += "E_" + ETranges[0][kk];
 
       c1->cd();
       c1->SaveAs(dir + nameSave + "_vs_eta.png");
@@ -1928,7 +1931,7 @@ void produceScanPlots(TString whichPlot, vector<string> fileName, vector<map<TSt
 
 
 
-void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, Bool_t do_autoScale, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, Int_t kEvents, vector<TString> matching, vector<TString> PUtag, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
+void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString, map<TString, Float_t>>> map_quantity, vector<map<TString, map<TString, vector<Float_t>>>> map_quantity_error, Bool_t do_ratioPlot, vector<Bool_t> do_EB, vector<Bool_t> do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, Bool_t do_autoScale, vector<TString> ETAranges_EB, vector<TString> ETAranges_EE, vector<vector<TString>> ETranges, vector<vector<TString>> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string outputdir, vector<Int_t> kEvents, vector<TString> matching, vector<TString> PUtag, vector<TString> pfrechit_thrs, vector<TString> seeding_thrs, vector<TString> dependency){
    // we first produce the plot of the efficiency as a function of the energy for different eta ranges
    TCanvas* c1;
    if(!do_ratioPlot){
@@ -1959,17 +1962,17 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    vector<float> vector_rangeR;
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
-      vector<float> range_graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").range;
+      vector<float> range_graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB[0], do_EE[0], do_binningEt, use_simEnergy, ETranges[0], ETAranges[0], ETvalue, ETAvalue, color, "vsEnergy").range;
       for(unsigned int i(0); i<range_graph1.size(); ++i){
          vector_range1.push_back(range_graph1[i]);
       }
       if(do_ratioPlot){
-         vector<float> range_graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").range;
+         vector<float> range_graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB[1], do_EE[1], do_binningEt, use_simEnergy, ETranges[1], ETAranges[1], ETvalue, ETAvalue, color, "vsEnergy").range;
          for(unsigned int i(0); i<range_graph2.size(); ++i){
             vector_range2.push_back(range_graph2[i]);
          }
 
-         vector<float> range_graphR =  getRatioGraph(whichPlot, fileName[0], fileName[1], 1,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").range;
+         vector<float> range_graphR =  getRatioGraph(whichPlot, fileName[0], fileName[1], 1,  map_quantity, map_quantity_error, kk, do_EB[0], do_EE[0], do_binningEt, use_simEnergy, ETranges[0], ETAranges[0], ETvalue, ETAvalue, color, "vsEnergy").range;
          for(unsigned int i(0); i<range_graphR.size(); ++i){
             vector_rangeR.push_back(range_graphR[i]);
          }
@@ -2006,7 +2009,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
    for(unsigned int kk(0); kk<ETAranges.size(); ++kk){
       TGraphAsymmErrors* graph1;
-      graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
+      graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB[0], do_EE[0], do_binningEt, use_simEnergy, ETranges[0], ETAranges[0], ETvalue, ETAvalue, color, "vsEnergy").graph; 
       if(do_autoScale){
          graph1->GetYaxis()->SetRangeUser(min_range1-0.05*(max_range1-min_range1), max_range1+0.8*(max_range1-min_range1));
       }
@@ -2020,14 +2023,14 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       else{
          graph1->Draw("*, same");
       }
-      leg1 -> AddEntry(graph1, ETAranges[kk]);
+      leg1 -> AddEntry(graph1, ETAranges[0][kk]);
       leg1 -> SetTextSize(0.025);
       leg1 -> SetLineColor(0);
       leg1 -> SetFillColorAlpha(0, 0);
       leg1 -> SetBorderSize(0);
       leg1 -> Draw("same");
       if(do_ratioPlot){
-         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
+         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB[1], do_EE[1], do_binningEt, use_simEnergy, ETranges[1], ETAranges[1], ETvalue, ETAvalue, color, "vsEnergy").graph; 
          if(do_autoScale){
             graph2->GetYaxis()->SetRangeUser(min_range2-0.05*(max_range2-min_range2), max_range2+0.8*(max_range2-min_range2));
          }
@@ -2041,7 +2044,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
          leg1->Draw("same");
 
-         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], 1,  map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEnergy").graph; 
+         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], 1,  map_quantity, map_quantity_error, kk, do_EB[0], do_EE[0], do_binningEt, use_simEnergy, ETranges[0], ETAranges[0], ETvalue, ETAvalue, color, "vsEnergy").graph; 
          if(do_autoScale){
             graph3->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.05*(max_rangeR-min_rangeR));
          }
@@ -2077,7 +2080,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_info_up->SetTextSize(0.028);
    label_info_up->SetTextFont(42);
    label_info_up->SetTextAlign(11);
-   TString nEvents = to_string(kEvents);
+   TString nEvents = to_string(kEvents[0]);
    label_info_up->AddText(nEvents + "k Events, " + PUtag[0]);
    label_info_up->AddText(matching[0] + " matching");
    if(do_ratioPlot){
@@ -2091,8 +2094,9 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
    label_info_down->SetTextSize(0.028);
    label_info_down->SetTextFont(42);
    label_info_down->SetTextAlign(11);
+   TString nEvents_down = to_string(kEvents[1]);
    if(do_ratioPlot){
-      label_info_down->AddText(nEvents + "k Events, " + PUtag[1]);
+      label_info_down->AddText(nEvents_down + "k Events, " + PUtag[1]);
       label_info_down->AddText(matching[1] +  " matching");
       pad2->cd();
       label_info_down->Draw("same");
@@ -2182,7 +2186,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
 
 
    for(unsigned int kk(0); kk<ETranges.size(); ++kk){
-      TGraphAsymmErrors* graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph; 
+      TGraphAsymmErrors* graph1 = getGraph(whichPlot, fileName[0], map_quantity[0], map_quantity_error[0], kk, true, do_EB[0], do_EE[0], do_binningEt, use_simEnergy, ETranges[0], ETAranges[0], ETvalue, ETAvalue, color, "vsEta").graph; 
 
       if(do_autoScale){
          graph1->GetYaxis()->SetRangeUser(min_range1-0.05*(max_range1-min_range1), max_range1+0.8*(max_range1-min_range1));
@@ -2197,7 +2201,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       else{
          graph1->Draw("*, same");
       }
-      leg2 -> AddEntry(graph1, ETranges[kk]);
+      leg2 -> AddEntry(graph1, ETranges[0][kk]);
       leg2 -> SetTextSize(0.025);
       leg2 -> SetLineColor(0);
       leg2 -> SetFillColorAlpha(0, 0);
@@ -2205,7 +2209,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
       leg2 -> Draw("same");
 
       if(do_ratioPlot){
-         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph; 
+         TGraphAsymmErrors* graph2 = getGraph(whichPlot, fileName[1], map_quantity[1], map_quantity_error[1], kk, false, do_EB[1], do_EE[1], do_binningEt, use_simEnergy, ETranges[1], ETAranges[1], ETvalue, ETAvalue, color, "vsEta").graph; 
 
          if(do_autoScale){
             graph2->GetYaxis()->SetRangeUser(min_range2-0.05*(max_range2-min_range2), max_range2+0.8*(max_range2-min_range2));
@@ -2220,7 +2224,7 @@ void producePlot(TString whichPlot, vector<string> fileName, vector<map<TString,
          }
          leg2->Draw("same");
 
-         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], 1, map_quantity, map_quantity_error, kk, do_EB, do_EE, do_binningEt, use_simEnergy, ETranges, ETAranges, ETvalue, ETAvalue, color, "vsEta").graph; 
+         TGraphAsymmErrors* graph3 = getRatioGraph(whichPlot, fileName[0], fileName[1], 1, map_quantity, map_quantity_error, kk, do_EB[0], do_EE[0], do_binningEt, use_simEnergy, ETranges[0], ETAranges[0], ETvalue, ETAvalue, color, "vsEta").graph; 
 
          if(do_autoScale){
             graph3->GetYaxis()->SetRangeUser(min_rangeR-0.05*(max_rangeR-min_rangeR), max_rangeR+0.05*(max_rangeR-min_rangeR));
