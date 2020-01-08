@@ -57,31 +57,7 @@ using namespace std;
    */
 
 
-// additional functions
-//FitParameters performFit(string fileName, string outputdir, Int_t kEvents, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, FlagList flaglist, string);
-// converts double to string with adjusting the number of decimals
-//TString getString(Float_t num, int decimal = 0);
-// produce the resolution and scale plots
-// produce the efficiency plots
-//void producePlot(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t, vector<Bool_t>, vector<Bool_t>, Bool_t, Bool_t, Bool_t do_autoScale, vector<TString>, vector<TString>, vector<vector<TString>>, vector<vector<TString>>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, vector<Int_t>, vector<TString>, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
 
-
-//void produceScanPlots(TString, vector<string>, vector<map<TString, map<TString, Float_t>>>, vector<map<TString, map<TString, vector<Float_t>>>>,  Bool_t, vector<Bool_t>, vector<Bool_t>, Bool_t, Bool_t, Bool_t, vector<TString>, vector<TString>, vector<vector<TString>>, vector<vector<TString>>, map<TString, Edges>, map<TString, Edges>, map<int, EColor> color, string, vector<Int_t>, vector<TString>, vector<TString>, vector<TString>, vector<TString>, vector<TString>);
-
-
-//PlottingTools getGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
-
-
-//TGraph2D* get2DGraph(TString whichPlot, string fileName, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, unsigned int kk, Bool_t printTitle, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
-
-
-//PlottingTools getRatioGraph(TString whichPlot, string fileName1, string fileName2, int iFile, vector<map<TString, map<TString, Float_t>>> map_sigma, vector<map<TString, map<TString, vector<Float_t>>>> map_sigma_error, unsigned int kk, Bool_t do_EB, Bool_t do_EE, Bool_t do_binningEt, Bool_t use_simEnergy, vector<TString> ETranges, vector<TString> ETAranges, map<TString, Edges> ETvalue, map<TString, Edges> ETAvalue, map<int, EColor> color, string what);
-
-//void getFile(string fileName, Bool_t do_EB, map<TString, map<TString, Float_t>> map_sigma, map<TString, map<TString, vector<Float_t>>> map_sigma_error, map<TString, map<TString, Float_t>> map_mean, map<TString, map<TString, vector<Float_t>>> map_mean_error, map<TString, map<TString, Float_t>> map_chisquare, vector<TString> ETranges, vector<TString> ETAranges);
-
-
-
-// main function
 void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString simEnergy, TString binningEt, TString CBfit, TString doubleCBfit, TString BGfit, TString fitPeak, TString resolutionPlot, TString scalePlot, TString efficiencyPlot, TString fakeRatePlot, TString efficiencyPlotOnly, TString ratioPlot, TString scanThrs, TString autoScale, TString writeFiles){
 
    // we fetch argurments of the function
@@ -522,19 +498,19 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
    // we get the resolution, scale and efficiency plots
    if(do_resolutionPlot && !do_efficiencyPlotOnly && !do_scanThrs){
-      producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      producePlot("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
    }
 
    if(do_scalePlot && !do_efficiencyPlotOnly && !do_scanThrs){
-      producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      producePlot("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
    }
 
    if((do_efficiencyPlot || do_efficiencyPlotOnly) && !do_scanThrs){
       vector<map<TString, map<TString, Float_t>>> map_dummy(2);
       vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(2);
-      producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+      producePlot("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
       if(do_fakeRatePlot){
-         producePlot("FakeRate", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+         producePlot("FakeRate", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
       }
    }
 
@@ -554,15 +530,15 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
          }
       }
       if(do_resolutionPlot && !do_efficiencyPlotOnly){
-         produceScanPlots("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+         produceScanPlots("Resolution", fileName, sigma, sigma_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
       }
       if(do_scalePlot && !do_efficiencyPlotOnly){
-         produceScanPlots("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+         produceScanPlots("Scale", fileName, mean, mean_error, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
       }
       if(do_efficiencyPlot || do_efficiencyPlotOnly){
          vector<map<TString, map<TString, Float_t>>> map_dummy(999);
          vector<map<TString, map<TString, vector<Float_t>>>> map_error_dummy(999);
-         produceScanPlots("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETAranges_EB, ETAranges_EE, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
+         produceScanPlots("Efficiency", fileName, map_dummy, map_error_dummy, do_ratioPlot, do_EB, do_EE, flagList.do_binningEt, flagList.use_simEnergy, do_autoScale, ETranges, ETAranges, ETvalue, ETAvalue, color, outputdir, kEvents, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency);
       }
    }
 }
