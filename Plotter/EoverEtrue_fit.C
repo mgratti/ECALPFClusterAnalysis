@@ -135,11 +135,14 @@ void EoverEtrue_fit(TString fineBinning_energy,
    Bool_t do_fitAll = true;
    if(do_fitPeak) do_fitAll = false;
 
+   Bool_t use_energy = false; 
+   if(!use_simEnergy) use_energy = true;
+
    // we gather all the flags together
    FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
    // variable declaration
-   vector<Bool_t> do_EB, doEE;
+   vector<Bool_t> do_EB, do_EE;
    vector<Bool_t> do_0to20GeV, do_0to100GeV, do_0p1to200GeV;
    vector<Int_t> kEvents;
    vector<TString> matching, PUtag, dependency;
@@ -147,9 +150,6 @@ void EoverEtrue_fit(TString fineBinning_energy,
    
    // initialization
    plotterInit(fileName, do_EB, do_EE, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency, kEvents, do_0to20GeV, do_0to100GeV, do_0p1to200GeV);
-   Bool_t use_energy = false; 
-   if(!use_simEnergy) use_energy = true;
-
    
    // define the different Et and Eta slots
    vector<vector<TString>> ETranges;
