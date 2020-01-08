@@ -43,22 +43,43 @@
 #include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/producePlot.C"
 #include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/produceScanPlots.C"
 #include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getFile.C"
-
-
+#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getBoundaries.C"
+#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/plotterInit.C"
 
 
 using namespace RooFit ;
 using namespace std;
 
-/*
-   The main functions of this script are the following:
-   1. This script enables to fit the E/Etrue distribution.The residuals are plotted and the chi square is computed.
-   2. Produce the scale, resolution and efficiency plots
-   */
+
+/**********************************
+ 
+  - This script allows to 
+      - perform the fit of Ereco/Esim looping of files and save the fit parameters in a txt file
+      - produce the reso/scale/efficiency/fakeRate plots, with and without ratio
+      - produce the scan thresholds plots, with and without ratio
+
+
+**********************************/
 
 
 
-void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString simEnergy, TString binningEt, TString CBfit, TString doubleCBfit, TString BGfit, TString fitPeak, TString resolutionPlot, TString scalePlot, TString efficiencyPlot, TString fakeRatePlot, TString efficiencyPlotOnly, TString ratioPlot, TString scanThrs, TString autoScale, TString writeFiles){
+void EoverEtrue_fit(TString fineBinning_energy, 
+      TString fineBinning_eta, 
+      TString simEnergy, 
+      TString binningEt, 
+      TString CBfit, 
+      TString doubleCBfit, 
+      TString BGfit, 
+      TString fitPeak, 
+      TString resolutionPlot, 
+      TString scalePlot, 
+      TString efficiencyPlot, 
+      TString fakeRatePlot, 
+      TString efficiencyPlotOnly, 
+      TString ratioPlot, 
+      TString scanThrs, 
+      TString autoScale, 
+      TString writeFiles){
 
    // we fetch argurments of the function
    Bool_t do_fineBinning_energy = fineBinning_energy=="true" ? true : false;
@@ -82,7 +103,6 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
 
    // we get the file names from the txt file produced by the AnalyserLauncher 
    vector<string> fileName;
-
    string item;
    ifstream myfile ("fileSamples.txt");
    if(myfile.is_open()){
@@ -109,83 +129,31 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       do_scanThrs=false;
    }
 
-   vector<Bool_t> do_EB;
-   vector<Bool_t> do_EE;
-
-   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-      if(fileName[iFile].find("_EB") != std::string::npos){
-         do_EB.push_back(true);
-         do_EE.push_back(false);
-      }
-      else if(fileName[iFile].find("_EE") != std::string::npos){
-         do_EE.push_back(true);
-         do_EB.push_back(false);
-      }  
-      else{
-         cout << "Didn't find 'EB' nor 'EE' in the file" << endl;
-         cout << "Aborting" << endl;
-         exit(11);
-      }
-   }
-
-   vector<Bool_t> do_0to20GeV;
-   vector<Bool_t> do_0to100GeV;
-   vector<Bool_t> do_0p1to200GeV;
-
-   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-      if(fileName[iFile].find("0to20GeV") != std::string::npos){
-         do_0to20GeV.push_back(true);
-         do_0to100GeV.push_back(false);
-         do_0p1to200GeV.push_back(false);
-      }
-      else if(fileName[iFile].find("0to100GeV") != std::string::npos){
-         do_0to20GeV.push_back(false);
-         do_0to100GeV.push_back(true);
-         do_0p1to200GeV.push_back(false);
-      }
-      else if((fileName[iFile].find("0.1to200GeV") != std::string::npos) || (fileName[0].find("0to200GeV") != std::string::npos)){
-         do_0to20GeV.push_back(false);
-         do_0to100GeV.push_back(false);
-         do_0p1to200GeV.push_back(true);
-      }
-      else{
-         cout << "Didn't find energy range" << endl;
-         cout << "Aborting" << endl;
-         exit(11);
-      }
-   }
-
-
-   vector<Int_t> kEvents;
-   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-      if(fileName[iFile].find("30000") != std::string::npos){
-         if(do_EB[iFile]){
-            kEvents.push_back(300);
-         }
-         else if(do_EE[iFile]){
-            kEvents.push_back(600);
-         }
-      }
-      else{
-         kEvents.push_back(150);
-      }
-   }
-
-
-   Bool_t use_energy = false; 
-   if(!use_simEnergy) use_energy = true;
-
    Bool_t do_binningEn = true;
    if(do_binningEt) do_binningEn = false;
 
    Bool_t do_fitAll = true;
    if(do_fitPeak) do_fitAll = false;
 
+   // we gather all the flags together
    FlagList flagList = {use_energy, use_simEnergy, do_binningEt, do_binningEn, do_CBfit, do_doubleCBfit, do_BGfit, do_fitAll, do_fitPeak};
 
+   // variable declaration
+   vector<Bool_t> do_EB, doEE;
+   vector<Bool_t> do_0to20GeV, do_0to100GeV, do_0p1to200GeV;
+   vector<Int_t> kEvents;
+   vector<TString> matching, PUtag, dependency;
+   vector<TString> pfrechit_thrs, seeding_thrs;
+   
+   // initialization
+   plotterInit(fileName, do_EB, do_EE, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency, kEvents, do_0to20GeV, do_0to100GeV, do_0p1to200GeV);
+   Bool_t use_energy = false; 
+   if(!use_simEnergy) use_energy = true;
 
+   
    // define the different Et and Eta slots
    vector<vector<TString>> ETranges;
+
    for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
       if(do_0to20GeV[iFile]){
          ETranges.push_back({"1_5", "5_10", "10_15", "15_20"});
@@ -195,6 +163,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
             ETranges.push_back({"1_20", "20_40", "40_60", "60_80", "80_100"});
          }
          else{
+            cout << "tu me vois" << endl;
             ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
          }
       }
@@ -217,7 +186,6 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       ETAranges_EB = {"0p00_0p40", "0p40_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
    }
 
-
    vector<TString> ETAranges_EE;
    if(!do_fineBinning_eta){
       ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
@@ -227,102 +195,11 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       //ETAranges_EE = {"1p48_1p64"};
    }
 
-
+   // and adjust the boundaries
    map<TString, Edges> ETvalue;
    map<TString, Edges> ETAvalue;
 
-   // and adjust the boundaries
-   ETvalue["0p1_1"].first = 0.1;
-   ETvalue["0p1_1"].second = 1.;
-   ETvalue["1_5"].first = 1.;
-   ETvalue["1_5"].second = 5.;
-   ETvalue["5_10"].first = 5.;
-   ETvalue["5_10"].second = 10.;
-   ETvalue["10_15"].first = 10.;
-   ETvalue["10_15"].second = 15.;
-   ETvalue["15_20"].first = 15.;
-   ETvalue["15_20"].second = 20.;
-   ETvalue["1_20"].first  = 1;
-   ETvalue["1_20"].second = 20; 
-   ETvalue["20_40"].first  = 20;
-   ETvalue["20_40"].second = 40; 
-   ETvalue["40_60"].first  = 40;
-   ETvalue["40_60"].second = 60; 
-   ETvalue["60_80"].first  = 60;
-   ETvalue["60_80"].second = 80; 
-   ETvalue["80_100"].first  = 80;
-   ETvalue["80_100"].second = 100; 
-   ETvalue["100_120"].first = 100.;
-   ETvalue["100_120"].second = 120.;
-   ETvalue["120_140"].first = 120.;
-   ETvalue["120_140"].second = 140.;
-   ETvalue["140_160"].first = 140.;
-   ETvalue["140_160"].second = 160.;
-   ETvalue["160_180"].first = 160.;
-   ETvalue["160_180"].second = 180.;
-   ETvalue["180_200"].first = 180.;
-   ETvalue["180_200"].second = 200.;
-
-
-   ETAvalue["0p00_0p20"].first = 0.;
-   ETAvalue["0p00_0p20"].second = 0.2;
-   ETAvalue["0p00_0p40"].first = 0.;
-   ETAvalue["0p00_0p40"].second = 0.4;
-   ETAvalue["0p40_0p80"].first = 0.4;
-   ETAvalue["0p40_0p80"].second = 0.8;
-   ETAvalue["0p20_0p40"].first = 0.2;
-   ETAvalue["0p20_0p40"].second = 0.4;
-   ETAvalue["0p40_0p60"].first = 0.4;
-   ETAvalue["0p40_0p60"].second = 0.6;
-   ETAvalue["0p60_0p80"].first = 0.6;
-   ETAvalue["0p60_0p80"].second = 0.8;
-   ETAvalue["0p80_1p00"].first = 0.8;
-   ETAvalue["0p80_1p00"].second = 1.;
-   ETAvalue["1p00_1p20"].first = 1.;
-   ETAvalue["1p00_1p20"].second = 1.2;
-   ETAvalue["1p20_1p44"].first = 1.2;
-   ETAvalue["1p20_1p44"].second = 1.44;
-   ETAvalue["1p40_1p60"].first = 1.4;
-   ETAvalue["1p40_1p60"].second = 1.6;
-   ETAvalue["0p00_0p50"].first  = 0.0;
-   ETAvalue["0p00_0p50"].second = 0.5;
-   ETAvalue["0p50_1p00"].first  = 0.5;
-   ETAvalue["0p50_1p00"].second = 1.0;
-   ETAvalue["1p00_1p44"].first  = 1.0;
-   ETAvalue["1p00_1p44"].second = 1.44;
-   ETAvalue["1p48_1p57"].first = 1.479;
-   ETAvalue["1p48_1p57"].second = 1.566;
-   ETAvalue["1p48_1p64"].first = 1.479;
-   ETAvalue["1p48_1p64"].second = 1.64;
-   ETAvalue["1p57_1p65"].first = 1.566;
-   ETAvalue["1p57_1p65"].second = 1.653;
-   ETAvalue["1p64_1p85"].first = 1.64;
-   ETAvalue["1p64_1p85"].second = 1.85;
-   ETAvalue["1p65_1p85"].first = 1.653;
-   ETAvalue["1p65_1p85"].second = 1.85;
-   ETAvalue["1p85_2p00"].first = 1.85;
-   ETAvalue["1p85_2p00"].second = 2.0;
-   ETAvalue["2p00_2p20"].first = 2.0;
-   ETAvalue["2p00_2p20"].second = 2.20;
-   ETAvalue["2p20_2p40"].first = 2.20;
-   ETAvalue["2p20_2p40"].second = 2.40;
-   ETAvalue["2p40_2p60"].first = 2.40;
-   ETAvalue["2p40_2p60"].second = 2.60;
-   ETAvalue["2p60_2p80"].first = 2.60;
-   ETAvalue["2p60_2p80"].second = 2.80;
-   ETAvalue["2p80_3p00"].first = 2.80;
-   ETAvalue["2p80_3p00"].second = 3.0;
-   ETAvalue["1p44_1p48"].first  = 1.44;
-   ETAvalue["1p44_1p48"].second = 1.48;
-   ETAvalue["1p00_1p48"].first  = 1.0;
-   ETAvalue["1p00_1p48"].second = 1.48;
-   ETAvalue["1p48_2p00"].first  = 1.48;
-   ETAvalue["1p48_2p00"].second = 2.0;
-   ETAvalue["2p00_2p50"].first  = 2.0;
-   ETAvalue["2p00_2p50"].second = 2.5;
-   ETAvalue["2p50_3p00"].first  = 2.5;
-   ETAvalue["2p50_3p00"].second = 3.0;
-
+   getBoundaries(ETvalue, ETAvalue);
 
    //color for the resolution, scale and efficiency plots
    map<int, EColor> color;
@@ -367,62 +244,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    system(Form("mkdir -p %s", outputdir.c_str()));
 
 
-   // we get the matching strategy from the fileName
-   vector<TString> matching;
-   for(unsigned int iFile(0); iFile<fileName.size(); ++ iFile){
-      if(fileName[iFile].find("numberOfHits") != std::string::npos){
-         matching.push_back("numberOfHits");
-      }
-      else if(fileName[iFile].find("simFraction") != std::string::npos){
-         matching.push_back("simFraction_min1");
-      }
-      else if(fileName[iFile].find("deltaR") != std::string::npos){
-         matching.push_back("deltaR");
-      }
-   }
-
-   // we get the pileUp tag from the fileName
-   vector<TString> PUtag;
-   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-      if(fileName[iFile].find("noPU") != std::string::npos){
-         PUtag.push_back("noPU");
-      }
-      else if(fileName[iFile].find("wPU") != std::string::npos){
-         PUtag.push_back("wPU");
-      }
-   }
-
-   // we get the thresholds from the fileName
-   vector<TString> pfrechit_thrs;
-   vector<TString> seeding_thrs;
-   for(unsigned int iFile(0); iFile<fileName.size(); ++ iFile){
-
-      std::size_t found_pfrechit_inf = fileName[iFile].find("pfrh");
-      std::size_t found_pfrechit_sup = fileName[iFile].find('_', found_pfrechit_inf);
-      string pfrechit_thrs_value = fileName[iFile].substr(found_pfrechit_inf, found_pfrechit_sup-found_pfrechit_inf);
-      TString thrs_rechit = pfrechit_thrs_value.c_str();
-      pfrechit_thrs.push_back(thrs_rechit);
-
-      std::size_t found_seeding_inf = fileName[iFile].find("seed");
-      std::size_t found_seeding_sup = fileName[iFile].find('_', found_seeding_inf);
-      string seeding_thrs_value = fileName[iFile].substr(found_seeding_inf, found_seeding_sup-found_seeding_inf);
-      TString thrs_seeding = seeding_thrs_value.c_str();
-      seeding_thrs.push_back(thrs_seeding);
-
-   }
-
-   // we retrieve whether it was crytal dependent or ring dependent
-   vector<TString> dependency;
-   for(unsigned int iFile(0); iFile<fileName.size(); ++ iFile){
-      if(fileName[iFile].find("thrRing") != std::string::npos){
-         dependency.push_back("#etaRing");
-      }
-      else{
-         dependency.push_back("Xtal");
-      }
-   }
-
-   // we perform the fit
+   // struct that will get the fit parameters
    FitParameters fitParameters_EB;
    FitParameters fitParameters_EE;
 
@@ -445,6 +267,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
       }
    }
 
+   // we write in a txt file the parameters of the fit for each file
    if(do_writeFiles){
       for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
          ifstream file("samples/" + fileName[iFile] + ".txt");
@@ -452,10 +275,6 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
          if(!file.is_open()){
             if(do_EB[iFile]){
                fitParameters_EB = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
-               cout << "finished the fit" << endl;
-               cout << "checking" << endl;
-               cout << "ETranges " << ETranges[iFile].size() <<  endl;
-               cout << "ETAranges " << ETAranges[iFile].size() << endl; 
                getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, ETranges[iFile], ETAranges[iFile]);
             }
             else{
@@ -471,7 +290,7 @@ void EoverEtrue_fit(TString fineBinning_energy, TString fineBinning_eta, TString
    }
 
 
-
+   // we produce the different plots
    if(!do_writeFiles){
       if(!do_efficiencyPlotOnly){
          for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
