@@ -163,7 +163,6 @@ void EoverEtrue_fit(TString fineBinning_energy,
             ETranges.push_back({"1_20", "20_40", "40_60", "60_80", "80_100"});
          }
          else{
-            cout << "tu me vois" << endl;
             ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
          }
       }
