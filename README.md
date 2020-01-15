@@ -54,17 +54,20 @@ This tool will produce comparison plots of basic distrbucions, starting from two
 
 Example of usage:
 ```
-cd Validor
+cd Validator
 python validate.py -f1 /work/mratti/validation/histo_photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2021_new2021_n1000_simFraction_EE.root -f2 /work/mratti/validation/histo_photon_E1to100GeV_closeEcal_EEclose_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_new2023_n1000_simFraction_EE.root -l1 new_2021 -l2 new_2023 -o 2021_vs_2023 --doNorm --doLog --rebin 2
 ```
 
 ### NoisePlotter
-
+First determine average of the thresholds in each eta ring.
 ```
 cd noisePlotter
 root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_2023.txt\"\)
+```
+Then smooth the noise graph and merge EB and EE in a single one.
+```
 python getMergedGraph.py -t PFRecHitThresholds_EB_ringaveraged_EE_2023
 ```
-
-
+Output is in ```PFRecHitThresholds_EB_ringaveraged_EE_2023/mergedGraphs.root```
+Graphs to be used are ```merged_smooth_i``` where i is the multiplier of the sigma noise, to be drawn with "AL" options.
 
