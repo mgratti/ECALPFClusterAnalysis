@@ -89,11 +89,14 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
   std::vector<float> ringPlus_Object;          std::vector<float> ringMinus_Object;      std::vector<float> ring_Object;
   std::vector<int> ringPlus_Objectcount;       std::vector<int> ringMinus_Objectcount;   std::vector<int> ring_Objectcount;
   std::vector<double> eta;
+  std::map<int,std::vector<double>> etas;
+  //std::vector<std::vector <double>> etas;
 
   for (int iter = 0; iter < (50-11+3); iter++) {
     ringPlus_Object.push_back(0);            ringMinus_Object.push_back(0);       ring_Object.push_back(0);
     ringPlus_Objectcount.push_back(0);       ringMinus_Objectcount.push_back(0);  ring_Objectcount.push_back(0);
     eta.push_back(0);
+    //etas.push_back({0});
   }
 
   for (int iter = 0; iter < ix_ieta.size(); iter++) {
@@ -106,8 +109,11 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
         float ring = sqrt( dx*dx + dy*dy );
 
         int iring = round(ring) - 12;  //---- 12 [ = (62 - 50 - 1) from the 2D plot] is the first ring
-        eta.at(iring)= -log(tan(0.5*atan(sqrt((ix_ieta.at(iter)-50.5)*(ix_ieta.at(iter)-50.5)+(iy_iphi.at(iter)-50.5)*(iy_iphi.at(iter)-50.5))*2.98/328.)));
-
+        std::cout << "working on EE on ring=" << iring << std::endl;
+        double this_eta = -log(tan(0.5*atan(sqrt(dx*dx+dy*dy)*2.98/328.)));
+        eta.at(iring) = this_eta; // this keeps only the last eta
+        etas[iring].push_back(this_eta);
+        std::cout << " corresponds to eta=" << eta.at(iring) << std::endl;
 
         if (iring > (50-11+2) || iring < 0) std::cout << " what ?!?   iring = " << iring << " dx = " << dx << " dy = " << dy << " :::: ix = " << ix_ieta.at(iter) << "  iy = " << iy_iphi.at(iter) << std::endl;
         if (Object.at(iter) > 0) {
@@ -148,6 +154,16 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
           Object.at(iter) = ring_average;
         }
      }
+  }
+  
+  // average the eta over the ring to get a better esimate of the eta of the ring
+  for (int iter = 0; iter < (50-11); iter++) {
+    double mean_eta=0;
+    for (int n = 0; n < etas[iter].size(); n++){
+      mean_eta += etas[iter].at(n);
+    }
+    mean_eta /= etas[iter].size();
+    eta.at(iter) = mean_eta;  // reset eta with the average eta over the ring
   }
 
   // ---------------
