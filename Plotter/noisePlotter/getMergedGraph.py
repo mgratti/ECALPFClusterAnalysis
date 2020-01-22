@@ -1,3 +1,5 @@
+#python getMergedGraph.py -t tagName
+# returns a root file with the merged graph for 1sigma, 2sigma, 3sigma
 import ROOT
 
 graph_saver = []
@@ -96,13 +98,17 @@ if __name__ == "__main__":
   mergedGraph1 = mergeGraphs(g1=graphEB,g2=graphEE,mult=1)  
   mergedGraph2 = mergeGraphs(g1=graphEB,g2=graphEE,mult=2)  
   mergedGraph3 = mergeGraphs(g1=graphEB,g2=graphEE,mult=3)  
+  mergedGraph4 = mergeGraphs(g1=graphEB,g2=graphEE,mult=4)  
+
 
   mergedGraph1_smooth = mergeGraphs(g1=graphEB_smooth,g2=graphEE_smooth,suffix='smooth',mult=1)
   mergedGraph2_smooth = mergeGraphs(g1=graphEB_smooth,g2=graphEE_smooth,suffix='smooth',mult=2)
   mergedGraph3_smooth = mergeGraphs(g1=graphEB_smooth,g2=graphEE_smooth,suffix='smooth',mult=3)
+  mergedGraph4_smooth = mergeGraphs(g1=graphEB_smooth,g2=graphEE_smooth,suffix='smooth',mult=4)
+
 
   #testGraphs(cname='test', g1=mergedGraph1, g2=mergedGraph1_smooth)
 
-  saveGraphs(outputfileName,graphs=[mergedGraph1, mergedGraph2, mergedGraph3, mergedGraph1_smooth, mergedGraph2_smooth, mergedGraph3_smooth])
+  saveGraphs(outputfileName,graphs=[mergedGraph1, mergedGraph2, mergedGraph3, mergedGraph4,  mergedGraph1_smooth, mergedGraph2_smooth, mergedGraph3_smooth, mergedGraph4_smooth])
 
 

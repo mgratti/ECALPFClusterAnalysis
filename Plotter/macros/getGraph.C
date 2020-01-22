@@ -98,7 +98,8 @@ PlottingTools getGraph(TString whichPlot,
          if(hist_deno->GetEntries()!=0){
             quantity = hist_num->GetEntries()/hist_deno->GetEntries();
          }
-         //cout << "efficiency: " << quantity << endl;
+         cout << ETranges[indexB] << " " << ETAranges[indexA] << endl;
+         cout << "efficiency: " << quantity << endl;
          range_candidate.push_back(quantity);
          if(TEfficiency::CheckConsistency(*hist_num,*hist_deno)){
             eff_error = new TEfficiency(*hist_num, *hist_deno);
@@ -107,6 +108,7 @@ PlottingTools getGraph(TString whichPlot,
             error_tmp += eff_error->GetEfficiencyErrorLow(i);
          }
          error = error_tmp;
+         cout << "error: " << error << endl;
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity);
          graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);

@@ -52,14 +52,14 @@ using namespace std;
 
 
 /**********************************
- 
+
   - This script allows to 
-      - perform the fit of Ereco/Esim looping of files and save the fit parameters in a txt file
-      - produce the reso/scale/efficiency/fakeRate plots, with and without ratio
-      - produce the scan thresholds plots, with and without ratio
+  - perform the fit of Ereco/Esim looping of files and save the fit parameters in a txt file
+  - produce the reso/scale/efficiency/fakeRate plots, with and without ratio
+  - produce the scan thresholds plots, with and without ratio
 
 
-**********************************/
+ **********************************/
 
 
 
@@ -147,10 +147,10 @@ void EoverEtrue_fit(TString fineBinning_energy,
    vector<Int_t> kEvents;
    vector<TString> matching, PUtag, dependency;
    vector<TString> pfrechit_thrs, seeding_thrs;
-   
+
    // initialization
    plotterInit(fileName, do_EB, do_EE, matching, PUtag, pfrechit_thrs, seeding_thrs, dependency, kEvents, do_0to20GeV, do_0to100GeV, do_0p1to200GeV);
-   
+
    // define the different Et and Eta slots
    vector<vector<TString>> ETranges;
 
@@ -213,35 +213,39 @@ void EoverEtrue_fit(TString fineBinning_energy,
    color[7]=kBlack;
 
    // define the output directory
-   string outputdir = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[0];
-   if(do_binningEt){
-      outputdir += "_EtaEtBinned";
-   }
-   else if(do_binningEn){
-      outputdir += "_EtaEnBinned";
-   }
-   if(do_CBfit){
-      outputdir += "_CB";
-   }
-   else if(do_doubleCBfit){
-      outputdir += "_doubleCB";
-   }
-   if(do_BGfit){
-      outputdir += "_BG";
-   }
+   vector<string> outputdir;
+   for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
+      string outputdir_tmp = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[iFile];
+      if(do_binningEt){
+         outputdir_tmp += "_EtaEtBinned";
+      }
+      else if(do_binningEn){
+         outputdir_tmp += "_EtaEnBinned";
+      }
+      if(do_CBfit){
+         outputdir_tmp += "_CB";
+      }
+      else if(do_doubleCBfit){
+         outputdir_tmp += "_doubleCB";
+      }
+      if(do_BGfit){
+         outputdir_tmp += "_BG";
+      }
 
-   if(use_simEnergy){
-      outputdir += "_simEnergy";
+      if(use_simEnergy){
+         outputdir_tmp += "_simEnergy";
+      }
+      outputdir_tmp += "/";
+
+      if(do_ratioPlot){
+         outputdir_tmp += "ratio/" + fileName[1] + "/";
+      }
+
+      outputdir.push_back(outputdir_tmp);
+
+      // create the output directory
+      system(Form("mkdir -p %s", outputdir_tmp.c_str()));
    }
-   outputdir += "/";
-
-   if(do_ratioPlot){
-      outputdir += "ratio/" + fileName[1] + "/";
-   }
-
-   // create the output directory
-   system(Form("mkdir -p %s", outputdir.c_str()));
-
 
    // struct that will get the fit parameters
    FitParameters fitParameters_EB;
@@ -273,11 +277,11 @@ void EoverEtrue_fit(TString fineBinning_energy,
 
          if(!file.is_open()){
             if(do_EB[iFile]){
-               fitParameters_EB = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
+               fitParameters_EB = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EB");
                getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, ETranges[iFile], ETAranges[iFile]);
             }
             else{
-               fitParameters_EE = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
+               fitParameters_EE = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EE");
                getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, ETranges[iFile], ETAranges[iFile]);
             }
          }
@@ -294,7 +298,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
       if(!do_efficiencyPlotOnly){
          for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
             if(do_EB[iFile]){
-               fitParameters_EB = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, flagList, "EB");
+               fitParameters_EB = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EB");
                sigma.push_back(fitParameters_EB.map_sigma);
                sigma_error.push_back(fitParameters_EB.map_sigma_error);
                mean.push_back(fitParameters_EB.map_mean);
@@ -302,7 +306,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
                chisquare.push_back(fitParameters_EB.map_chisquare);
             }
             else{
-               fitParameters_EE = performFit(fileName[iFile], outputdir, kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, flagList, "EE");
+               fitParameters_EE = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EE");
                sigma.push_back(fitParameters_EE.map_sigma);
                sigma_error.push_back(fitParameters_EE.map_sigma_error);
                mean.push_back(fitParameters_EE.map_mean);

@@ -43,7 +43,7 @@ void produceScanPlots(TString whichPlot,
       map<TString, Edges> ETvalue, 
       map<TString, Edges> ETAvalue, 
       map<int, EColor> color, 
-      string outputdir, 
+      vector<string> outputdir, 
       vector<Int_t> kEvents, 
       vector<TString> matching, 
       vector<TString> PUtag, 
@@ -207,7 +207,7 @@ void produceScanPlots(TString whichPlot,
          cr->cd();
          label_info_up->Draw("same");
 
-         TString dir = outputdir.c_str();
+         TString dir = outputdir[0].c_str();
          TString nameSave;
          if(whichPlot=="Resolution"){
             nameSave = "resolution_";

@@ -3,19 +3,21 @@
 # source AnalyserLauncher.sh
 
 # to run on the batch:
-# sbatch -p wn --account=cn-test -o logs/analyser.log -e logs/analyser.log --job-name=analyser --ntasks=10 AnalyserLauncher.sh
+# sbatch -p wn --account=t3 -o logs/analyser.log -e logs/analyser.log --job-name=analyser --ntasks=10 AnalyserLauncher.sh
 
 
 
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=false
-doPlotter=true
+doAnalyser=true
+doPlotter=false
 
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
+                        "T2_v1_t11_nj1"
+                        #"T2_v1_t12_nj1"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
@@ -34,7 +36,7 @@ declare -a FilesArray=(
                         #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t34_n30000"
                         #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t44_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v1_t0_n30000"
-                        "photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed1.0_thrRingEBXtalEE_y2023_T2_v1_t11_n30000"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed1.0_thrRingEBXtalEE_y2023_T2_v1_t11_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed2.0_thrRingEBXtalEE_y2023_T2_v1_t12_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t13_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t14_n30000"
@@ -65,11 +67,11 @@ do_writeFiles=false
 do_resolutionPlot=true
 do_scalePlot=true
 do_efficiencyPlot=true
-do_fakeRatePlot=false
+do_fakeRatePlot=true
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency and fakeRate plot, turn this option to true
-do_efficiencyPlotOnly=true
+do_efficiencyPlotOnly=false
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
 do_ratioPlot=false
@@ -81,7 +83,7 @@ do_useDifMatching=false
 do_scanThrs=false
 
 # do you want to enable pop-up plots?
-do_popUpPlot=true
+do_popUpPlot=false
 
 
 

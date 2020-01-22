@@ -46,7 +46,7 @@ void producePlot(
       map<TString, Edges> ETvalue, 
       map<TString, Edges> ETAvalue, 
       map<int, EColor> color, 
-      string outputdir, 
+      vector<string> outputdir, 
       vector<Int_t> kEvents, 
       vector<TString> matching, 
       vector<TString> PUtag, 
@@ -291,7 +291,7 @@ void producePlot(
             }
 
 
-            TString dir = outputdir.c_str();
+            TString dir = outputdir[0].c_str();
             TString nameSave;
             if(whichPlot=="Resolution"){
                nameSave = "resolution";

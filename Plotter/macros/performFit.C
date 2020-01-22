@@ -16,7 +16,9 @@ FitParameters performFit(string fileName,
       vector<TString> ETranges, 
       vector<TString> ETAranges, 
       map<TString, Edges> ETvalue, 
-      map<TString, Edges> ETAvalue, 
+      map<TString, Edges> ETAvalue,
+      TString PFRecHit_thrs,
+      TString seeding_thrs,
       FlagList flagList, 
       string do_where){
 
@@ -278,7 +280,8 @@ FitParameters performFit(string fileName,
          label->SetTextFont(42);
          label->SetTextAlign(11);
          TString kevt = to_string(kEvents);
-         label->AddText(kevt + "k events " + mean_tmp + "  " + sigma_tmp);
+         label->AddText(kevt + "k events ");// + mean_tmp + "  " + sigma_tmp);
+         label->AddText(PFRecHit_thrs + " " + seeding_thrs);
          if(do_binningEt){
             label->AddText(getString(ETvalue[ETranges[i]].first, 0) + " < E_{T} < " + getString(ETvalue[ETranges[i]].second, 0) + "  GeV");
          }
