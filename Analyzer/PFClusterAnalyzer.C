@@ -485,6 +485,11 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
+   //if(entry > 8000 && entry < 9000){
+   if(entry>=0){
+   //cout << endl << endl;
+   //cout << entry << endl;
+   //cout << "eventId " << *eventId << endl;
    //if(entry>1){ throw std::invalid_argument("aborting");}
 
    //cout << endl << endl << "EVENT " << entry << endl;
@@ -514,6 +519,17 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    map<TString, map<TString, float>> N_PFmatched_binned;
 
    for (unsigned int icP=0; icP<caloParticle_genEnergy.GetSize(); icP++){
+     
+      //if(*eventId==6) cout <<"found event 6" << endl;
+      if(caloParticle_genEnergy[icP]>5 && caloParticle_genEnergy[icP]<10){
+      //if(caloParticle_genEnergy[icP]>7.83245 && caloParticle_genEnergy[icP]<7.83247 && caloParticle_genEta[icP]>1.18228 && caloParticle_genEta[icP]<1.18230){
+         cout << endl;
+         //cout <<  << icP << endl;
+         cout << "eventId: " << *eventId << endl;
+         cout << "calo energy: " << caloParticle_genEnergy[icP] << endl;
+         cout << "calo eta: " << caloParticle_genEta[icP] << endl;
+         cout << "calo phi: " << caloParticle_genPhi[icP] << endl;
+      }
 
       N_Cl++;
 
@@ -609,7 +625,12 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             }
             if(caloParticle_simEnergy[icP]>=Et_edges[Et_key].first && caloParticle_simEnergy[icP]<Et_edges[Et_key].second 
                   && std::abs(caloParticle_simEta[icP])>=Eta_edges[Eta_key].first && std::abs(caloParticle_simEta[icP])<Eta_edges[Eta_key].second){
-               h_caloParticle_size_EtaEnBinned_simEnergy[Eta_key][Et_key]->Fill(1.);
+               // as a check remvove caloParticle if it has energy below the energy threshold
+               // check only in the endcaps
+               if(abs(caloParticle_simEta[icP])>2.4 && abs(caloParticle_simEta[icP])<2.6){
+                  if(caloParticle_simEnergy[icP] < 10.6) continue;
+                  h_caloParticle_size_EtaEnBinned_simEnergy[Eta_key][Et_key]->Fill(1.);
+               }
             }
          }
       }
@@ -692,8 +713,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
       double filling_energy=0;
       double filling_phi=0;
       double filling_eta=0;
-
-
+if(caloParticle_genEnergy[icP]>5 && caloParticle_genEnergy[icP]<10){
+      cout << "Matching: " << endl;
+}
       vector<int> vector_matched_indices;
       if(flag_doMatching_score){
          vector<int> input_vector = caloParticle_pfCluster_sim_fraction_min1_MatchedIndex[icP];
@@ -710,16 +732,20 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }
 
          sort(pair_clusterIndex_score.begin(), pair_clusterIndex_score.end(), sortbysecdesc);
-         //if(input_vector.size()>2){ 
-         // cout << "sorted: " << endl;
-         // for(unsigned int iSort(0); iSort<pair_clusterIndex_score.size(); ++iSort){
-         //    cout << pair_clusterIndex_score[iSort].first << " " << pair_clusterIndex_score[iSort].second << endl;
-         // }
-         // }
+         if(input_vector.size()>0){ 
+          if(caloParticle_genEnergy[icP]>5 && caloParticle_genEnergy[icP]<10){
+             cout << "sorted: " << endl;
+          for(unsigned int iSort(0); iSort<pair_clusterIndex_score.size(); ++iSort){
+             cout << pair_clusterIndex_score[iSort].first << " " << pair_clusterIndex_score[iSort].second << endl;
+          }
+          }
+         }
 
          if(flag_keepOnlyOnePFCluster){
             if(pair_clusterIndex_score.size()!=0){
-               vector_matched_indices.push_back(pair_clusterIndex_score[0].first);
+               if(pair_clusterIndex_score.size()>1){
+               vector_matched_indices.push_back(pair_clusterIndex_score[1].first);
+               }
             }
          }
          else{
@@ -728,12 +754,12 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             }
          }
       }
-
-      //cout << "vector matched indices: " << endl;
-      //for(unsigned int i(0); i<vector_matched_indices.size(); ++i){
-      //   cout << vector_matched_indices[i] << endl;
-      //}
-
+      if(caloParticle_genEnergy[icP]>5 && caloParticle_genEnergy[icP]<10){
+      cout << "vector matched indices: " << endl;
+      for(unsigned int i(0); i<vector_matched_indices.size(); ++i){
+         cout << vector_matched_indices[i] << endl;
+      }
+      }
       if(flag_doMatching_deltaR){
          vector<int> input_vector = caloParticle_pfCluster_dR_simScore_MatchedIndex[icP];
 
@@ -775,6 +801,11 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             filling_energy = pfCluster_energy[matched_index];
             filling_phi    = pfCluster_phi[matched_index];
             filling_eta    = pfCluster_eta[matched_index];
+            if(caloParticle_genEnergy[icP]>5 && caloParticle_genEnergy[icP]<10){
+            cout << "pfCluster energy: " << filling_energy << endl; 
+            cout << "pfCluster eta: " << filling_eta << endl;
+            cout << "pfCluster phi: " << filling_phi << endl;
+            }
 
             if(flag_doEB){
                if(TMath::Abs(caloParticle_simEta[icP])<1.479){
@@ -1070,7 +1101,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
      } // end N_perEvent_plots
      */
 
-
+   }
    return kTRUE;
 }
 
