@@ -211,8 +211,8 @@ if __name__ == "__main__":
       gROOT.SetBatch(True)
 
    #outputdirectory
-   #outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/2DScan'
-   outputdir = '/afs/cern.ch/user/a/anlyon/CMSSW_10_6_1_patch1/src/Plotter/myPlots/2DScan'
+   outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/2DScan'
+   #outputdir = '/afs/cern.ch/user/a/anlyon/CMSSW_10_6_1_patch1/src/Plotter/myPlots/2DScan'
    os.system('mkdir {}'.format(outputdir))
 
  
@@ -220,7 +220,7 @@ if __name__ == "__main__":
   
 
    #EnRanges  = ["10_15"] #, "5_10", "10_15", "15_20", "20_40", "40_60", "60_80"]
-   #EtaRanges = ["1p48_1p64"] #, "0p40_0p80"]
+   #EtaRanges = ["1p20_1p44"] #, "0p40_0p80"]
 
    #since we want a graph per energy/eta bin, we bin the samples vector
    # samples_binned is a list of dictionaries
@@ -242,7 +242,7 @@ if __name__ == "__main__":
    for iEn in EnRanges:
       selected_pair[iEn] = {}
       for iEta in EtaRanges: 
-         selected_pair[iEn][iEta] = ' - '
+         selected_pair[iEn][iEta] = [] #' - '
 
  
    whichPlot = [] 
@@ -259,7 +259,7 @@ if __name__ == "__main__":
       whichPlot.append('Efficiency')
 
 
-   #testFile = open("testFile_seeding4_withCut.txt", "w+")
+   #testFile = open("testFile_seeding3.txt", "w+")
 
    #start of the plotting
    for iEn in EnRanges: 
@@ -307,7 +307,7 @@ if __name__ == "__main__":
                            else:
                               if quantity>ref_quantity: ref_quantity=quantity
                            n=n+1
-                           #if iSeeding==4 and iPFRecHit==1: 
+                           #if iSeeding==3 and iPFRecHit==1: 
                            #   ref_quantity = quantity
                            
                         histo.Fill(getFloat(iSample.seeding), getFloat(iSample.pfRecHit), getFloat(quantity))
@@ -424,71 +424,89 @@ if __name__ == "__main__":
             del histo
             del histo_ratio
 
-         #selection         
-         selection = []
+         #selection
+         if do_rankingPlot == 'True' or do_summaryPlot == 'True':
+            selection = []
 
-         if iEn == 'ETranges': continue
-         if iEta == 'ETAranges': continue
-         
-
-         n=0
-         for iPFRecHit in pfRechitThrs:
-            for iSeeding in seedingThrs:
+            if iEn == 'ETranges': continue
+            if iEta == 'ETAranges': continue
             
-               if(iPFRecHit > iSeeding): continue
-                  
-               for iSample in samples_binned[iEn][iEta]:
-                   if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
-                        reso = iSample.resolution
-                        eff = iSample.efficiency
-                        if n==0:
-                           ref_reso=reso
-                           ref_eff=eff
-                        else: 
-                           if reso<ref_reso and reso != '0': ref_reso=reso
-                           if eff>ref_eff: ref_eff=eff
-                        n=n+1
-                           
-                        #print('{a} {b} {c} {d} {e}'.format(a=what, b=iPFRecHit, c=iSeeding, d=reso, e=ref_reso))
-         
-         for iPFRecHit in pfRechitThrs:
-           for iSeeding in seedingThrs:
-              if(iPFRecHit > iSeeding): continue
-              for iSample in samples_binned[iEn][iEta]:
-                 if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
-                    reso=iSample.resolution
-                    eff=iSample.efficiency
-                    if reso == '0': continue
-                    if getFloat(ref_reso)!=0 and getFloat(ref_eff)!=0:
-                       ratio_reso = getFloat(reso)/getFloat(ref_reso)
-                       ratio_eff = getFloat(eff)/getFloat(ref_eff)
-                       if(ratio_reso!=1):
-                          score_reso = round((ratio_reso-1)*100, 2)
-                       else:
-                          score_reso = 0 #1
-                       if(ratio_eff!=1):
-                          score_eff = round((ratio_eff-1)*100, 2)
-                       else:
-                          score_eff = 0 #-1
-                       score = score_reso - score_eff
-                       #score = -1*score_reso*score_eff
-                       selection.append('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score))
-                       #print('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=ratio_reso, d=score_eff, e=score))
-          
 
-                                         
-         selection.sort(key=getScore)
-         #print('\n')
-         #for i in selection:
-         #   print(getScore(i))
-         if len(selection)>0:
-            #selected_pair[iEn][iEta] = '({a}, {b})'.format(a=int(getFloat(getFirstElement(selection[0]))), b=int(getFloat(getSecondElement(selection[0]))))
-            selected_pair[iEn][iEta] = '{a} {b}'.format(a=getFloat(getFirstElement(selection[0])), b=getFloat(getSecondElement(selection[0])))
-         else:
-            selected_pair[iEn][iEta] = ' - '
-                 
-         #print('Selected index: {a}').format(a=selected_pair[iEn][iEta]) 
-        
+            n=0
+            for iPFRecHit in pfRechitThrs:
+               for iSeeding in seedingThrs:
+               
+                  if(iPFRecHit > iSeeding): continue
+                     
+                  for iSample in samples_binned[iEn][iEta]:
+                      if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
+                           reso = iSample.resolution
+                           eff = iSample.efficiency
+                           if n==0:
+                              ref_reso=reso
+                              ref_eff=eff
+                           else: 
+                              if reso<ref_reso and reso != '0': ref_reso=reso
+                              if eff>ref_eff: ref_eff=eff
+                           n=n+1
+                              
+                           #print('{a} {b} {c} {d} {e}'.format(a=what, b=iPFRecHit, c=iSeeding, d=reso, e=ref_reso))
+             
+            for iPFRecHit in pfRechitThrs:
+               for iSeeding in seedingThrs:
+                  if(iPFRecHit > iSeeding): continue
+                  for iSample in samples_binned[iEn][iEta]:
+                     if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
+                        reso=iSample.resolution
+                        eff=iSample.efficiency
+                        if reso == '0': continue
+                        if getFloat(ref_reso)!=0 and getFloat(ref_eff)!=0:
+                           ratio_reso = getFloat(reso)/getFloat(ref_reso)
+                           ratio_eff = getFloat(eff)/getFloat(ref_eff)
+                           if(ratio_reso!=1):
+                              score_reso = round((ratio_reso-1)*100, 2)
+                           else:
+                              score_reso = -0.001 #0 #1
+                           if(ratio_eff!=1):
+                              score_eff = round((ratio_eff-1)*100, 2)
+                           else:
+                              score_eff = 0 #-1
+                        
+                           #if the fluctuation is below 1%, we put the score to the ref
+                           if score_reso > 0 and score_reso < 1:
+                              score_reso = 0
+                           if abs(score_eff) < 1:
+                              score_eff = 0
+                           weight_reso = 1
+                           weight_eff = 1
+                           score = weight_reso*score_reso - weight_eff*score_eff
+                           #score = -1*score_reso*score_eff
+                           selection.append('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score))
+                           #print('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score))
+    
+                                            
+            selection.sort(key=getScore)
+            #print('\n')
+            #for i in selection:
+            #   print(getScore(i))
+            if len(selection)>0:
+               firstPair_left = getFloat(getFirstElement(selection[0]))
+               firstPair_right = getFloat(getSecondElement(selection[0]))
+               secondPair_left = getFloat(getFirstElement(selection[1]))
+               secondPair_right = getFloat(getSecondElement(selection[1]))
+               thirdPair_left = getFloat(getFirstElement(selection[2]))
+               thirdPair_right = getFloat(getSecondElement(selection[2]))
+    
+               selected_pair[iEn][iEta].append('{a} {b}'.format(a=getFloat(getFirstElement(selection[0])), b=getFloat(getSecondElement(selection[0]))))
+               if (getScore(selection[1])-getScore(selection[0]))/getScore(selection[0]) < 0.01:
+                  selected_pair[iEn][iEta].append('{a} {b}'.format(a=secondPair_left, b=secondPair_right))
+               if (getScore(selection[2])-getScore(selection[0]))/getScore(selection[0]) < 0.01:
+                  selected_pair[iEn][iEta].append('{a} {b}'.format(a=thirdPair_left, b=thirdPair_right))
+            else:
+               selected_pair[iEn][iEta].append(' - ')
+                    
+            #print('Selected index: {a}').format(a=selected_pair[iEn][iEta]) 
+           
 
 
 
@@ -524,7 +542,7 @@ if __name__ == "__main__":
                n_reso=n_reso+1
 	            #resolutions_ranking.SetTextFont(12)
                resolutions_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
-               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta], 'all'):
+               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][0]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][0], 'all'):
                   resolutions_ranking.GetListOfLines().Last().SetTextColor(1);
                   resolutions_ranking.GetListOfLines().Last().SetTextFont(62);
                else:
@@ -545,7 +563,7 @@ if __name__ == "__main__":
                else: value=str(getThirdElement(item, 2))+'%'
                n_eff=n_eff+1
                efficiencies_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
-               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta], 'all'):
+               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][0]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][0], 'all'):
                   efficiencies_ranking.GetListOfLines().Last().SetTextColor(1);
                   efficiencies_ranking.GetListOfLines().Last().SetTextFont(62);
                else:
@@ -559,6 +577,10 @@ if __name__ == "__main__":
    # summary plot
    if do_summaryPlot=='True':
       print('Producing summary plot')
+
+      for iEn in EnRanges[:]:
+         if getFloat(getUpperBin(iEn)) > 60:
+            EnRanges.remove(iEn)
 
       nBins_energy = len(EnRanges)
       nBins_eta = len(EtaRanges)
@@ -606,22 +628,6 @@ if __name__ == "__main__":
 
       # we draw the best score 
       score_label = []
-      '''
-      for iEn in EnRanges:
-         for iEta in EtaRanges:
-            if iEta == '1p44_1p48': continue
-            print(selected_pair[iEn][iEta])   
-            x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-            x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-            y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-            y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-
-          #print('{aa} {bb} {a} {b} {c} {d}').format(aa=iEn, bb=iEta, a=x1, b=x2, c=y1, d=y2)   
-
-            score_print = TPaveText(x1, y1, x2, y2)
-            score_print.AddText(selected_pair[iEn][iEta])
-            score_label.append(score_print)
-      '''
       for iEn in EnRanges:
          for iEta in EtaRanges:
             if iEta == '1p44_1p48': continue
@@ -633,10 +639,13 @@ if __name__ == "__main__":
             #print('{aa} {bb} {a} {b} {c} {d}').format(aa=iEn, bb=iEta, a=x1, b=x2, c=y1, d=y2)   
             #print('{a} {b}').format(a=int(getPairInf(selected_pair[iEn][iEta])), b=getPairSup(selected_pair[iEn][iEta]))
             score_print = TPaveText(x1, y1, x2, y2)
-            if selected_pair[iEn][iEta]!=' - ':
-               score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(selected_pair[iEn][iEta]))), b=int(getFloat(getSecondElement(selected_pair[iEn][iEta], 'all')))))
+            #if selected_pair[iEn][iEta][0]!=' - ':
+            if len(selected_pair[iEn][iEta])!=0:
+               #score_print.AddText(selected_pair[iEn][iEta])
+               for iPair in selected_pair[iEn][iEta]:
+                  score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
                #score_print.SetTextColor(getColor(int(getPairInf(selected_pair[iEn][iEta])), int(getPairSup(selected_pair[iEn][iEta]))))
-               score_print.SetTextColor(getColor(int(getFloat(getFirstElement(selected_pair[iEn][iEta]))), int(getFloat(getSecondElement(selected_pair[iEn][iEta], 'all')))))
+                  score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
             else:
                score_print.AddText(' - ')
             score_label.append(score_print)         
