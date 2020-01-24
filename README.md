@@ -71,3 +71,21 @@ python getMergedGraph.py -t PFRecHitThresholds_EB_ringaveraged_EE_2023
 Output is in ```PFRecHitThresholds_EB_ringaveraged_EE_2023/mergedGraphs.root```
 Graphs to be used are ```merged_smooth_i``` where i is the multiplier of the sigma noise, to be drawn with "AL" options.
 
+### SingleEventAnalyzer
+Used to analyze and plot PFClusters in a single event.
+
+Will produce histograms for all events chosen and for each pfcluster in the event, with x-tal level information on the energy of the rechits, fractions, best-matched caloparticle, energy of the cluster, etc.
+
+* Choose an event number to check and add it in ```eventsToCheck``` in ```SingleEventPFClusterAnalyzer.C```; 
+* note the convention on the event number is: evt=eventId-1
+* define input and output in ```start_SingleEventPFClusterAnalyzer.C```
+* run with ```root -l -b -q start_SingleEventPFClusterAnalyzer.C+```
+
+Do the plotting:
+
+* specify the events and clusters of your choice in ```eventPlotter.py```
+* run with ```python eventPlotter.py```
+
+
+
+
