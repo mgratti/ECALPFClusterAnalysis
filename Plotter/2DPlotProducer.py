@@ -5,6 +5,9 @@ import operator
 import numpy as np
 from math import sin, atan, exp
 
+sys.path.append('noisePlotter/')
+import getMergedGraph as noisePlotter
+
 from array import *
 from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TGraph, TLine, gROOT, gStyle
 from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue, kBird, kCherry
@@ -583,7 +586,7 @@ if __name__ == "__main__":
 
       # in order not to plot the full energy range
       for iEn in EnRanges[:]:
-         if getFloat(getUpperBin(iEn)) > 60:
+         if getFloat(getUpperBin(iEn)) > 80:
             EnRanges.remove(iEn)
 
       nBins_energy = len(EnRanges)
@@ -612,15 +615,12 @@ if __name__ == "__main__":
          whichQuantities = ['Resolution', 'Efficiency']
       
       for item in whichQuantities:
-         # using a TGraph may be better to superimpose the ET curve
          if printWithColour:
            histo_summary = TH2D('histo_summary_{a}'.format(a=item), 'histo_summary_{a}'.format(a=item), nBins_eta, binsEta, nBins_energy, binsEnergy)
          else:
            histo_summary = TH2D('histo_summary', 'histo_summary', nBins_eta, binInf_eta, binSup_eta, nBins_energy, binInf_energy, binSup_energy)
          histo_summary.SetTitle(' ')
-         #print('Bins {a} {b} {c} {d} {e} {f}').format(a=nBins_eta, b=binInf_eta, c=binSup_eta, d=nBins_energy, e=binInf_energy, f=binSup_energy)  
-         #for iEta in EtaRanges:
-         #   print(iEta) 
+         
          c_summary = TCanvas('c_summary_{a}'.format(a=item), 'c_summary_{a}'.format(a=item), 1500, 1500)
          histo_summary.GetXaxis().SetTitle('#eta')
          histo_summary.GetXaxis().SetLabelSize(0.028)
@@ -675,11 +675,6 @@ if __name__ == "__main__":
                   line_vert = TLine(getFloat(getUpperBin(iEta), 'p'), getFloat(getInfBin(EnRanges)), getFloat(getUpperBin(iEta), 'p'), getFloat(getSupBin(EnRanges))) 
                   dashed_lines.append(line_vert)
 
-               #print((getFloat(getLowerBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2) 
-               #histo_summary.Fill(str((getFloat(getLowerBin(iEta), 'p') + getFloat(getUpperBin(iEta), 'p'))/2), str((getFloat(getLowerBin(iEn)) + getFloat(getUpperBin(iEn)))/2), getFloat(getLowerBin(iEta), 'p') * getFloat(getLowerBin(iEn)))
-
-         #histo_summary.Draw('colz')
-         #histo_summary.Draw('text' +'same')
 
          for line in dashed_lines:
             line.SetLineStyle(9)
@@ -736,31 +731,74 @@ if __name__ == "__main__":
          f_ET_10.Draw('same')
 
 
-         legend1 = TLegend(0.1, 0.8, 0.4, 0.9)
-         legend1.AddEntry('f_ET_2', 'E_{T} = 2GeV')
-         legend1.SetTextSize(0.03);
+         legend1 = TLegend(0.1, 0.85, 0.4, 0.9)
+         legend1.AddEntry('f_ET_2', 'E_{T} = 2GeV', 'l')
+         legend1.SetTextSize(0.025);
          legend1.SetLineColor(0);
          legend1.SetFillColorAlpha(0, 0);
          legend1.SetBorderSize(0);
          legend1.Draw('same')
 
-
-         legend2 = TLegend(0.1, 0.7, 0.4, 0.8)
-         legend2.AddEntry('f_ET_5', 'E_{T} = 5GeV')
-         legend2. SetTextSize(0.03);
-         legend2. SetLineColor(0);
-         legend2. SetFillColorAlpha(0, 0);
-         legend2. SetBorderSize(0);
+         legend2 = TLegend(0.1, 0.8, 0.4, 0.85)
+         legend2.AddEntry('f_ET_5', 'E_{T} = 5GeV', 'l')
+         legend2.SetTextSize(0.025);
+         legend2.SetLineColor(0);
+         legend2.SetFillColorAlpha(0, 0);
+         legend2.SetBorderSize(0);
          legend2.Draw('same')
 
-         legend3 = TLegend(0.1, 0.6, 0.4, 0.7)
-         legend3.AddEntry('f_ET_10', 'E_{T} = 10GeV')
-         legend3. SetTextSize(0.03);
-         legend3. SetLineColor(0);
-         legend3. SetFillColorAlpha(0, 0);
-         legend3. SetBorderSize(0);
+         legend3 = TLegend(0.1, 0.75, 0.4, 0.8)
+         legend3.AddEntry('f_ET_10', 'E_{T} = 10GeV', 'l')
+         legend3.SetTextSize(0.025);
+         legend3.SetLineColor(0);
+         legend3.SetFillColorAlpha(0, 0);
+         legend3.SetBorderSize(0);
          legend3.Draw('same')
 
+         # noise curves
+         inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023/graphs.root'
+         graphEB = noisePlotter.getGraph(inputFileName, graphName='gr_EB_Object', doSmoothing=True)
+         graphEE= noisePlotter.getGraph(inputFileName, graphName='gr_EE_Object', doSmoothing=True)
+         
+         
+         mergedGraph1 = noisePlotter.mergeGraphs(g1=graphEB,g2=graphEE,suffix='smooth',mult=1)
+         mergedGraph2 = noisePlotter.mergeGraphs(g1=graphEB,g2=graphEE,suffix='smooth',mult=2)
+         mergedGraph3 = noisePlotter.mergeGraphs(g1=graphEB,g2=graphEE,suffix='smooth',mult=3)
+         mergedGraph4 = noisePlotter.mergeGraphs(g1=graphEB,g2=graphEE,suffix='smooth',mult=4)
+
+         mergedGraph1.SetLineWidth(4)
+         mergedGraph1.SetMarkerSize(1.2)
+         mergedGraph1.SetMarkerStyle(8)
+         mergedGraph1.SetMarkerColor(1)
+         mergedGraph1.Draw('C')
+
+         mergedGraph2.SetLineWidth(4)
+         mergedGraph2.SetMarkerSize(1.2)
+         mergedGraph2.SetMarkerStyle(8)
+         mergedGraph2.SetMarkerColor(1)
+         mergedGraph2.Draw('C')
+
+         mergedGraph3.SetLineWidth(4)
+         mergedGraph3.SetMarkerSize(1.2)
+         mergedGraph3.SetMarkerStyle(8)
+         mergedGraph3.SetMarkerColor(1)
+         mergedGraph3.Draw('C')
+
+         mergedGraph4.SetLineWidth(4)
+         mergedGraph4.SetMarkerSize(1.2)
+         mergedGraph4.SetMarkerStyle(8)
+         mergedGraph4.SetMarkerColor(1)
+         mergedGraph4.Draw('C')
+        
+
+         legend4 = TLegend(0.1, 0.7, 0.4, 0.75)
+         legend4.AddEntry('merged_smooth_1', 'noise curves {1,..,4}#sigma', 'l')
+         legend4.SetTextSize(0.025);
+         legend4.SetLineColor(0);
+         legend4.SetFillColorAlpha(0,0);
+         legend4.SetBorderSize(0);
+         legend4.Draw('same')
+        
 
          if item == 'Resolution': 
             c_summary.SaveAs('{a}/summaryPlot_resolution.png'.format(a=outputdir)) 
