@@ -119,6 +119,7 @@ PlottingTools getGraph(TString whichPlot,
          TFile* inputFile = TFile::Open(filename);
          TH1D* hist = 0;
          hist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_fakeRate_Eta" + ETAranges[indexA] + "_En" + ETranges[indexB])->Clone("hist");
+         //hist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_fakeRate_caloEta" + ETAranges[indexA] + "_En" + ETranges[indexB])->Clone("hist");
          Float_t error_tmp(0);
          quantity = hist->GetMean();
          //cout << "fakeRate: " << quantity << endl;

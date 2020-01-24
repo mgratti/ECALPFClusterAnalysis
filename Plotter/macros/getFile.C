@@ -19,7 +19,7 @@ void getFile(string fileName,
       vector<TString> ETAranges){
 
    ofstream outFile("/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
-   outFile << "ETranges ETAranges chi2 resolution scale efficiency" << endl;
+   outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate" << endl;
    TString label = fileName.c_str();
    TString filename;
    if(do_EB){
@@ -46,7 +46,11 @@ void getFile(string fileName,
             efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
          }
 
-         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << endl;
+         float noiseRate;
+         TH1D* hist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_fakeRate_Eta" + ETAranges[iEta] + "_En" + ETranges[iEn])->Clone("hist");
+         noiseRate = hist->GetMean();
+
+         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << " " << noiseRate << endl;
       }
    }
    

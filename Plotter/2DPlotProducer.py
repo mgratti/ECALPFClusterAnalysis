@@ -13,7 +13,7 @@ from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TGraph, 
 from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue, kBird, kCherry
 
 class Sample(object):
-   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0):
+   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0):
       self.energy = energy
       self.eta = eta
       self.pfRecHit = pfRecHit
@@ -21,6 +21,7 @@ class Sample(object):
       self.resolution = resolution
       self.scale = scale
       self.efficiency = efficiency
+      self.noiseRate = noiseRate
 
 
 def getOptions():
@@ -29,6 +30,7 @@ def getOptions():
    parser.add_argument('--doResolutionPlot', type=str, dest='doResolutionPlot', help='resolution plots', default='True')
    parser.add_argument('--doScalePlot', type=str, dest='doScalePlot', help='scale plots', default='True')
    parser.add_argument('--doEfficiencyPlot', type=str, dest='doEfficiencyPlot', help='efficiency plots', default='True')
+   parser.add_argument('--doNoiseRatePlot', type=str, dest='doNoiseRatePlot', help='noise rate plots', default='True')
    parser.add_argument('--doRankingPlot', type=str, dest='doRankingPlot', help='ranking plot', default='True')
    parser.add_argument('--doSummaryPlot', type=str, dest='doSummaryPlot', help='summary plot', default='True')
    parser.add_argument('--doPopUpPlot', type=str, dest='doPopUpPlot', help='want plots to pop up?', default='True')
@@ -88,9 +90,12 @@ def getSampleItems(inputfile):
          index6 = line.find(' ', index5+1)
          eff = line[index5+1:index6]
 
+         index7 = line.find(' ', index6+1)
+         noise = line[index6+1:index7]
+
          #print('pfrechit {t1} seeding {t2} energyBin {a1} etaBin {a2} reso {a3} mean {a4} eff {a5}').format(t1=PFRecHitThrs, t2=seedThrs, a1=energyBin, a2=etaBin, a3=reso, a4=mean, a5=eff)
       
-         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff)
+         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise)
          output.append(thisSample)
  
          if energyBin not in EnBins and energyBin != 'ETranges':
@@ -155,8 +160,13 @@ def getSecondElement(input, cond=None):
       return input[index1+1:index2]
 
 
-def getThirdElement(input, num=3):
+def getThirdElementPercentage(input, num=3):
    percentage = (getFloat(getQuantity(input))-1)*100
+   return round(percentage, num)
+
+
+def getThirdElement(input, num=3):
+   percentage = getFloat(getQuantity(input))
    return round(percentage, num)
 
 
@@ -206,6 +216,7 @@ if __name__ == "__main__":
    do_resolutionPlot=opt.doResolutionPlot
    do_scalePlot=opt.doScalePlot
    do_efficiencyPlot=opt.doEfficiencyPlot
+   do_noiseRatePlot=opt.doNoiseRatePlot
    do_rankingPlot=opt.doRankingPlot
    do_summaryPlot=opt.doSummaryPlot
 
@@ -256,11 +267,16 @@ if __name__ == "__main__":
       whichPlot.append('Scale')
    if do_efficiencyPlot=='True':
       whichPlot.append('Efficiency')
+   if do_noiseRatePlot=='True':
+      whichPlot.append('NoiseRate')
 
    if (do_rankingPlot=='True' or do_summaryPlot=='True') and do_resolutionPlot=='False':
       whichPlot.append('Resolution')
    if (do_rankingPlot=='True' or do_summaryPlot=='True') and do_efficiencyPlot=='False':
       whichPlot.append('Efficiency')
+   if (do_rankingPlot=='True' or do_summaryPlot=='True') and do_noiseRatePlot=='False':
+      whichPlot.append('NoiseRate')
+
 
 
    #testFile = open("testFile_seeding3.txt", "w+")
@@ -271,6 +287,7 @@ if __name__ == "__main__":
 
          resolutions = []
          efficiencies = []
+         noiseRates = []
          
          if iEn == 'ETranges': continue
          if iEta == 'ETAranges': continue
@@ -313,7 +330,12 @@ if __name__ == "__main__":
                            n=n+1
                            #if iSeeding==3 and iPFRecHit==1: 
                            #   ref_quantity = quantity
-                           
+                        elif what == 'NoiseRate':
+                           quantity = iSample.noiseRate
+                           if n==0: ref_quantity=quantity
+                           else:
+                              if quantity>ref_quantity: ref_quantity=quantity
+
                         histo.Fill(getFloat(iSample.seeding), getFloat(iSample.pfRecHit), getFloat(quantity))
                         #print('{a} {b} {c} {d} {e}'.format(a=what, b=iPFRecHit, c=iSeeding, d=quantity, e=ref_quantity))
 	    
@@ -335,6 +357,12 @@ if __name__ == "__main__":
                            if getFloat(ref_quantity)!= 0:
                               ratio = getFloat(quantity)/getFloat(ref_quantity)
                               efficiencies.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
+                        if what == 'NoiseRate':
+                           quantity = iSample.noiseRate
+                           noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=quantity))
+                           if getFloat(ref_quantity)!=0:
+                              ratio = getFloat(quantity)/getFloat(ref_quantity)
+                              #noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
                         if getFloat(ref_quantity)!= 0:   
                            histo_ratio.Fill(getFloat(iSample.seeding), getFloat(iSample.pfRecHit), getFloat(quantity)/getFloat(ref_quantity))
                            #if getFloat(quantity)/getFloat(ref_quantity) >= 1.01:
@@ -362,6 +390,8 @@ if __name__ == "__main__":
                histo.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
                histo.GetZaxis().SetTitle('Efficiency')
+            elif what == 'noiseRate':
+               histo.GetZaxis().SetTitle('Noise Rate')
 
             if what == 'Resolution':
                histo.GetZaxis().SetRangeUser(0, 0.4)
@@ -369,6 +399,8 @@ if __name__ == "__main__":
                histo.GetZaxis().SetRangeUser(0.5, 1.5)
             elif what == 'Efficiency':
                histo.GetZaxis().SetRangeUser(0, 1)
+            elif what == 'NoiseRate':
+               histo.GetZaxis().SetRangeUser(0, 2)
  
             histo.GetZaxis().SetTitleSize(0.04)
             histo.GetZaxis().SetTitleOffset(1.2)
@@ -387,12 +419,16 @@ if __name__ == "__main__":
                histo_ratio.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
                histo_ratio.GetZaxis().SetTitle('Efficiency')
+            elif what == 'NoiseRate':
+               histo_ratio.GetZaxis().SetTitle('Noise Rate')
 
             if what == 'Resolution':
                histo_ratio.GetZaxis().SetRangeUser(0, 0.4)
             elif what == 'Scale':
                histo_ratio.GetZaxis().SetRangeUser(0.5, 1.5)
             elif what == 'Efficiency':
+               histo_ratio.GetZaxis().SetRangeUser(0, 1)
+            elif what == 'NoiseRate':
                histo_ratio.GetZaxis().SetRangeUser(0, 1)
  
             histo_ratio.GetZaxis().SetTitleSize(0.04)
@@ -416,6 +452,9 @@ if __name__ == "__main__":
                c.SaveAs("{dir}/scale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
             elif do_efficiencyPlot == 'True' and what == 'Efficiency':
                c.SaveAs("{dir}/efficiency_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+            elif do_noiseRatePlot == 'True' and what == 'NoiseRate':
+               c.SaveAs("{dir}/noiseRate_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+
 
             if do_resolutionPlot == 'True' and what == 'Resolution':
                c_ratio.SaveAs("{dir}/ratio_resolution_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
@@ -423,6 +462,8 @@ if __name__ == "__main__":
                c_ratio.SaveAs("{dir}/ratio_scale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
             elif do_efficiencyPlot == 'True' and what == 'Efficiency':
                c_ratio.SaveAs("{dir}/ratio_efficiency_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+            elif do_noiseRatePlot == 'True' and what == 'NoiseRate':
+               c_ratio.SaveAs("{dir}/ratio_noiseRate_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
 	    	
 
             del histo
@@ -487,8 +528,7 @@ if __name__ == "__main__":
                            #score = -1*score_reso*score_eff
                            selection.append('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score))
                            #print('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score))
-    
-                                            
+             
             selection.sort(key=getScore)
             #print('\n')
             #for i in selection:
@@ -513,15 +553,14 @@ if __name__ == "__main__":
            
 
 
-
-
  
          # ranking
          if do_rankingPlot=='True':
-            c_ranking = TCanvas('c_ranking_{a}_{b}_{c}'.format(a=iEn, b=iEta, c='ranking'), 'c', 900, 900)
+            c_ranking = TCanvas('c_ranking_{a}_{b}_{c}'.format(a=iEn, b=iEta, c='ranking'), 'c', 1000, 1000)
            
             resolutions.sort(key=getQuantity)
             efficiencies.sort(key=getQuantity, reverse=True)
+            noiseRates.sort(key=getQuantity)      
             
             titleRanking = TPaveText(0.15,0.85,0.85,0.95,"brNDC")
             titleRanking.AddText('Energy bin: {a}   #eta bin: {b}'.format(a=iEn, b=iEta))
@@ -532,7 +571,8 @@ if __name__ == "__main__":
             titleRanking.SetTextAlign(11)
             titleRanking.Draw()
             
-            resolutions_ranking = TPaveText(0.15,0.1,0.45,0.8,"brNDC")
+            #resolutions_ranking = TPaveText(0.15,0.1,0.45,0.8,"brNDC")
+            resolutions_ranking = TPaveText(0.1,0.1,0.3,0.8,"brNDC")
             resolutions_ranking.SetBorderSize(0)
             resolutions_ranking.SetFillColor(kWhite)
             resolutions_ranking.SetTextSize(0.032)
@@ -542,7 +582,7 @@ if __name__ == "__main__":
             n_reso=0
             for item in resolutions:
                if n_reso==0: value = 'ref'
-               else: value=str(getThirdElement(item, 2))+'%'
+               else: value=str(getThirdElementPercentage(item, 2))+'%'
                n_reso=n_reso+1
 	            #resolutions_ranking.SetTextFont(12)
                resolutions_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
@@ -554,7 +594,7 @@ if __name__ == "__main__":
                   resolutions_ranking.Draw()
 
  
-            efficiencies_ranking = TPaveText(0.55,0.1,0.85,0.8,"brNDC")
+            efficiencies_ranking = TPaveText(0.4,0.1,0.6,0.8,"brNDC")
             efficiencies_ranking.SetBorderSize(0)
             efficiencies_ranking.SetFillColor(kWhite)
             efficiencies_ranking.SetTextSize(0.032)
@@ -564,7 +604,7 @@ if __name__ == "__main__":
             n_eff=0
             for item in efficiencies:
                if n_eff==0: value = 'ref'
-               else: value=str(getThirdElement(item, 2))+'%'
+               else: value=str(getThirdElementPercentage(item, 2))+'%'
                n_eff=n_eff+1
                efficiencies_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
                if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][0]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][0], 'all'):
@@ -574,6 +614,27 @@ if __name__ == "__main__":
                   efficiencies_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
                   efficiencies_ranking.Draw()
             
+ 
+            noiseRates_ranking = TPaveText(0.7,0.1,0.9,0.8,"brNDC")
+            noiseRates_ranking.SetBorderSize(0)
+            noiseRates_ranking.SetFillColor(kWhite)
+            noiseRates_ranking.SetTextSize(0.032)
+            noiseRates_ranking.SetTextFont(42)
+            noiseRates_ranking.SetTextAlign(11)
+            noiseRates_ranking.AddText('    Noise Rate')
+            #n_eff=0
+            for item in noiseRates:
+               #if n_eff==0: value = 'ref'
+               #else: value=str(getThirdElement(item, 2))+'%'
+               #n_eff=n_eff+1
+               value=str(getThirdElement(item, 3))
+               noiseRates_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
+               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][0]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][0], 'all'):
+                  noiseRates_ranking.GetListOfLines().Last().SetTextColor(1);
+                  noiseRates_ranking.GetListOfLines().Last().SetTextFont(62);
+               else:
+                  noiseRates_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
+                  noiseRates_ranking.Draw()
             
             c_ranking.SaveAs("{dir}/ranking_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
 
