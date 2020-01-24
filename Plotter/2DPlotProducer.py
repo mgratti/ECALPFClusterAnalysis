@@ -2,11 +2,12 @@ import sys
 import os
 import collections
 import operator
+import numpy as np
 from math import sin, atan, exp
 
 from array import *
-from ROOT import TH2D, TH1D, TF1, TLegend, TCanvas, TPaveText, TGraph, TLine, gROOT, gStyle
-from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue
+from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TGraph, TLine, gROOT, gStyle
+from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue, kBird, kCherry
 
 class Sample(object):
    def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0):
@@ -182,7 +183,7 @@ def getColor(a, b):
    elif a==1 and b==4:
       return kCyan+1
    elif a==2 and b==2:
-      return kAzure+2
+      return kAzure+6
    elif a==2 and b==3:
       return kMagenta+1
    elif a==2 and b==4:
@@ -578,6 +579,9 @@ if __name__ == "__main__":
    if do_summaryPlot=='True':
       print('Producing summary plot')
 
+      printWithColour = True
+
+      # in order not to plot the full energy range
       for iEn in EnRanges[:]:
          if getFloat(getUpperBin(iEn)) > 60:
             EnRanges.remove(iEn)
@@ -590,120 +594,183 @@ if __name__ == "__main__":
 
       binSup_energy = getFloat(getSupBin(EnRanges))
       binSup_eta = getFloat(getSupBin(EtaRanges), 'p')
-      
-      # using a TGraph may be better to superimpose the ET curve
-      histo_summary = TH2D('histo_summary', 'histo_summary', nBins_eta, binInf_eta, binSup_eta, nBins_energy, binInf_energy, binSup_energy)
-      histo_summary.SetTitle(' ')
-      #print('Bins {a} {b} {c} {d} {e} {f}').format(a=nBins_eta, b=binInf_eta, c=binSup_eta, d=nBins_energy, e=binInf_energy, f=binSup_energy)  
-      #for iEta in EtaRanges:
-      #   print(iEta) 
-      c_summary = TCanvas('c_summary', 'c', 1500, 1500)
-      histo_summary.GetXaxis().SetTitle('#eta')
-      histo_summary.GetXaxis().SetTitleSize(0.04)
-      histo_summary.GetXaxis().SetTitleOffset(1.2)
-
-      histo_summary.GetYaxis().SetTitle('Energy')
-      histo_summary.GetYaxis().SetTitleSize(0.04)
-      histo_summary.GetYaxis().SetTitleOffset(1.2)
-    
-      histo_summary.Draw()
-
-       
-      #draw dashed lines
-      dashed_lines = []
-    
-      for iEn in EnRanges: 
-         for iEta in EtaRanges:
-            if getFloat(getUpperBin(iEn)) != getFloat(getSupBin(EnRanges)):
-               line_hor = TLine(getFloat(getInfBin(EtaRanges), 'p'), getFloat(getUpperBin(iEn)), getFloat(getSupBin(EtaRanges), 'p'), getFloat(getUpperBin(iEn)))
-               dashed_lines.append(line_hor)
-            if getFloat(getUpperBin(iEta), 'p') !=  getFloat(getSupBin(EtaRanges), 'p'):
-               line_vert = TLine(getFloat(getUpperBin(iEta), 'p'), getFloat(getInfBin(EnRanges)), getFloat(getUpperBin(iEta), 'p'), getFloat(getSupBin(EnRanges))) 
-               dashed_lines.append(line_vert)
-
-      for line in dashed_lines:
-         line.SetLineStyle(9)
-         line.SetLineWidth(3)
-         line.Draw('same')
-
-      # we draw the best score 
-      score_label = []
+     
+      energy_boundaries = [ 0 ]
+      eta_boundaries = [ 0 ]
       for iEn in EnRanges:
-         for iEta in EtaRanges:
-            if iEta == '1p44_1p48': continue
-            #print(selected_pair[iEn][iEta])   
-            x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-            x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-            y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-            y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-            #print('{aa} {bb} {a} {b} {c} {d}').format(aa=iEn, bb=iEta, a=x1, b=x2, c=y1, d=y2)   
-            #print('{a} {b}').format(a=int(getPairInf(selected_pair[iEn][iEta])), b=getPairSup(selected_pair[iEn][iEta]))
-            score_print = TPaveText(x1, y1, x2, y2)
-            #if selected_pair[iEn][iEta][0]!=' - ':
-            if len(selected_pair[iEn][iEta])!=0:
-               #score_print.AddText(selected_pair[iEn][iEta])
-               for iPair in selected_pair[iEn][iEta]:
-                  score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
-               #score_print.SetTextColor(getColor(int(getPairInf(selected_pair[iEn][iEta])), int(getPairSup(selected_pair[iEn][iEta]))))
-                  score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
-            else:
-               score_print.AddText(' - ')
-            score_label.append(score_print)         
+         energy_boundaries.append(getFloat(getUpperBin(iEn)))
+
+      for iEta in EtaRanges:
+         eta_boundaries.append(getFloat(getUpperBin(iEta), 'p'))
+         
+
+      binsEnergy = array('d', energy_boundaries)
+      binsEta = array('d', eta_boundaries)
+
+      whichQuantities = ['']
+      if printWithColour:
+         whichQuantities = ['Resolution', 'Efficiency']
       
-      for label in score_label:
-         label.Draw('same')
-         label.SetBorderSize(0)
-         label.SetFillColor(kWhite)
-         label.SetTextSize(0.015)
-         label.SetTextFont(62)
-         label.SetTextAlign(11)
-      
-      # we plot transverse energy at given values
-      f_ET_2 = TF1('f_ET_2', '2/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
-      f_ET_2.SetLineWidth(4)
-      f_ET_2.Draw('same')
+      for item in whichQuantities:
+         # using a TGraph may be better to superimpose the ET curve
+         if printWithColour:
+           histo_summary = TH2D('histo_summary_{a}'.format(a=item), 'histo_summary_{a}'.format(a=item), nBins_eta, binsEta, nBins_energy, binsEnergy)
+         else:
+           histo_summary = TH2D('histo_summary', 'histo_summary', nBins_eta, binInf_eta, binSup_eta, nBins_energy, binInf_energy, binSup_energy)
+         histo_summary.SetTitle(' ')
+         #print('Bins {a} {b} {c} {d} {e} {f}').format(a=nBins_eta, b=binInf_eta, c=binSup_eta, d=nBins_energy, e=binInf_energy, f=binSup_energy)  
+         #for iEta in EtaRanges:
+         #   print(iEta) 
+         c_summary = TCanvas('c_summary_{a}'.format(a=item), 'c_summary_{a}'.format(a=item), 1500, 1500)
+         histo_summary.GetXaxis().SetTitle('#eta')
+         histo_summary.GetXaxis().SetLabelSize(0.028)
+         histo_summary.GetXaxis().SetTitleSize(0.04)
+         histo_summary.GetXaxis().SetTitleOffset(1.2)
 
-      f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
-      f_ET_5.SetLineWidth(4)
-      f_ET_5.SetLineColor(kBlue)
-      f_ET_5.Draw('same')
+         histo_summary.GetYaxis().SetTitle('Energy')
+         histo_summary.GetYaxis().SetLabelSize(0.028)
+         histo_summary.GetYaxis().SetTitleSize(0.04)
+         histo_summary.GetYaxis().SetTitleOffset(1.2)
+   
+         if printWithColour:
+            histo_summary.GetZaxis().SetTitle(item)
+            histo_summary.GetZaxis().SetTitleSize(0.04)
+            histo_summary.GetZaxis().SetTitleOffset(1.2)
+            histo_summary.GetZaxis().SetRangeUser(0,0.6)
 
-      f_ET_10 = TF1('f_ET_10', '10/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
-      f_ET_10.SetLineWidth(4)
-      f_ET_10.SetLineColor(kMagenta)
-      f_ET_10.Draw('same')
+         if printWithColour:
+            for iEn in EnRanges:
+               for iEta in EtaRanges:
+                  for iSample in samples_binned[iEn][iEta]:
+                     if(len(selected_pair[iEn][iEta])>1):
+                        if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
+                           if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
+                              if item == 'Resolution':
+                                 quantity = getFloat(iSample.resolution)
+                              elif item == 'Efficiency':
+                                 quantity = getFloat(iSample.efficiency)
+                              histo_summary.Fill(iEta, iEn, quantity)
+                     else:
+                         if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
+                           if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
+                              if item == 'Resolution':
+                                 quantity = getFloat(iSample.resolution)
+                              elif item == 'Efficiency':
+                                 quantity = getFloat(iSample.efficiency)
+                              histo_summary.Fill(iEta, iEn, quantity)
+            histo_summary.Draw('colz')
+         else:
+            histo_summary.Draw()
+         
+
+         #draw dashed lines
+         dashed_lines = []
+       
+         for iEn in EnRanges: 
+            for iEta in EtaRanges:
+               if getFloat(getUpperBin(iEn)) != getFloat(getSupBin(EnRanges)):
+                  line_hor = TLine(getFloat(getInfBin(EtaRanges), 'p'), getFloat(getUpperBin(iEn)), getFloat(getSupBin(EtaRanges), 'p'), getFloat(getUpperBin(iEn)))
+                  dashed_lines.append(line_hor)
+               if getFloat(getUpperBin(iEta), 'p') !=  getFloat(getSupBin(EtaRanges), 'p'):
+                  line_vert = TLine(getFloat(getUpperBin(iEta), 'p'), getFloat(getInfBin(EnRanges)), getFloat(getUpperBin(iEta), 'p'), getFloat(getSupBin(EnRanges))) 
+                  dashed_lines.append(line_vert)
+
+               #print((getFloat(getLowerBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2) 
+               #histo_summary.Fill(str((getFloat(getLowerBin(iEta), 'p') + getFloat(getUpperBin(iEta), 'p'))/2), str((getFloat(getLowerBin(iEn)) + getFloat(getUpperBin(iEn)))/2), getFloat(getLowerBin(iEta), 'p') * getFloat(getLowerBin(iEn)))
+
+         #histo_summary.Draw('colz')
+         #histo_summary.Draw('text' +'same')
+
+         for line in dashed_lines:
+            line.SetLineStyle(9)
+            line.SetLineWidth(3)
+            line.Draw('same')
 
 
-      legend1 = TLegend(0.1, 0.8, 0.4, 0.9)
-      legend1.AddEntry('f_ET_2', 'E_{T} = 2GeV')
-      legend1. SetTextSize(0.03);
-      legend1. SetLineColor(0);
-      legend1. SetFillColorAlpha(0, 0);
-      legend1. SetBorderSize(0);
-      legend1.Draw('same')
+
+         # we draw the best score 
+         score_label = []
+         for iEn in EnRanges:
+            for iEta in EtaRanges:
+               if iEta == '1p44_1p48': continue
+               #print(selected_pair[iEn][iEta])   
+               x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
+               x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
+               y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
+               y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
+               #print('{aa} {bb} {a} {b} {c} {d}').format(aa=iEn, bb=iEta, a=x1, b=x2, c=y1, d=y2)   
+               #print('{a} {b}').format(a=int(getPairInf(selected_pair[iEn][iEta])), b=getPairSup(selected_pair[iEn][iEta]))
+               score_print = TPaveText(x1, y1, x2, y2)
+               #if selected_pair[iEn][iEta][0]!=' - ':
+               if len(selected_pair[iEn][iEta])!=0:
+                  #score_print.AddText(selected_pair[iEn][iEta])
+                  for iPair in selected_pair[iEn][iEta]:
+                     score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
+                  #score_print.SetTextColor(getColor(int(getPairInf(selected_pair[iEn][iEta])), int(getPairSup(selected_pair[iEn][iEta]))))
+                     score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
+               else:
+                  score_print.AddText(' - ')
+               score_label.append(score_print)         
+         
+         for label in score_label:
+            label.Draw('same')
+            label.SetBorderSize(0)
+            label.SetFillColorAlpha(0, 0)
+            label.SetTextSize(0.015)
+            label.SetTextFont(62)
+            label.SetTextAlign(11)
+         
+         # we plot transverse energy at given values
+         f_ET_2 = TF1('f_ET_2', '2/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+         f_ET_2.SetLineWidth(4)
+         f_ET_2.Draw('same')
+
+         f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+         f_ET_5.SetLineWidth(4)
+         f_ET_5.SetLineColor(kBlue)
+         f_ET_5.Draw('same')
+
+         f_ET_10 = TF1('f_ET_10', '10/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+         f_ET_10.SetLineWidth(4)
+         f_ET_10.SetLineColor(kMagenta)
+         f_ET_10.Draw('same')
 
 
-      legend2 = TLegend(0.1, 0.7, 0.4, 0.8)
-      legend2.AddEntry('f_ET_5', 'E_{T} = 5GeV')
-      legend2. SetTextSize(0.03);
-      legend2. SetLineColor(0);
-      legend2. SetFillColorAlpha(0, 0);
-      legend2. SetBorderSize(0);
-      legend2.Draw('same')
-
-      legend3 = TLegend(0.1, 0.6, 0.4, 0.7)
-      legend3.AddEntry('f_ET_10', 'E_{T} = 10GeV')
-      legend3. SetTextSize(0.03);
-      legend3. SetLineColor(0);
-      legend3. SetFillColorAlpha(0, 0);
-      legend3. SetBorderSize(0);
-      legend3.Draw('same')
-
-    
-      c_summary.SaveAs('{a}/summaryPlot.png'.format(a=outputdir)) 
+         legend1 = TLegend(0.1, 0.8, 0.4, 0.9)
+         legend1.AddEntry('f_ET_2', 'E_{T} = 2GeV')
+         legend1.SetTextSize(0.03);
+         legend1.SetLineColor(0);
+         legend1.SetFillColorAlpha(0, 0);
+         legend1.SetBorderSize(0);
+         legend1.Draw('same')
 
 
+         legend2 = TLegend(0.1, 0.7, 0.4, 0.8)
+         legend2.AddEntry('f_ET_5', 'E_{T} = 5GeV')
+         legend2. SetTextSize(0.03);
+         legend2. SetLineColor(0);
+         legend2. SetFillColorAlpha(0, 0);
+         legend2. SetBorderSize(0);
+         legend2.Draw('same')
 
- 
+         legend3 = TLegend(0.1, 0.6, 0.4, 0.7)
+         legend3.AddEntry('f_ET_10', 'E_{T} = 10GeV')
+         legend3. SetTextSize(0.03);
+         legend3. SetLineColor(0);
+         legend3. SetFillColorAlpha(0, 0);
+         legend3. SetBorderSize(0);
+         legend3.Draw('same')
+
+
+         if item == 'Resolution': 
+            c_summary.SaveAs('{a}/summaryPlot_resolution.png'.format(a=outputdir)) 
+         elif item == 'Efficiency':
+            c_summary.SaveAs('{a}/summaryPlot_efficiency.png'.format(a=outputdir))
+
+
+
+
+
+
 
 
