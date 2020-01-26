@@ -54,8 +54,8 @@ do_resolutionPlot='False'
 do_scalePlot='False'
 do_efficiencyPlot='False'
 do_noiseRatePlot='False'
-do_rankingPlot='True'
-do_summaryPlot='False'
+do_rankingPlot='False'
+do_summaryPlot='True'
 do_popUpPlot='False'
 
 # -----  2. Advanced parameters ----- #

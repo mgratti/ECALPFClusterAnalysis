@@ -332,9 +332,11 @@ if __name__ == "__main__":
                            #   ref_quantity = quantity
                         elif what == 'NoiseRate':
                            quantity = iSample.noiseRate
-                           if n==0: ref_quantity=quantity
-                           else:
-                              if quantity>ref_quantity: ref_quantity=quantity
+                           if quantity=='0': quantity='0.000001'
+                           ref_quantity='0'
+                           #if n==0: ref_quantity=quantity
+                           #else:
+                           #   if quantity>ref_quantity: ref_quantity=quantity
 
                         histo.Fill(getFloat(iSample.seeding), getFloat(iSample.pfRecHit), getFloat(quantity))
                         #print('{a} {b} {c} {d} {e}'.format(a=what, b=iPFRecHit, c=iSeeding, d=quantity, e=ref_quantity))
@@ -357,11 +359,11 @@ if __name__ == "__main__":
                            if getFloat(ref_quantity)!= 0:
                               ratio = getFloat(quantity)/getFloat(ref_quantity)
                               efficiencies.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
-                        if what == 'NoiseRate':
-                           quantity = iSample.noiseRate
-                           noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=quantity))
-                           if getFloat(ref_quantity)!=0:
-                              ratio = getFloat(quantity)/getFloat(ref_quantity)
+                        #if what == 'NoiseRate':
+                        #   quantity = iSample.noiseRate
+                        #   noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=quantity))
+                           #if getFloat(ref_quantity)!=0:
+                              #ratio = getFloat(quantity)/getFloat(ref_quantity)
                               #noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
                         if getFloat(ref_quantity)!= 0:   
                            histo_ratio.Fill(getFloat(iSample.seeding), getFloat(iSample.pfRecHit), getFloat(quantity)/getFloat(ref_quantity))
@@ -390,7 +392,7 @@ if __name__ == "__main__":
                histo.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
                histo.GetZaxis().SetTitle('Efficiency')
-            elif what == 'noiseRate':
+            elif what == 'NoiseRate':
                histo.GetZaxis().SetTitle('Noise Rate')
 
             if what == 'Resolution':
@@ -400,7 +402,7 @@ if __name__ == "__main__":
             elif what == 'Efficiency':
                histo.GetZaxis().SetRangeUser(0, 1)
             elif what == 'NoiseRate':
-               histo.GetZaxis().SetRangeUser(0, 2)
+               histo.GetZaxis().SetRangeUser(0, 1)
  
             histo.GetZaxis().SetTitleSize(0.04)
             histo.GetZaxis().SetTitleOffset(1.2)
@@ -419,8 +421,8 @@ if __name__ == "__main__":
                histo_ratio.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
                histo_ratio.GetZaxis().SetTitle('Efficiency')
-            elif what == 'NoiseRate':
-               histo_ratio.GetZaxis().SetTitle('Noise Rate')
+            #elif what == 'NoiseRate':
+            #   histo_ratio.GetZaxis().SetTitle('Noise Rate')
 
             if what == 'Resolution':
                histo_ratio.GetZaxis().SetRangeUser(0, 0.4)
@@ -428,8 +430,8 @@ if __name__ == "__main__":
                histo_ratio.GetZaxis().SetRangeUser(0.5, 1.5)
             elif what == 'Efficiency':
                histo_ratio.GetZaxis().SetRangeUser(0, 1)
-            elif what == 'NoiseRate':
-               histo_ratio.GetZaxis().SetRangeUser(0, 1)
+            #elif what == 'NoiseRate':
+            #   histo_ratio.GetZaxis().SetRangeUser(0, 1)
  
             histo_ratio.GetZaxis().SetTitleSize(0.04)
             histo_ratio.GetZaxis().SetTitleOffset(1.2)
@@ -462,8 +464,8 @@ if __name__ == "__main__":
                c_ratio.SaveAs("{dir}/ratio_scale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
             elif do_efficiencyPlot == 'True' and what == 'Efficiency':
                c_ratio.SaveAs("{dir}/ratio_efficiency_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
-            elif do_noiseRatePlot == 'True' and what == 'NoiseRate':
-               c_ratio.SaveAs("{dir}/ratio_noiseRate_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+            #elif do_noiseRatePlot == 'True' and what == 'NoiseRate':
+            #   c_ratio.SaveAs("{dir}/ratio_noiseRate_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
 	    	
 
             del histo
@@ -673,7 +675,7 @@ if __name__ == "__main__":
 
       whichQuantities = ['']
       if printWithColour:
-         whichQuantities = ['Resolution', 'Efficiency']
+         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate']
       
       for item in whichQuantities:
          if printWithColour:
@@ -710,6 +712,8 @@ if __name__ == "__main__":
                                  quantity = getFloat(iSample.resolution)
                               elif item == 'Efficiency':
                                  quantity = getFloat(iSample.efficiency)
+                              elif item == 'NoiseRate':
+                                 quantity = getFloat(iSample.noiseRate)
                               histo_summary.Fill(iEta, iEn, quantity)
                      else:
                          if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
@@ -718,6 +722,8 @@ if __name__ == "__main__":
                                  quantity = getFloat(iSample.resolution)
                               elif item == 'Efficiency':
                                  quantity = getFloat(iSample.efficiency)
+                              elif item == 'NoiseRate':
+                                 quantity = getFloat(iSample.noiseRate)
                               histo_summary.Fill(iEta, iEn, quantity)
             histo_summary.Draw('colz')
          else:
@@ -865,7 +871,8 @@ if __name__ == "__main__":
             c_summary.SaveAs('{a}/summaryPlot_resolution.png'.format(a=outputdir)) 
          elif item == 'Efficiency':
             c_summary.SaveAs('{a}/summaryPlot_efficiency.png'.format(a=outputdir))
-
+         elif item == 'NoiseRate':
+            c_summary.SaveAs('{a}/summaryPlot_noiseRate.png'.format(a=outputdir))
 
 
 
