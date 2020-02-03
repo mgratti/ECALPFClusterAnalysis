@@ -3,7 +3,7 @@ import os
 import collections
 import operator
 import numpy as np
-from math import sin, atan, exp
+from math import sin, atan, exp, log
 
 sys.path.append('noisePlotter/')
 import getMergedGraph as noisePlotter
@@ -13,7 +13,7 @@ from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TGraph, 
 from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue, kBird, kCherry
 
 class Sample(object):
-   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0):
+   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0, resolution_error=0, efficiency_error=0, noiseRate_error=0):
       self.energy = energy
       self.eta = eta
       self.pfRecHit = pfRecHit
@@ -22,6 +22,9 @@ class Sample(object):
       self.scale = scale
       self.efficiency = efficiency
       self.noiseRate = noiseRate
+      self.resolution_error = resolution_error
+      self.efficiency_error = efficiency_error
+      self.noiseRate_error = noiseRate_error
 
 
 def getOptions():
@@ -93,9 +96,18 @@ def getSampleItems(inputfile):
          index7 = line.find(' ', index6+1)
          noise = line[index6+1:index7]
 
+         index8 = line.find(' ', index7+1)
+         reso_err = line[index7+1:index8]
+
+         index9 = line.find(' ', index8+1)
+         eff_err = line[index8+1:index9]
+
+         index10 = line.find(' ', index9+1)
+         noise_err = line[index9+1:index10]
+
          #print('pfrechit {t1} seeding {t2} energyBin {a1} etaBin {a2} reso {a3} mean {a4} eff {a5}').format(t1=PFRecHitThrs, t2=seedThrs, a1=energyBin, a2=etaBin, a3=reso, a4=mean, a5=eff)
       
-         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise)
+         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise, resolution_error = reso_err, efficiency_error = eff_err, noiseRate_error = noise_err)
          output.append(thisSample)
  
          if energyBin not in EnBins and energyBin != 'ETranges':
@@ -117,14 +129,18 @@ def getFloat(input, condition=None):
       firstPart = float(input[0:dotIndex])
       secondPart = float(input[dotIndex+1:len(input)])
       #print('dotIndex {a} firstPart {b} secondPart {c}'.format(a=dotIndex, b=firstPart, c=secondPart))
-      expo = len(input[dotIndex+1:len(input)])
-      #print(firstPart+pow(10, -expo)*secondPart)
-      if str(firstPart) == '-0.0':
-         return firstPart+pow(10, -expo)*secondPart*(-1)
+      if input.find('e', 0)!=-1:
+         expo = getFloat(input[input.find('e', 0)+1:len(input)])
+         return (firstPart+secondPart)*pow(10, expo)
       else:
-         return firstPart+pow(10, -expo)*secondPart
+         expo = len(input[dotIndex+1:len(input)])
+         #print(firstPart+pow(10, -expo)*secondPart)
+         if str(firstPart) == '-0.0':
+            return firstPart+pow(10, -expo)*secondPart*(-1)
+         else:
+            return firstPart+pow(10, -expo)*secondPart
    else:
-      return int(input)
+         return int(input)
 
 def getUpperBin(input):
    index = input.find('_')
@@ -144,7 +160,24 @@ def getScore(input):
    index1 = phrase.find(' ')
    index2 = phrase.find(' ', index1+1)
    index3 = phrase.find(' ', index2+1)
-   return float(phrase[index3+1:len(phrase)])
+   index4 = phrase.find(' ', index3+1)
+   return float(phrase[index3+1:index4])
+
+def getScoreError(input):
+   phrase = getQuantity(input)
+   index1 = phrase.find(' ')
+   index2 = phrase.find(' ', index1+1)
+   index3 = phrase.find(' ', index2+1)
+   index4 = phrase.find(' ', index3+1)
+   return float(phrase[index4+1:len(input)])
+
+
+def areOverlapping(input1, input2):
+   if input2 < input1:
+      return True
+   else:
+      return False
+
 
 def getFirstElement(input):
    index1 = input.find(' ')
@@ -234,8 +267,8 @@ if __name__ == "__main__":
    samples, EnRanges, EtaRanges, pfRechitThrs, seedingThrs = getSampleItems('fileSamples.txt')
   
 
-   #EnRanges  = ["10_15"] #, "5_10", "10_15", "15_20", "20_40", "40_60", "60_80"]
-   #EtaRanges = ["1p20_1p44"] #, "0p40_0p80"]
+   #EnRanges  = ["60_80"] #, "5_10", "10_15", "15_20", "20_40", "40_60", "60_80"]
+   #EtaRanges = ["0p00_0p40"] #, "0p40_0p80"]
 
    #since we want a graph per energy/eta bin, we bin the samples vector
    # samples_binned is a list of dictionaries
@@ -359,9 +392,9 @@ if __name__ == "__main__":
                            if getFloat(ref_quantity)!= 0:
                               ratio = getFloat(quantity)/getFloat(ref_quantity)
                               efficiencies.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
-                        #if what == 'NoiseRate':
-                        #   quantity = iSample.noiseRate
-                        #   noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=quantity))
+                        if what == 'NoiseRate':
+                           quantity = iSample.noiseRate
+                           noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=quantity))
                            #if getFloat(ref_quantity)!=0:
                               #ratio = getFloat(quantity)/getFloat(ref_quantity)
                               #noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
@@ -487,73 +520,144 @@ if __name__ == "__main__":
                      
                   for iSample in samples_binned[iEn][iEta]:
                       if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
+                           #reso = getFloat(iSample.resolution)
+                           #eff = getFloat(iSample.efficiency)
+                           #reso_err = getFloat(iSample.resolution_error)
+                           #eff_err = getFloat(iSample.efficiency_error)
                            reso = iSample.resolution
                            eff = iSample.efficiency
+                           reso_err = iSample.resolution_error
+                           #print('{a} {b}'.format(a=reso_err, b=getFloat(reso_err)))
+                           eff_err = iSample.efficiency_error
                            if n==0:
                               ref_reso=reso
                               ref_eff=eff
+                              ref_reso_err=reso_err
+                              ref_eff_err=eff_err
                            else: 
-                              if reso<ref_reso and reso != '0': ref_reso=reso
-                              if eff>ref_eff: ref_eff=eff
+                              if reso<ref_reso and reso != '0': 
+                                 ref_reso=reso
+                                 ref_reso_err=reso_err
+                              if eff>ref_eff: 
+                                 ref_eff=eff
+                                 ref_eff_err=eff_err
                            n=n+1
                               
                            #print('{a} {b} {c} {d} {e}'.format(a=what, b=iPFRecHit, c=iSeeding, d=reso, e=ref_reso))
-             
+            
+            putToRef = True
+            addNoiseRateWeight = True
+
             for iPFRecHit in pfRechitThrs:
                for iSeeding in seedingThrs:
                   if(iPFRecHit > iSeeding): continue
                   for iSample in samples_binned[iEn][iEta]:
                      if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
+                        #reso=getFloat(iSample.resolution)
+                        #eff=getFloat(iSample.efficiency)
+                        #reso_err=getFloat(iSample.resolution_error)
+                        #eff_err=getFloat(iSample.efficiency_error)
                         reso=iSample.resolution
-                        eff=iSample.efficiency
+                        eff=iSample.efficiency 
+                        reso_err=iSample.resolution_error
+                        eff_err=iSample.efficiency_error
                         if reso == '0': continue
+                        #if reso == 0: continue
                         if getFloat(ref_reso)!=0 and getFloat(ref_eff)!=0:
+                        #if ref_reso!=0 and ref_eff!=0:
                            ratio_reso = getFloat(reso)/getFloat(ref_reso)
                            ratio_eff = getFloat(eff)/getFloat(ref_eff)
+                           #ratio_reso = reso/ref_reso
+                           #ratio_eff = eff/ref_eff
                            if(ratio_reso!=1):
                               score_reso = round((ratio_reso-1)*100, 2)
                            else:
                               score_reso = -0.001 #0 #1
+                           score_reso_err = abs(score_reso)*(abs(getFloat(reso_err)/getFloat(reso)) + abs(getFloat(ref_reso_err)/getFloat(ref_reso)))
+                           #score_reso_err = (score_reso+100)*(getFloat(reso_err)/getFloat(reso) + getFloat(ref_reso_err)/getFloat(ref_reso))
+                           #print('check')
+                           #print('{a} * {b} {c} + {d} {e}'.format(a=score_reso, b=getFloat(reso_err), c=getFloat(reso), d=getFloat(ref_reso_err), e=getFloat(ref_reso))) 
+                           #score_reso_err = (ratio_reso_err-1)*100
+                           #score_reso_err = 100*getFloat(reso_err)/getFloat(ref_reso) + 100*getFloat(reso)*getFloat(ref_reso_err)/(getFloat(ref_reso)*getFloat(ref_reso))
+                           #score_reso_err = 100*reso_err/ref_reso + 100*reso*ref_reso_err/(ref_reso*ref_reso)
                            if(ratio_eff!=1):
                               score_eff = round((ratio_eff-1)*100, 2)
                            else:
                               score_eff = 0 #-1
-                        
+                           #score_eff_err = 100*eff_err/ref_eff + 100*eff*ref_eff_err/(ref_eff*ref_eff)
+                           #score_eff_err = 100*getFloat(eff_err)/getFloat(ref_eff) + 100*getFloat(eff)*getFloat(ref_eff_err)/(getFloat(ref_eff)*getFloat(ref_eff))
+                           score_eff_err = abs(score_eff)*(abs(getFloat(eff_err)/getFloat(eff)) + abs(getFloat(ref_eff_err)/getFloat(ref_eff)))
+                     
                            #if the fluctuation is below 1%, we put the score to the ref
-                           if score_reso > 0 and score_reso < 1:
-                              score_reso = 0
-                           if abs(score_eff) < 1:
-                              score_eff = 0
+                           if putToRef:   
+                              if score_reso > 0 and score_reso < 1:
+                                 score_reso = -0.001
+                              if abs(score_eff) < 1:
+                                 score_eff = 0
+                            
+                           
                            weight_reso = 1
                            weight_eff = 1
-                           score = weight_reso*score_reso - weight_eff*score_eff
-                           #score = -1*score_reso*score_eff
-                           selection.append('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score))
-                           #print('{a} {b} {c} {d} {e}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score))
-             
+                           
+                           if addNoiseRateWeight:
+                              if getFloat(iSample.noiseRate) > 0.25: continue
+                              weight_noiseRate = exp(1*getFloat(iSample.noiseRate))
+                              #weight on eff:
+                              #if score_eff == 0:
+                              #   score = weight_reso*abs(score_reso) + weight_eff*weight_noiseRate
+                              #else:
+                              #   score = weight_reso*abs(score_reso) + weight_eff*abs(score_eff)*weight_noiseRate
+                              if score_reso == 0:
+                                 score = weight_reso*weight_noiseRate + weight_eff*abs(score_eff)
+                              else:
+                                 score = weight_reso*abs(score_reso)*weight_noiseRate + weight_eff*abs(score_eff)
+                                 #print('{a} * {b} + {c} * {d} * {e}'.format(a=weight_reso, b=abs(score_reso), c=weight_eff, d=abs(score_eff), r=weight_noiseRate))
+                              #score_error = getFloat(iSample.resolution_error) + (getFloat(iSample.efficiency_error) + 1*getFloat(iSample.efficiency)*getFloat(iSample.noiseRate_error))*weight_noiseRate
+                              score_error = score_reso_err + (score_eff_err + 1*score_eff*getFloat(iSample.noiseRate_error))*weight_noiseRate
+                           else:
+                              score = weight_reso*score_reso - weight_eff*score_eff
+                              score_error=0
+                              #score = -1*score_reso*score_eff
+                           selection.append('{a} {b} {c} {d} {e} {f}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score, f=score_error))
+                           #print('{a} {b} score_reso: {c} score_reso_err: {d} score_eff: {e} score_eff_err: {f} noiseRate: {g} noiseRate_err: {h} score: {i} score_err: {j}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_reso_err, e=score_eff, f=score_eff_err, g=weight_noiseRate, h=iSample.noiseRate_error, i=score, j=score_error))
+            
             selection.sort(key=getScore)
             #print('\n')
             #for i in selection:
             #   print(getScore(i))
-            if len(selection)>0:
-               firstPair_left = getFloat(getFirstElement(selection[0]))
-               firstPair_right = getFloat(getSecondElement(selection[0]))
-               secondPair_left = getFloat(getFirstElement(selection[1]))
-               secondPair_right = getFloat(getSecondElement(selection[1]))
-               thirdPair_left = getFloat(getFirstElement(selection[2]))
-               thirdPair_right = getFloat(getSecondElement(selection[2]))
-    
-               selected_pair[iEn][iEta].append('{a} {b}'.format(a=getFloat(getFirstElement(selection[0])), b=getFloat(getSecondElement(selection[0]))))
-               if (getScore(selection[1])-getScore(selection[0]))/getScore(selection[0]) < 0.01:
-                  selected_pair[iEn][iEta].append('{a} {b}'.format(a=secondPair_left, b=secondPair_right))
-               if (getScore(selection[2])-getScore(selection[0]))/getScore(selection[0]) < 0.01:
-                  selected_pair[iEn][iEta].append('{a} {b}'.format(a=thirdPair_left, b=thirdPair_right))
-            else:
-               selected_pair[iEn][iEta].append(' - ')
-                    
-            #print('Selected index: {a}').format(a=selected_pair[iEn][iEta]) 
-           
 
+            # we select all the pairs compatible within uncertainties
+            if addNoiseRateWeight:
+               if len(selection)>0:
+                  for i, val in enumerate(selection):
+                     if areOverlapping(getScore(selection[0])+getScoreError(selection[0]), getScore(selection[i])-getScoreError(selection[i])):
+                        selected_pair[iEn][iEta].append('{a} {b}'.format(a=getFloat(getFirstElement(selection[i])), b=getFloat(getSecondElement(selection[i]))))
+               else:
+                  if getInfBin(iEta) < 2:
+                     selected_pair[iEn][iEta].append(' - ')
+                  else:
+                     #bins where stat is not enough are hardcoded (for plotting concerns) 
+                     selected_pair[iEn][iEta].append('1.0 2.0')
+                
+            #print('Selected index: {a}').format(a=selected_pair[iEn][iEta]) 
+            #for item in selected_pair[iEn][iEta]:
+            #   print item
+            if not addNoiseRateWeight:
+               if len(selection)>0:
+                  firstPair_left = getFloat(getFirstElement(selection[0]))
+                  firstPair_right = getFloat(getSecondElement(selection[0]))
+                  secondPair_left = getFloat(getFirstElement(selection[1]))
+                  secondPair_right = getFloat(getSecondElement(selection[1]))
+                  thirdPair_left = getFloat(getFirstElement(selection[2]))
+                  thirdPair_right = getFloat(getSecondElement(selection[2]))
+       
+                  selected_pair[iEn][iEta].append('{a} {b}'.format(a=getFloat(getFirstElement(selection[0])), b=getFloat(getSecondElement(selection[0]))))
+                  #if (getScore(selection[1])-getScore(selection[0]))/getScore(selection[0]) < 0.01:
+                  #   selected_pair[iEn][iEta].append('{a} {b}'.format(a=secondPair_left, b=secondPair_right))
+                  #if (getScore(selection[2])-getScore(selection[0]))/getScore(selection[0]) < 0.01:
+                  #   selected_pair[iEn][iEta].append('{a} {b}'.format(a=thirdPair_left, b=thirdPair_right))
+               else:
+                  selected_pair[iEn][iEta].append(' - ')
 
  
          # ranking
@@ -586,14 +690,14 @@ if __name__ == "__main__":
                if n_reso==0: value = 'ref'
                else: value=str(getThirdElementPercentage(item, 2))+'%'
                n_reso=n_reso+1
-	            #resolutions_ranking.SetTextFont(12)
                resolutions_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
-               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][0]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][0], 'all'):
-                  resolutions_ranking.GetListOfLines().Last().SetTextColor(1);
-                  resolutions_ranking.GetListOfLines().Last().SetTextFont(62);
-               else:
-                  resolutions_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
-                  resolutions_ranking.Draw()
+               resolutions_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
+               resolutions_ranking.GetListOfLines().Last().SetTextFont(12);
+               for i, val in enumerate(selected_pair[iEn][iEta]):
+                  if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][i]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][i], 'all'):
+                     resolutions_ranking.GetListOfLines().Last().SetTextColor(1);
+                     resolutions_ranking.GetListOfLines().Last().SetTextFont(62);
+                     resolutions_ranking.Draw()
 
  
             efficiencies_ranking = TPaveText(0.4,0.1,0.6,0.8,"brNDC")
@@ -609,12 +713,14 @@ if __name__ == "__main__":
                else: value=str(getThirdElementPercentage(item, 2))+'%'
                n_eff=n_eff+1
                efficiencies_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
-               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][0]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][0], 'all'):
-                  efficiencies_ranking.GetListOfLines().Last().SetTextColor(1);
-                  efficiencies_ranking.GetListOfLines().Last().SetTextFont(62);
-               else:
-                  efficiencies_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
-                  efficiencies_ranking.Draw()
+               efficiencies_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
+               efficiencies_ranking.GetListOfLines().Last().SetTextFont(12);   
+               for i, val in enumerate(selected_pair[iEn][iEta]):
+                  if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][i]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][i], 'all'):
+                     efficiencies_ranking.GetListOfLines().Last().SetTextColor(1);
+                     efficiencies_ranking.GetListOfLines().Last().SetTextFont(62);
+                     efficiencies_ranking.Draw()
+                  
             
  
             noiseRates_ranking = TPaveText(0.7,0.1,0.9,0.8,"brNDC")
@@ -631,13 +737,14 @@ if __name__ == "__main__":
                #n_eff=n_eff+1
                value=str(getThirdElement(item, 3))
                noiseRates_ranking.AddText('({a}, {b})  {c}'.format(a=getFirstElement(item), b=getSecondElement(item), c=value))
-               if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][0]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][0], 'all'):
-                  noiseRates_ranking.GetListOfLines().Last().SetTextColor(1);
-                  noiseRates_ranking.GetListOfLines().Last().SetTextFont(62);
-               else:
-                  noiseRates_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
-                  noiseRates_ranking.Draw()
-            
+               noiseRates_ranking.GetListOfLines().Last().SetTextColor(getColor(float(getFirstElement(item)), float(getSecondElement(item))));
+               noiseRates_ranking.GetListOfLines().Last().SetTextFont(12);
+               for i, val in enumerate(selected_pair[iEn][iEta]):
+                  if getFirstElement(item)==getFirstElement(selected_pair[iEn][iEta][i]) and getSecondElement(item)==getSecondElement(selected_pair[iEn][iEta][i], 'all'):
+                     noiseRates_ranking.GetListOfLines().Last().SetTextColor(1);
+                     noiseRates_ranking.GetListOfLines().Last().SetTextFont(62);
+                     noiseRates_ranking.Draw()
+               
             c_ranking.SaveAs("{dir}/ranking_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
 
 
@@ -699,13 +806,18 @@ if __name__ == "__main__":
             histo_summary.GetZaxis().SetTitle(item)
             histo_summary.GetZaxis().SetTitleSize(0.04)
             histo_summary.GetZaxis().SetTitleOffset(1.2)
-            histo_summary.GetZaxis().SetRangeUser(0,0.6)
+            if item == 'Resolution':
+               histo_summary.GetZaxis().SetRangeUser(0,0.6)
+            elif item == 'Efficiency':
+               histo_summary.GetZaxis().SetRangeUser(0,1)
+            elif item == 'NoiseRate':
+               histo_summary.GetZaxis().SetRangeUser(-0.0001,0.3)
 
          if printWithColour:
             for iEn in EnRanges:
                for iEta in EtaRanges:
                   for iSample in samples_binned[iEn][iEta]:
-                     if(len(selected_pair[iEn][iEta])>1):
+                     if(len(selected_pair[iEn][iEta])>2):
                         if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
                            if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
                               if item == 'Resolution':
@@ -714,6 +826,7 @@ if __name__ == "__main__":
                                  quantity = getFloat(iSample.efficiency)
                               elif item == 'NoiseRate':
                                  quantity = getFloat(iSample.noiseRate)
+                                 #if quantity == 0.: quantity=0.001
                               histo_summary.Fill(iEta, iEn, quantity)
                      else:
                          if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
@@ -764,7 +877,9 @@ if __name__ == "__main__":
                #print('{a} {b}').format(a=int(getPairInf(selected_pair[iEn][iEta])), b=getPairSup(selected_pair[iEn][iEta]))
                score_print = TPaveText(x1, y1, x2, y2)
                #if selected_pair[iEn][iEta][0]!=' - ':
-               if len(selected_pair[iEn][iEta])!=0:
+               #print(selected_pair[iEn][iEta][0])
+               if len(selected_pair[iEn][iEta])!=0 and selected_pair[iEn][iEta][0]!=' - ':
+                  #print( len(selected_pair[iEn][iEta]))
                   #score_print.AddText(selected_pair[iEn][iEta])
                   for iPair in selected_pair[iEn][iEta]:
                      score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
@@ -873,7 +988,8 @@ if __name__ == "__main__":
             c_summary.SaveAs('{a}/summaryPlot_efficiency.png'.format(a=outputdir))
          elif item == 'NoiseRate':
             c_summary.SaveAs('{a}/summaryPlot_noiseRate.png'.format(a=outputdir))
-
+         else:
+            c_summary.SaveAs('{a}/summaryPlot.png'.format(a=outputdir))
 
 
 

@@ -28,7 +28,7 @@ PlottingTools getGraph(TString whichPlot,
       filename = "../Analyzer/outputfiles/" + label + "_EE.root";
    }
 
-   Float_t x, quantity, error;
+   Float_t x, quantity, error, error_stat;
    TEfficiency* eff_error;
 
    vector<float> range_candidate(10);
@@ -98,8 +98,7 @@ PlottingTools getGraph(TString whichPlot,
          if(hist_deno->GetEntries()!=0){
             quantity = hist_num->GetEntries()/hist_deno->GetEntries();
          }
-         cout << ETranges[indexB] << " " << ETAranges[indexA] << endl;
-         cout << "efficiency: " << quantity << endl;
+         //cout << "efficiency: " << quantity << endl;
          range_candidate.push_back(quantity);
          if(TEfficiency::CheckConsistency(*hist_num,*hist_deno)){
             eff_error = new TEfficiency(*hist_num, *hist_deno);
@@ -108,7 +107,8 @@ PlottingTools getGraph(TString whichPlot,
             error_tmp += eff_error->GetEfficiencyErrorLow(i);
          }
          error = error_tmp;
-         cout << "error: " << error << endl;
+         error_stat = quantity*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
+         //cout << "TEfficiency: " << error << " error stat: " << error_stat << endl; 
          int thisPoint = graph->GetN();
          graph->SetPoint(thisPoint, x, quantity);
          graph->SetPointError(thisPoint, (bin_sup - bin_inf)/2, (bin_sup - bin_inf)/2, error/2, error/2);

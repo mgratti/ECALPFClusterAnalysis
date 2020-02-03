@@ -19,7 +19,7 @@ void getFile(string fileName,
       vector<TString> ETAranges){
 
    ofstream outFile("/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
-   outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate" << endl;
+   outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate resolution_error efficiency_error noiseRate_error" << endl;
    TString label = fileName.c_str();
    TString filename;
    if(do_EB){
@@ -35,22 +35,37 @@ void getFile(string fileName,
       for(unsigned int iEta(0); iEta<ETAranges.size(); ++iEta){
 
          float resolution = map_sigma[ETranges[iEn]][ETAranges[iEta]];
+         float resolution_error = map_sigma_error[ETranges[iEn]][ETAranges[iEta]][0];
          float scale = map_mean[ETranges[iEn]][ETAranges[iEta]];
          float chisquare = map_chisquare[ETranges[iEn]][ETAranges[iEta]];
 
+         float efficiency, efficiency_error;
+         TEfficiency* eff_error;
+         
          TH1D* hist_num = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_size_simEnergy_Eta" + ETAranges[iEta] + "_En" + ETranges[iEn] + "_forEfficiency")->Clone("hist_num");
          TH1D* hist_deno = (TH1D*) inputFile->Get("EtEta_binned/h_caloParticle_size_simEnergy_Eta" + ETAranges[iEta] + "_En" + ETranges[iEn])->Clone("hist_deno");
 
-         float efficiency;
          if(hist_deno->GetEntries()!=0){
             efficiency = hist_num->GetEntries()/hist_deno->GetEntries();
          }
+         //efficiency_error = efficiency*(sqrt(hist_num->GetEntries())/hist_num->GetEntries() + sqrt(hist_deno->GetEntries())/hist_deno->GetEntries());
+         
+         if(TEfficiency::CheckConsistency(*hist_num,*hist_deno)){
+            eff_error = new TEfficiency(*hist_num, *hist_deno);
+         }
 
-         float noiseRate;
+         float error_tmp(0.);
+         for(int i(0); i<hist_num->GetNbinsX(); ++i){
+            error_tmp += eff_error->GetEfficiencyErrorLow(i);
+         }
+         efficiency_error = error_tmp;
+ 
+         float noiseRate, noiseRate_error;
          TH1D* hist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_fakeRate_Eta" + ETAranges[iEta] + "_En" + ETranges[iEn])->Clone("hist");
          noiseRate = hist->GetMean();
+         noiseRate_error = hist->GetMeanError();
 
-         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << " " << noiseRate << endl;
+         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << " " << noiseRate << " " << resolution_error << " " << efficiency_error << " " << noiseRate_error << endl;
       }
    }
    
