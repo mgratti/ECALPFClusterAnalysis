@@ -36,6 +36,7 @@ def getOptions():
    parser.add_argument('--doNoiseRatePlot', type=str, dest='doNoiseRatePlot', help='noise rate plots', default='True')
    parser.add_argument('--doRankingPlot', type=str, dest='doRankingPlot', help='ranking plot', default='True')
    parser.add_argument('--doSummaryPlot', type=str, dest='doSummaryPlot', help='summary plot', default='True')
+   parser.add_argument('--doDecisionPlot', type=str, dest='doDecisionPlot', help='decision plot', default='True')
    parser.add_argument('--doPopUpPlot', type=str, dest='doPopUpPlot', help='want plots to pop up?', default='True')
    return parser.parse_args()
 
@@ -252,7 +253,7 @@ if __name__ == "__main__":
    do_noiseRatePlot=opt.doNoiseRatePlot
    do_rankingPlot=opt.doRankingPlot
    do_summaryPlot=opt.doSummaryPlot
-
+   do_decisionPlot=opt.doDecisionPlot
    do_popUpPlot = opt.doPopUpPlot
    
    if do_popUpPlot == 'False':
@@ -994,168 +995,169 @@ if __name__ == "__main__":
 
 
    #decision plot
-   print('producing decision plot')
+   if do_decisionPlot == 'True':
+      print('producing decision plot')
 
-   # we produce one plot per eta range
-
-
-   table_pair = {}
-   table_pair['0p00_0p40'] = '2.0 3.0'
-   table_pair['0p40_0p80'] = '2.0 2.0'
-   table_pair['0p80_1p00'] = '2.0 2.0'
-   table_pair['1p00_1p20'] = '2.0 2.0'
-   table_pair['1p20_1p44'] = '2.0 2.0'
-   table_pair['1p48_1p64'] = '4.0 4.0'
-   table_pair['1p64_1p85'] = '3.0 4.0'
-   table_pair['1p85_2p00'] = '3.0 3.0'
-   table_pair['2p00_2p20'] = '3.0 3.0'
-   table_pair['2p20_2p40'] = '3.0 3.0'
-   table_pair['2p40_2p60'] = '3.0 3.0'
-   table_pair['2p60_2p80'] = '3.0 3.0'
-   table_pair['2p80_3p00'] = '3.0 3.0'
-
-   for iEta in EtaRanges:
-
-      if iEta =='1p44_1p48': continue
-
-      if getFloat(getUpperBin(iEta), 'p') < 1.48:
-         for iEn in EnRanges[:]:
-            if getFloat(getUpperBin(iEn), 'p') > 100:
-               EnRanges.remove(iEn)
- 
-      nBins_energy = len(EnRanges)
-      energy_boundaries = [ 0 ]
-      for iEn in EnRanges:
-         energy_boundaries.append(getFloat(getUpperBin(iEn)))
-      binsEnergy = array('d', energy_boundaries)
-
- 
-      histo_decision_reso = TH2D('histo_decision_reso_{a}'.format(a=iEta), 'histo_decision_reso_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
-      histo_decision_reso.SetTitle('Resolution          ')
-      
-      histo_decision_reso.GetXaxis().SetTitle('#eta')
-      histo_decision_reso.GetXaxis().SetLabelSize(0.052)
-      histo_decision_reso.GetXaxis().SetTitleSize(0.04)
-      histo_decision_reso.GetXaxis().SetTitleOffset(1.2)
-
-      histo_decision_reso.GetYaxis().SetTitle('Energy')
-      histo_decision_reso.GetYaxis().SetLabelSize(0.038)
-      histo_decision_reso.GetYaxis().SetTitleSize(0.04)
-      histo_decision_reso.GetYaxis().SetTitleOffset(1.2)
-
-      histo_decision_reso.GetZaxis().SetTitleSize(0.04)
-      histo_decision_reso.GetZaxis().SetTitleOffset(1.2)
-      histo_decision_reso.GetZaxis().SetRangeUser(0,0.6)
-
-      histo_decision_eff = TH2D('histo_decision_eff_{a}'.format(a=iEta), 'histo_decision_eff_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
-      histo_decision_eff.SetTitle('Efficiency         ')
-      
-      histo_decision_eff.GetXaxis().SetTitle('#eta')
-      histo_decision_eff.GetXaxis().SetLabelSize(0.052)
-      histo_decision_eff.GetXaxis().SetTitleSize(0.04)
-      histo_decision_eff.GetXaxis().SetTitleOffset(1.2)
-
-      histo_decision_eff.GetYaxis().SetTitle('Energy')
-      histo_decision_eff.GetYaxis().SetLabelSize(0.038)
-      histo_decision_eff.GetYaxis().SetTitleSize(0.04)
-      histo_decision_eff.GetYaxis().SetTitleOffset(1.2)
-
-      histo_decision_eff.GetZaxis().SetTitleSize(0.04)
-      histo_decision_eff.GetZaxis().SetTitleOffset(1.2)
-      histo_decision_eff.GetZaxis().SetRangeUser(0,1)
-
-      histo_decision_noise = TH2D('histo_decision_noise_{a}'.format(a=iEta), 'histo_decision_noise_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
-      histo_decision_noise.SetTitle('NoiseRate         ')
-      
-      histo_decision_noise.GetXaxis().SetTitle('#eta')
-      histo_decision_noise.GetXaxis().SetLabelSize(0.052)
-      histo_decision_noise.GetXaxis().SetTitleSize(0.04)
-      histo_decision_noise.GetXaxis().SetTitleOffset(1.2)
-
-      histo_decision_noise.GetYaxis().SetTitle('Energy')
-      histo_decision_noise.GetYaxis().SetLabelSize(0.038)
-      histo_decision_noise.GetYaxis().SetTitleSize(0.04)
-      histo_decision_noise.GetYaxis().SetTitleOffset(1.2)
-
-      histo_decision_noise.GetZaxis().SetTitleSize(0.04)
-      histo_decision_noise.GetZaxis().SetTitleOffset(1.2)
-      histo_decision_noise.GetZaxis().SetRangeUser(-0.0001,0.3)
+      # we produce one plot per eta range
 
 
-      c_decision = TCanvas('c_decision_{a}'.format(a=iEta), 'c_decision_{a}'.format(a=iEta), 1500, 1000)
-      pad1 = TPad('pad1_{a}'.format(a=iEta), 'pad1_{a}'.format(a=iEta), 0, 0, 0.33, 1)
-      pad2 = TPad('pad2_{a}'.format(a=iEta), 'pad2_{a}'.format(a=iEta), 0.33, 0, 0.66, 1)
-      pad3 = TPad('pad3_{a}'.format(a=iEta), 'pad3_{a}'.format(a=iEta), 0.66, 0, 1, 1)
-      pad1.Draw()
-      pad2.Draw()
-      pad3.Draw()
-      
-      for iEn in EnRanges:
-         for iSample in samples_binned[iEn][iEta]:
-            if iSample.pfRecHit == getFirstElement(table_pair[iEta]) and iSample.seeding == getSecondElement(table_pair[iEta], 'all'):   
-               resolution = getFloat(iSample.resolution)
-               histo_decision_reso.Fill(iEta, iEn, resolution)
-               efficiency = getFloat(iSample.efficiency)
-               histo_decision_eff.Fill(iEta, iEn, efficiency)
-               noiseRate = getFloat(iSample.noiseRate)
-               histo_decision_noise.Fill(iEta, iEn, noiseRate)
+      table_pair = {}
+      table_pair['0p00_0p40'] = '2.0 3.0'
+      table_pair['0p40_0p80'] = '2.0 2.0'
+      table_pair['0p80_1p00'] = '2.0 2.0'
+      table_pair['1p00_1p20'] = '2.0 2.0'
+      table_pair['1p20_1p44'] = '2.0 2.0'
+      table_pair['1p48_1p64'] = '4.0 4.0'
+      table_pair['1p64_1p85'] = '3.0 4.0'
+      table_pair['1p85_2p00'] = '3.0 3.0'
+      table_pair['2p00_2p20'] = '3.0 3.0'
+      table_pair['2p20_2p40'] = '3.0 3.0'
+      table_pair['2p40_2p60'] = '3.0 3.0'
+      table_pair['2p60_2p80'] = '3.0 3.0'
+      table_pair['2p80_3p00'] = '3.0 3.0'
 
+      for iEta in EtaRanges:
 
-      pad1.cd()
-      histo_decision_reso.Draw('colz')
-      pad2.cd()
-      histo_decision_eff.Draw('colz')
-      pad3.cd()
-      histo_decision_noise.Draw('colz')
+         if iEta =='1p44_1p48': continue
 
-
-      #draw dashed lines
-      dashed_lines = []
+         if getFloat(getUpperBin(iEta), 'p') < 1.48:
+            for iEn in EnRanges[:]:
+               if getFloat(getUpperBin(iEn), 'p') > 100:
+                  EnRanges.remove(iEn)
     
-      for iEn in EnRanges: 
-         if getFloat(getUpperBin(iEn)) != getFloat(getSupBin(EnRanges)):
-            line_hor = TLine(getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEn)), getFloat(getUpperBin(iEta), 'p'), getFloat(getUpperBin(iEn)))
-            dashed_lines.append(line_hor)
+         nBins_energy = len(EnRanges)
+         energy_boundaries = [ 0 ]
+         for iEn in EnRanges:
+            energy_boundaries.append(getFloat(getUpperBin(iEn)))
+         binsEnergy = array('d', energy_boundaries)
 
-      for line in dashed_lines:
-         line.SetLineStyle(9)
-         line.SetLineWidth(3)
+    
+         histo_decision_reso = TH2D('histo_decision_reso_{a}'.format(a=iEta), 'histo_decision_reso_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
+         histo_decision_reso.SetTitle('Resolution          ')
+         
+         histo_decision_reso.GetXaxis().SetTitle('#eta')
+         histo_decision_reso.GetXaxis().SetLabelSize(0.052)
+         histo_decision_reso.GetXaxis().SetTitleSize(0.04)
+         histo_decision_reso.GetXaxis().SetTitleOffset(1.2)
+
+         histo_decision_reso.GetYaxis().SetTitle('Energy')
+         histo_decision_reso.GetYaxis().SetLabelSize(0.038)
+         histo_decision_reso.GetYaxis().SetTitleSize(0.04)
+         histo_decision_reso.GetYaxis().SetTitleOffset(1.2)
+
+         histo_decision_reso.GetZaxis().SetTitleSize(0.04)
+         histo_decision_reso.GetZaxis().SetTitleOffset(1.2)
+         histo_decision_reso.GetZaxis().SetRangeUser(0,0.6)
+
+         histo_decision_eff = TH2D('histo_decision_eff_{a}'.format(a=iEta), 'histo_decision_eff_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
+         histo_decision_eff.SetTitle('Efficiency         ')
+         
+         histo_decision_eff.GetXaxis().SetTitle('#eta')
+         histo_decision_eff.GetXaxis().SetLabelSize(0.052)
+         histo_decision_eff.GetXaxis().SetTitleSize(0.04)
+         histo_decision_eff.GetXaxis().SetTitleOffset(1.2)
+
+         histo_decision_eff.GetYaxis().SetTitle('Energy')
+         histo_decision_eff.GetYaxis().SetLabelSize(0.038)
+         histo_decision_eff.GetYaxis().SetTitleSize(0.04)
+         histo_decision_eff.GetYaxis().SetTitleOffset(1.2)
+
+         histo_decision_eff.GetZaxis().SetTitleSize(0.04)
+         histo_decision_eff.GetZaxis().SetTitleOffset(1.2)
+         histo_decision_eff.GetZaxis().SetRangeUser(0,1)
+
+         histo_decision_noise = TH2D('histo_decision_noise_{a}'.format(a=iEta), 'histo_decision_noise_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
+         histo_decision_noise.SetTitle('NoiseRate         ')
+         
+         histo_decision_noise.GetXaxis().SetTitle('#eta')
+         histo_decision_noise.GetXaxis().SetLabelSize(0.052)
+         histo_decision_noise.GetXaxis().SetTitleSize(0.04)
+         histo_decision_noise.GetXaxis().SetTitleOffset(1.2)
+
+         histo_decision_noise.GetYaxis().SetTitle('Energy')
+         histo_decision_noise.GetYaxis().SetLabelSize(0.038)
+         histo_decision_noise.GetYaxis().SetTitleSize(0.04)
+         histo_decision_noise.GetYaxis().SetTitleOffset(1.2)
+
+         histo_decision_noise.GetZaxis().SetTitleSize(0.04)
+         histo_decision_noise.GetZaxis().SetTitleOffset(1.2)
+         histo_decision_noise.GetZaxis().SetRangeUser(-0.0001,0.3)
+
+
+         c_decision = TCanvas('c_decision_{a}'.format(a=iEta), 'c_decision_{a}'.format(a=iEta), 1500, 1000)
+         pad1 = TPad('pad1_{a}'.format(a=iEta), 'pad1_{a}'.format(a=iEta), 0, 0, 0.33, 1)
+         pad2 = TPad('pad2_{a}'.format(a=iEta), 'pad2_{a}'.format(a=iEta), 0.33, 0, 0.66, 1)
+         pad3 = TPad('pad3_{a}'.format(a=iEta), 'pad3_{a}'.format(a=iEta), 0.66, 0, 1, 1)
+         pad1.Draw()
+         pad2.Draw()
+         pad3.Draw()
+         
+         for iEn in EnRanges:
+            for iSample in samples_binned[iEn][iEta]:
+               if iSample.pfRecHit == getFirstElement(table_pair[iEta]) and iSample.seeding == getSecondElement(table_pair[iEta], 'all'):   
+                  resolution = getFloat(iSample.resolution)
+                  histo_decision_reso.Fill(iEta, iEn, resolution)
+                  efficiency = getFloat(iSample.efficiency)
+                  histo_decision_eff.Fill(iEta, iEn, efficiency)
+                  noiseRate = getFloat(iSample.noiseRate)
+                  histo_decision_noise.Fill(iEta, iEn, noiseRate)
+
+
          pad1.cd()
-         line.Draw('same')
+         histo_decision_reso.Draw('colz')
          pad2.cd()
-         line.Draw('same')
+         histo_decision_eff.Draw('colz')
          pad3.cd()
-         line.Draw('same')
+         histo_decision_noise.Draw('colz')
 
-      # plotting the score
-      score_label = []
-      for iEn in EnRanges:
-            x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.15
-            x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.15
-            y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-            y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-            score_print = TPaveText(x1, y1, x2, y2)
-            score_print.AddText('({a}, {b})'.format(a=getFirstElement(table_pair[iEta]), b=getSecondElement(table_pair[iEta], 'all')))
-            score_label.append(score_print)         
-      
-      for label in score_label:
-         label.SetBorderSize(0)
-         label.SetFillColorAlpha(0, 0)
-         label.SetTextSize(0.035)
-         label.SetTextFont(62)
-         label.SetTextAlign(11)
-         pad1.cd()
-         label.Draw('same')
-         pad2.cd()
-         label.Draw('same')
-         pad3.cd()
-         label.Draw('same')
 
-      gStyle.SetOptStat(0)
-      gStyle.SetPadRightMargin(0.36)
+         #draw dashed lines
+         dashed_lines = []
+       
+         for iEn in EnRanges: 
+            if getFloat(getUpperBin(iEn)) != getFloat(getSupBin(EnRanges)):
+               line_hor = TLine(getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEn)), getFloat(getUpperBin(iEta), 'p'), getFloat(getUpperBin(iEn)))
+               dashed_lines.append(line_hor)
 
-      c_decision.cd()
-      c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.png'.format(d=outputdir, a=iEta, b=getFirstElement(table_pair[iEta]), c=getSecondElement(table_pair[iEta], 'all')))
+         for line in dashed_lines:
+            line.SetLineStyle(9)
+            line.SetLineWidth(3)
+            pad1.cd()
+            line.Draw('same')
+            pad2.cd()
+            line.Draw('same')
+            pad3.cd()
+            line.Draw('same')
+
+         # plotting the score
+         score_label = []
+         for iEn in EnRanges:
+               x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.15
+               x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.15
+               y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
+               y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
+               score_print = TPaveText(x1, y1, x2, y2)
+               score_print.AddText('({a}, {b})'.format(a=getFirstElement(table_pair[iEta]), b=getSecondElement(table_pair[iEta], 'all')))
+               score_label.append(score_print)         
+         
+         for label in score_label:
+            label.SetBorderSize(0)
+            label.SetFillColorAlpha(0, 0)
+            label.SetTextSize(0.035)
+            label.SetTextFont(62)
+            label.SetTextAlign(11)
+            pad1.cd()
+            label.Draw('same')
+            pad2.cd()
+            label.Draw('same')
+            pad3.cd()
+            label.Draw('same')
+
+         gStyle.SetOptStat(0)
+         gStyle.SetPadRightMargin(0.36)
+
+         c_decision.cd()
+         c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.png'.format(d=outputdir, a=iEta, b=getFirstElement(table_pair[iEta]), c=getSecondElement(table_pair[iEta], 'all')))
 
 
 

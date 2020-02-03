@@ -56,6 +56,7 @@ do_efficiencyPlot='False'
 do_noiseRatePlot='False'
 do_rankingPlot='False'
 do_summaryPlot='False'
+do_decisionPlot='False'
 do_popUpPlot='False'
 
 # -----  2. Advanced parameters ----- #
@@ -116,7 +117,7 @@ if [ "$do_writeFiles" = true ] ; then
 
 fi
 
-python 2DPlotProducer.py --doResolutionPlot=$do_resolutionPlot --doScalePlot=$do_scalePlot --doEfficiencyPlot=$do_efficiencyPlot --doNoiseRatePlot=$do_noiseRatePlot --doRankingPlot=$do_rankingPlot --doSummaryPlot=$do_summaryPlot --doPopUpPlot=$do_popUpPlot 
+python 2DPlotProducer.py --doResolutionPlot=$do_resolutionPlot --doScalePlot=$do_scalePlot --doEfficiencyPlot=$do_efficiencyPlot --doNoiseRatePlot=$do_noiseRatePlot --doRankingPlot=$do_rankingPlot --doSummaryPlot=$do_summaryPlot --doDecisionPlot=$do_decisionPlot --doPopUpPlot=$do_popUpPlot 
 
 
 rm fileSamples.txt
