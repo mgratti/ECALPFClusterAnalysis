@@ -13,7 +13,7 @@ from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TPad, TG
 from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue, kBird, kCherry
 
 class Sample(object):
-   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0, resolution_error=0, efficiency_error=0, noiseRate_error=0):
+   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0, resolution_error=0, efficiency_error=0, noiseRate_error=0, scale_error=0):
       self.energy = energy
       self.eta = eta
       self.pfRecHit = pfRecHit
@@ -25,7 +25,8 @@ class Sample(object):
       self.resolution_error = resolution_error
       self.efficiency_error = efficiency_error
       self.noiseRate_error = noiseRate_error
-
+      self.scale_error = scale_error
+      
 
 def getOptions():
    from argparse import ArgumentParser
@@ -37,6 +38,7 @@ def getOptions():
    parser.add_argument('--doRankingPlot', type=str, dest='doRankingPlot', help='ranking plot', default='True')
    parser.add_argument('--doSummaryPlot', type=str, dest='doSummaryPlot', help='summary plot', default='True')
    parser.add_argument('--doDecisionPlot', type=str, dest='doDecisionPlot', help='decision plot', default='True')
+   parser.add_argument('--doResoOverScale', type=str, dest='doResoOverScale', help='use reso/scale?', default='True')
    parser.add_argument('--doPopUpPlot', type=str, dest='doPopUpPlot', help='want plots to pop up?', default='True')
    return parser.parse_args()
 
@@ -106,9 +108,12 @@ def getSampleItems(inputfile):
          index10 = line.find(' ', index9+1)
          noise_err = line[index9+1:index10]
 
+         index11 = line.find(' ', index10+1)
+         scale_err = line[index10+1:index11]
+
          #print('pfrechit {t1} seeding {t2} energyBin {a1} etaBin {a2} reso {a3} mean {a4} eff {a5}').format(t1=PFRecHitThrs, t2=seedThrs, a1=energyBin, a2=etaBin, a3=reso, a4=mean, a5=eff)
       
-         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise, resolution_error = reso_err, efficiency_error = eff_err, noiseRate_error = noise_err)
+         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise, resolution_error = reso_err, efficiency_error = eff_err, noiseRate_error = noise_err, scale_error=scale_err)
          output.append(thisSample)
  
          if energyBin not in EnBins and energyBin != 'ETranges':
@@ -127,13 +132,16 @@ def getFloat(input, condition=None):
       dotIndex = input.find('p', 0)
 
    if(dotIndex!=-1):   
-      firstPart = float(input[0:dotIndex])
-      secondPart = float(input[dotIndex+1:len(input)])
-      #print('dotIndex {a} firstPart {b} secondPart {c}'.format(a=dotIndex, b=firstPart, c=secondPart))
       if input.find('e', 0)!=-1:
-         expo = getFloat(input[input.find('e', 0)+1:len(input)])
-         return (firstPart+secondPart)*pow(10, expo)
+         firstPart = float(input[0:dotIndex])
+         secondPart = float(input[dotIndex+1:input.find('e', 0)])
+         expo = len(input[dotIndex+1:input.find('e', 0)])
+         expotot = float(input[input.find('e', 0)+1:len(input)])
+         #print('first: {a} second: {b} expo: {c} result: {d}'.format(a=firstPart, b=secondPart, c=expo, d=(firstPart+secondPart*pow(10, -expo))*pow(10, expotot)))
+         return (firstPart+secondPart*pow(10, -expo))*pow(10, expotot)
       else:
+         firstPart = float(input[0:dotIndex])
+         secondPart = float(input[dotIndex+1:len(input)])
          expo = len(input[dotIndex+1:len(input)])
          #print(firstPart+pow(10, -expo)*secondPart)
          if str(firstPart) == '-0.0':
@@ -254,6 +262,7 @@ if __name__ == "__main__":
    do_rankingPlot=opt.doRankingPlot
    do_summaryPlot=opt.doSummaryPlot
    do_decisionPlot=opt.doDecisionPlot
+   do_resoOverScale=opt.doResoOverScale
    do_popUpPlot = opt.doPopUpPlot
    
    if do_popUpPlot == 'False':
@@ -268,7 +277,7 @@ if __name__ == "__main__":
    samples, EnRanges, EtaRanges, pfRechitThrs, seedingThrs = getSampleItems('fileSamples.txt')
   
 
-   #EnRanges  = ["60_80"] #, "5_10", "10_15", "15_20", "20_40", "40_60", "60_80"]
+   #EnRanges  = ["80_100"] #, "5_10", "10_15", "15_20", "20_40", "40_60", "60_80"]
    #EtaRanges = ["0p00_0p40"] #, "0p40_0p80"]
 
    #since we want a graph per energy/eta bin, we bin the samples vector
@@ -347,11 +356,20 @@ if __name__ == "__main__":
                   for iSample in samples_binned[iEn][iEta]:
                       if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
                         if what == 'Resolution':
-                           quantity = iSample.resolution
-                           if n==0: ref_quantity=quantity
-                           else: 
-                              if quantity<ref_quantity and quantity != '0': ref_quantity=quantity
-                           n=n+1
+                           if do_resoOverScale != 'True':
+                              quantity = iSample.resolution
+                              if n==0: ref_quantity=quantity
+                              else: 
+                                 if quantity<ref_quantity and quantity != '0': ref_quantity=quantity
+                              n=n+1
+                           else:
+                              #print('{a} {b} {c} {d} {e}'.format(a=iEn, b=iEta, c=iPFRecHit, d=iSeeding, e=getFloat(iSample.scale)))
+                              if getFloat(iSample.scale)!=0:
+                                 quantity = str(getFloat(iSample.resolution)/getFloat(iSample.scale))
+                                 if n==0: ref_quantity = quantity
+                                 else:
+                                    if getFloat(quantity)<getFloat(ref_quantity) and quantity != '0': ref_quantity=quantity
+                                 n=n+1
                         elif what == 'Scale':
                            quantity = iSample.scale
                            if n==0: ref_quantity=quantity
@@ -382,10 +400,18 @@ if __name__ == "__main__":
                   for iSample in samples_binned[iEn][iEta]:
                       if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
                         if what == 'Resolution':
-                           quantity = iSample.resolution
-                           if getFloat(ref_quantity)!= 0 :
-                              ratio = getFloat(quantity)/getFloat(ref_quantity)
-                              resolutions.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
+                           if do_resoOverScale != 'True':
+                              quantity = iSample.resolution
+                              if getFloat(ref_quantity)!= 0 :
+                                 ratio = getFloat(quantity)/getFloat(ref_quantity)
+                                 resolutions.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
+                           else:
+                              if getFloat(iSample.scale)!=0:
+                                 quantity = str(getFloat(iSample.resolution)/getFloat(iSample.scale))
+                                 #print('{a} {b}'.format(a=quantity, b=ref_quantity))
+                                 if getFloat(ref_quantity)!=0:
+                                    ratio = getFloat(quantity)/getFloat(ref_quantity)
+                                    resolutions.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=ratio))
                         elif what == 'Scale':
                            quantity = iSample.scale
                         elif what == 'Efficiency':
@@ -421,7 +447,10 @@ if __name__ == "__main__":
  
    
             if what == 'Resolution':
-               histo.GetZaxis().SetTitle('Resolution')
+               if do_resoOverScale != 'True':
+                  histo.GetZaxis().SetTitle('Resolution')
+               else:
+                  histo.GetZaxis().SetTitle('Resolution/Scale')
             elif what == 'Scale':
                histo.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
@@ -450,7 +479,10 @@ if __name__ == "__main__":
             histo_ratio.GetYaxis().SetTitleOffset(1.2)
  
             if what == 'Resolution':
-               histo_ratio.GetZaxis().SetTitle('Resolution')
+               if do_resoOverScale != 'True':
+                  histo_ratio.GetZaxis().SetTitle('Resolution')
+               else:
+                  histo_ratio.GetZaxis().SetTitle('Resolution/Scale')
             elif what == 'Scale':
                histo_ratio.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
@@ -483,7 +515,10 @@ if __name__ == "__main__":
             
             
             if do_resolutionPlot == 'True' and what == 'Resolution':
-               c.SaveAs("{dir}/resolution_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               if do_resoOverScale != 'True':
+                  c.SaveAs("{dir}/resolution_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               else:
+                  c.SaveAs("{dir}/resolutionOverScale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
             elif do_scalePlot == 'True' and what == 'Scale':
                c.SaveAs("{dir}/scale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
             elif do_efficiencyPlot == 'True' and what == 'Efficiency':
@@ -493,7 +528,10 @@ if __name__ == "__main__":
 
 
             if do_resolutionPlot == 'True' and what == 'Resolution':
-               c_ratio.SaveAs("{dir}/ratio_resolution_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               if do_resoOverScale != 'True':
+                  c_ratio.SaveAs("{dir}/ratio_resolution_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               else:
+                  c_ratio.SaveAs("{dir}/ratio_resolutionOverScale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
             elif do_scalePlot == 'True' and what == 'Scale':
                c_ratio.SaveAs("{dir}/ratio_scale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
             elif do_efficiencyPlot == 'True' and what == 'Efficiency':
@@ -521,14 +559,17 @@ if __name__ == "__main__":
                      
                   for iSample in samples_binned[iEn][iEta]:
                       if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
-                           #reso = getFloat(iSample.resolution)
-                           #eff = getFloat(iSample.efficiency)
-                           #reso_err = getFloat(iSample.resolution_error)
-                           #eff_err = getFloat(iSample.efficiency_error)
-                           reso = iSample.resolution
+                           if do_resoOverScale != 'True':
+                              reso = iSample.resolution
+                           else:
+                              if getFloat(iSample.scale)!=0:
+                                 reso = str(getFloat(iSample.resolution)/getFloat(iSample.scale))
                            eff = iSample.efficiency
-                           reso_err = iSample.resolution_error
-                           #print('{a} {b}'.format(a=reso_err, b=getFloat(reso_err)))
+                           if do_resoOverScale != 'True':
+                              reso_err = iSample.resolution_error
+                           else:
+                              if getFloat(iSample.scale)!=0 and getFloat(iSample.resolution)!=0:
+                                 reso_err = str(getFloat(iSample.resolution)/getFloat(iSample.scale)*(getFloat(iSample.resolution_error)/getFloat(iSample.resolution) + getFloat(iSample.scale_error)/getFloat(iSample.scale)))
                            eff_err = iSample.efficiency_error
                            if n==0:
                               ref_reso=reso
@@ -554,40 +595,35 @@ if __name__ == "__main__":
                   if(iPFRecHit > iSeeding): continue
                   for iSample in samples_binned[iEn][iEta]:
                      if getFloat(iSample.seeding)==iSeeding and getFloat(iSample.pfRecHit)==iPFRecHit:
-                        #reso=getFloat(iSample.resolution)
-                        #eff=getFloat(iSample.efficiency)
-                        #reso_err=getFloat(iSample.resolution_error)
-                        #eff_err=getFloat(iSample.efficiency_error)
-                        reso=iSample.resolution
+                        if do_resoOverScale != 'True':                    
+                           reso=iSample.resolution
+                        else:
+                           if getFloat(iSample.scale)!=0:
+                              reso = str(getFloat(iSample.resolution)/getFloat(iSample.scale))
                         eff=iSample.efficiency 
-                        reso_err=iSample.resolution_error
+                        if do_resoOverScale != 'True':
+                           reso_err=iSample.resolution_error
+                        else:
+                           if getFloat(iSample.scale)!=0 and getFloat(iSample.resolution)!=0:
+                              reso_err = str(getFloat(iSample.resolution)/getFloat(iSample.scale)*(getFloat(iSample.resolution_error)/getFloat(iSample.resolution) + getFloat(iSample.scale_error)/getFloat(iSample.scale)))
                         eff_err=iSample.efficiency_error
                         if reso == '0': continue
-                        #if reso == 0: continue
                         if getFloat(ref_reso)!=0 and getFloat(ref_eff)!=0:
-                        #if ref_reso!=0 and ref_eff!=0:
                            ratio_reso = getFloat(reso)/getFloat(ref_reso)
                            ratio_eff = getFloat(eff)/getFloat(ref_eff)
-                           #ratio_reso = reso/ref_reso
-                           #ratio_eff = eff/ref_eff
                            if(ratio_reso!=1):
                               score_reso = round((ratio_reso-1)*100, 2)
                            else:
                               score_reso = -0.001 #0 #1
                            score_reso_err = abs(score_reso)*(abs(getFloat(reso_err)/getFloat(reso)) + abs(getFloat(ref_reso_err)/getFloat(ref_reso)))
-                           #score_reso_err = (score_reso+100)*(getFloat(reso_err)/getFloat(reso) + getFloat(ref_reso_err)/getFloat(ref_reso))
-                           #print('check')
+                           #print('{a} {b}'.format(a=reso_err, b=getFloat(reso_err)))
                            #print('{a} * {b} {c} + {d} {e}'.format(a=score_reso, b=getFloat(reso_err), c=getFloat(reso), d=getFloat(ref_reso_err), e=getFloat(ref_reso))) 
-                           #score_reso_err = (ratio_reso_err-1)*100
-                           #score_reso_err = 100*getFloat(reso_err)/getFloat(ref_reso) + 100*getFloat(reso)*getFloat(ref_reso_err)/(getFloat(ref_reso)*getFloat(ref_reso))
-                           #score_reso_err = 100*reso_err/ref_reso + 100*reso*ref_reso_err/(ref_reso*ref_reso)
                            if(ratio_eff!=1):
                               score_eff = round((ratio_eff-1)*100, 2)
                            else:
                               score_eff = 0 #-1
-                           #score_eff_err = 100*eff_err/ref_eff + 100*eff*ref_eff_err/(ref_eff*ref_eff)
-                           #score_eff_err = 100*getFloat(eff_err)/getFloat(ref_eff) + 100*getFloat(eff)*getFloat(ref_eff_err)/(getFloat(ref_eff)*getFloat(ref_eff))
-                           score_eff_err = abs(score_eff)*(abs(getFloat(eff_err)/getFloat(eff)) + abs(getFloat(ref_eff_err)/getFloat(ref_eff)))
+                           if getFloat(eff)!=0:
+                              score_eff_err = abs(score_eff)*(abs(getFloat(eff_err)/getFloat(eff)) + abs(getFloat(ref_eff_err)/getFloat(ref_eff)))
                      
                            #if the fluctuation is below 1%, we put the score to the ref
                            if putToRef:   
@@ -603,29 +639,28 @@ if __name__ == "__main__":
                            if addNoiseRateWeight:
                               if getFloat(iSample.noiseRate) > 0.25: continue
                               weight_noiseRate = exp(1*getFloat(iSample.noiseRate))
-                              #weight on eff:
-                              #if score_eff == 0:
-                              #   score = weight_reso*abs(score_reso) + weight_eff*weight_noiseRate
-                              #else:
-                              #   score = weight_reso*abs(score_reso) + weight_eff*abs(score_eff)*weight_noiseRate
-                              if score_reso == 0:
-                                 score = weight_reso*weight_noiseRate + weight_eff*abs(score_eff)
+                              # weight on eff:
+                              if score_eff == 0:
+                                 score = weight_reso*abs(score_reso) + weight_eff*weight_noiseRate
                               else:
-                                 score = weight_reso*abs(score_reso)*weight_noiseRate + weight_eff*abs(score_eff)
-                                 #print('{a} * {b} + {c} * {d} * {e}'.format(a=weight_reso, b=abs(score_reso), c=weight_eff, d=abs(score_eff), r=weight_noiseRate))
-                              #score_error = getFloat(iSample.resolution_error) + (getFloat(iSample.efficiency_error) + 1*getFloat(iSample.efficiency)*getFloat(iSample.noiseRate_error))*weight_noiseRate
+                                 score = weight_reso*abs(score_reso) + weight_eff*abs(score_eff)*weight_noiseRate
+                              # weight on reso:
+                              #if score_reso == 0:
+                              #   score = weight_reso*weight_noiseRate + weight_eff*abs(score_eff)
+                              #else:
+                              #   score = weight_reso*abs(score_reso)*weight_noiseRate + weight_eff*abs(score_eff)
+                              
                               score_error = score_reso_err + (score_eff_err + 1*score_eff*getFloat(iSample.noiseRate_error))*weight_noiseRate
                            else:
                               score = weight_reso*score_reso - weight_eff*score_eff
                               score_error=0
-                              #score = -1*score_reso*score_eff
                            selection.append('{a} {b} {c} {d} {e} {f}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_eff, e=score, f=score_error))
                            #print('{a} {b} score_reso: {c} score_reso_err: {d} score_eff: {e} score_eff_err: {f} noiseRate: {g} noiseRate_err: {h} score: {i} score_err: {j}'.format(a=iPFRecHit, b=iSeeding, c=score_reso, d=score_reso_err, e=score_eff, f=score_eff_err, g=weight_noiseRate, h=iSample.noiseRate_error, i=score, j=score_error))
             
             selection.sort(key=getScore)
             #print('\n')
             #for i in selection:
-            #   print(getScore(i))
+               #print(getScore(i))
 
             # we select all the pairs compatible within uncertainties
             if addNoiseRateWeight:
@@ -660,7 +695,7 @@ if __name__ == "__main__":
                else:
                   selected_pair[iEn][iEta].append(' - ')
 
- 
+         
          # ranking
          if do_rankingPlot=='True':
             c_ranking = TCanvas('c_ranking_{a}_{b}_{c}'.format(a=iEn, b=iEta, c='ranking'), 'c', 1000, 1000)
@@ -678,14 +713,16 @@ if __name__ == "__main__":
             titleRanking.SetTextAlign(11)
             titleRanking.Draw()
             
-            #resolutions_ranking = TPaveText(0.15,0.1,0.45,0.8,"brNDC")
             resolutions_ranking = TPaveText(0.1,0.1,0.3,0.8,"brNDC")
             resolutions_ranking.SetBorderSize(0)
             resolutions_ranking.SetFillColor(kWhite)
             resolutions_ranking.SetTextSize(0.032)
             resolutions_ranking.SetTextFont(42)
             resolutions_ranking.SetTextAlign(11)
-            resolutions_ranking.AddText('     Resolution')
+            if do_resoOverScale != 'True':
+               resolutions_ranking.AddText('     Resolution')
+            else:
+               resolutions_ranking.AddText('  Resolution/Scale')
             n_reso=0
             for item in resolutions:
                if n_reso==0: value = 'ref'
@@ -749,7 +786,7 @@ if __name__ == "__main__":
             c_ranking.SaveAs("{dir}/ranking_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
 
 
-
+   # those are the fixed pair of thresholds per eta bin
    table_pair = {}
    table_pair['0p00_0p40'] = '2.0 3.0'
    table_pair['0p40_0p80'] = '2.0 3.0'
@@ -771,7 +808,7 @@ if __name__ == "__main__":
       print('Producing summary plot')
 
       printWithColour = True
-      printFromTable = True
+      printFromTable = False
 
       # in order not to plot the full energy range
       for iEn in EnRanges[:]:
@@ -830,7 +867,13 @@ if __name__ == "__main__":
          histo_summary.GetYaxis().SetTitleOffset(1.2)
    
          if printWithColour:
-            histo_summary.GetZaxis().SetTitle(item)
+            if do_resoOverScale != 'True':
+               histo_summary.GetZaxis().SetTitle(item)
+            else:
+               if item == 'Resolution':
+                  histo_summary.GetZaxis().SetTitle('Resolution/Scale')
+               else:
+                  histo_summary.GetZaxis().SetTitle(item)
             histo_summary.GetZaxis().SetTitleSize(0.04)
             histo_summary.GetZaxis().SetTitleOffset(1.2)
             if item == 'Resolution':
@@ -852,7 +895,11 @@ if __name__ == "__main__":
                            if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
                               if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
                                  if item == 'Resolution':
-                                    quantity = getFloat(iSample.resolution)
+                                    if do_resoOverScale != 'True':
+                                       quantity = getFloat(iSample.resolution)
+                                    else:
+                                       if getFloat(iSample.scale) != 0:
+                                          quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
                                  elif item == 'Efficiency':
                                     quantity = getFloat(iSample.efficiency)
                                  elif item == 'NoiseRate':
@@ -863,7 +910,10 @@ if __name__ == "__main__":
                             if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
                               if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
                                  if item == 'Resolution':
-                                    quantity = getFloat(iSample.resolution)
+                                    if do_resoOverScale != 'True':
+                                       quantity = getFloat(iSample.resolution)
+                                    else:
+                                       quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
                                  elif item == 'Efficiency':
                                     quantity = getFloat(iSample.efficiency)
                                  elif item == 'NoiseRate':
@@ -872,7 +922,10 @@ if __name__ == "__main__":
                      else:
                         if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
                            if item == 'Resolution':
-                              quantity = getFloat(iSample.resolution)
+                              if do_resoOverScale != 'True':
+                                 quantity = getFloat(iSample.resolution)
+                              else:
+                                 quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
                            elif item == 'Efficiency':
                               quantity = getFloat(iSample.efficiency)
                            elif item == 'NoiseRate':
@@ -1059,7 +1112,10 @@ if __name__ == "__main__":
 
     
          histo_decision_reso = TH2D('histo_decision_reso_{a}'.format(a=iEta), 'histo_decision_reso_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
-         histo_decision_reso.SetTitle('Resolution          ')
+         if do_resoOverScale != 'True':
+            histo_decision_reso.SetTitle('Resolution          ')
+         else:
+            histo_decision_reso.SetTitle('Resolution/Scale       ')
          
          histo_decision_reso.GetXaxis().SetTitle('#eta')
          histo_decision_reso.GetXaxis().SetLabelSize(0.052)
@@ -1121,7 +1177,10 @@ if __name__ == "__main__":
          for iEn in EnRanges:
             for iSample in samples_binned[iEn][iEta]:
                if iSample.pfRecHit == getFirstElement(table_pair[iEta]) and iSample.seeding == getSecondElement(table_pair[iEta], 'all'):   
-                  resolution = getFloat(iSample.resolution)
+                  if do_resoOverScale != 'True':
+                     resolution = getFloat(iSample.resolution)
+                  else:
+                     resolution = getFloat(iSample.resolution)/getFloat(iSample.scale)
                   histo_decision_reso.Fill(iEta, iEn, resolution)
                   efficiency = getFloat(iSample.efficiency)
                   histo_decision_eff.Fill(iEta, iEn, efficiency)

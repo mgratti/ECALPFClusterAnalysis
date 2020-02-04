@@ -19,7 +19,7 @@ void getFile(string fileName,
       vector<TString> ETAranges){
 
    ofstream outFile("/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
-   outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate resolution_error efficiency_error noiseRate_error" << endl;
+   outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate resolution_error efficiency_error noiseRate_error scale_error" << endl;
    TString label = fileName.c_str();
    TString filename;
    if(do_EB){
@@ -37,6 +37,7 @@ void getFile(string fileName,
          float resolution = map_sigma[ETranges[iEn]][ETAranges[iEta]];
          float resolution_error = map_sigma_error[ETranges[iEn]][ETAranges[iEta]][0];
          float scale = map_mean[ETranges[iEn]][ETAranges[iEta]];
+         float scale_error = map_mean_error[ETranges[iEn]][ETAranges[iEta]][0];
          float chisquare = map_chisquare[ETranges[iEn]][ETAranges[iEta]];
 
          float efficiency, efficiency_error;
@@ -65,7 +66,7 @@ void getFile(string fileName,
          noiseRate = hist->GetMean();
          noiseRate_error = hist->GetMeanError();
 
-         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << " " << noiseRate << " " << resolution_error << " " << efficiency_error << " " << noiseRate_error << endl;
+         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << " " << noiseRate << " " << resolution_error << " " << efficiency_error << " " << noiseRate_error << " " << scale_error << endl;
       }
    }
    
