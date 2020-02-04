@@ -749,16 +749,43 @@ if __name__ == "__main__":
             c_ranking.SaveAs("{dir}/ranking_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
 
 
+
+   table_pair = {}
+   table_pair['0p00_0p40'] = '2.0 3.0'
+   table_pair['0p40_0p80'] = '2.0 3.0'
+   table_pair['0p80_1p00'] = '2.0 3.0'
+   table_pair['1p00_1p20'] = '3.0 3.0'
+   table_pair['1p20_1p44'] = '3.0 3.0'
+   table_pair['1p48_1p64'] = '2.0 4.0'
+   table_pair['1p64_1p85'] = '3.0 3.0'
+   table_pair['1p85_2p00'] = '3.0 3.0'
+   table_pair['2p00_2p20'] = '4.0 4.0'
+   table_pair['2p20_2p40'] = '4.0 4.0'
+   table_pair['2p40_2p60'] = '3.0 3.0'
+   table_pair['2p60_2p80'] = '3.0 4.0'
+   table_pair['2p80_3p00'] = '3.0 3.0'
+
+
    # summary plot
    if do_summaryPlot=='True':
       print('Producing summary plot')
 
       printWithColour = True
+      printFromTable = True
 
       # in order not to plot the full energy range
       for iEn in EnRanges[:]:
-         if getFloat(getUpperBin(iEn)) > 80:
+         if getFloat(getUpperBin(iEn)) > 100:
             EnRanges.remove(iEn)
+
+      # removing the crack bin
+      for iEta in EtaRanges[:]:
+         if iEta == '1p44_1p48':
+            EtaRanges.remove(iEta)
+         # provisory
+         if iEta == '2p80_3p00':
+            EtaRanges.remove(iEta)
+
 
       nBins_energy = len(EnRanges)
       nBins_eta = len(EtaRanges)
@@ -818,29 +845,40 @@ if __name__ == "__main__":
          if printWithColour:
             for iEn in EnRanges:
                for iEta in EtaRanges:
+                  if iEta == '1p44_1p48': continue
                   for iSample in samples_binned[iEn][iEta]:
-                     if(len(selected_pair[iEn][iEta])>2):
-                        if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
-                           if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
-                              if item == 'Resolution':
-                                 quantity = getFloat(iSample.resolution)
-                              elif item == 'Efficiency':
-                                 quantity = getFloat(iSample.efficiency)
-                              elif item == 'NoiseRate':
-                                 quantity = getFloat(iSample.noiseRate)
-                                 #if quantity == 0.: quantity=0.001
-                              histo_summary.Fill(iEta, iEn, quantity)
+                     if not printFromTable:
+                        if(len(selected_pair[iEn][iEta])>2):
+                           if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
+                              if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
+                                 if item == 'Resolution':
+                                    quantity = getFloat(iSample.resolution)
+                                 elif item == 'Efficiency':
+                                    quantity = getFloat(iSample.efficiency)
+                                 elif item == 'NoiseRate':
+                                    quantity = getFloat(iSample.noiseRate)
+                                    #if quantity == 0.: quantity=0.001
+                                 histo_summary.Fill(iEta, iEn, quantity)
+                        else:
+                            if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
+                              if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
+                                 if item == 'Resolution':
+                                    quantity = getFloat(iSample.resolution)
+                                 elif item == 'Efficiency':
+                                    quantity = getFloat(iSample.efficiency)
+                                 elif item == 'NoiseRate':
+                                    quantity = getFloat(iSample.noiseRate)
+                                 histo_summary.Fill(iEta, iEn, quantity)
                      else:
-                         if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
-                           if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
-                              if item == 'Resolution':
-                                 quantity = getFloat(iSample.resolution)
-                              elif item == 'Efficiency':
-                                 quantity = getFloat(iSample.efficiency)
-                              elif item == 'NoiseRate':
-                                 quantity = getFloat(iSample.noiseRate)
-                              histo_summary.Fill(iEta, iEn, quantity)
-            histo_summary.Draw('colz')
+                        if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
+                           if item == 'Resolution':
+                              quantity = getFloat(iSample.resolution)
+                           elif item == 'Efficiency':
+                              quantity = getFloat(iSample.efficiency)
+                           elif item == 'NoiseRate':
+                              quantity = getFloat(iSample.noiseRate)
+                           histo_summary.Fill(iEta, iEn, quantity)
+               histo_summary.Draw('colz')
          else:
             histo_summary.Draw()
          
@@ -880,17 +918,22 @@ if __name__ == "__main__":
                score_print = TPaveText(x1, y1, x2, y2)
                #if selected_pair[iEn][iEta][0]!=' - ':
                #print(selected_pair[iEn][iEta][0])
-               if len(selected_pair[iEn][iEta])!=0 and selected_pair[iEn][iEta][0]!=' - ':
-                  #print( len(selected_pair[iEn][iEta]))
-                  #score_print.AddText(selected_pair[iEn][iEta])
-                  for iPair in selected_pair[iEn][iEta]:
-                     score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
-                  #score_print.SetTextColor(getColor(int(getPairInf(selected_pair[iEn][iEta])), int(getPairSup(selected_pair[iEn][iEta]))))
-                     score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
+               if not printFromTable:
+                  if len(selected_pair[iEn][iEta])!=0 and selected_pair[iEn][iEta][0]!=' - ':
+                     #print( len(selected_pair[iEn][iEta]))
+                     #score_print.AddText(selected_pair[iEn][iEta])
+                     for iPair in selected_pair[iEn][iEta]:
+                        score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
+                     #score_print.SetTextColor(getColor(int(getPairInf(selected_pair[iEn][iEta])), int(getPairSup(selected_pair[iEn][iEta]))))
+                        score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
+                  else:
+                     score_print.AddText(' - ')
+                  #score_label.append(score_print)        
                else:
-                  score_print.AddText(' - ')
-               score_label.append(score_print)         
-         
+                  score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(table_pair[iEta]))), b=int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
+                  score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(table_pair[iEta]))), int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
+               score_label.append(score_print)
+            
          for label in score_label:
             label.Draw('same')
             label.SetBorderSize(0)
@@ -999,23 +1042,6 @@ if __name__ == "__main__":
       print('producing decision plot')
 
       # we produce one plot per eta range
-
-
-      table_pair = {}
-      table_pair['0p00_0p40'] = '2.0 3.0'
-      table_pair['0p40_0p80'] = '2.0 2.0'
-      table_pair['0p80_1p00'] = '2.0 2.0'
-      table_pair['1p00_1p20'] = '2.0 2.0'
-      table_pair['1p20_1p44'] = '2.0 2.0'
-      table_pair['1p48_1p64'] = '4.0 4.0'
-      table_pair['1p64_1p85'] = '3.0 4.0'
-      table_pair['1p85_2p00'] = '3.0 3.0'
-      table_pair['2p00_2p20'] = '3.0 3.0'
-      table_pair['2p20_2p40'] = '3.0 3.0'
-      table_pair['2p40_2p60'] = '3.0 3.0'
-      table_pair['2p60_2p80'] = '3.0 3.0'
-      table_pair['2p80_3p00'] = '3.0 3.0'
-
       for iEta in EtaRanges:
 
          if iEta =='1p44_1p48': continue
@@ -1047,7 +1073,7 @@ if __name__ == "__main__":
 
          histo_decision_reso.GetZaxis().SetTitleSize(0.04)
          histo_decision_reso.GetZaxis().SetTitleOffset(1.2)
-         histo_decision_reso.GetZaxis().SetRangeUser(0,0.6)
+         histo_decision_reso.GetZaxis().SetRangeUser(0,0.3)
 
          histo_decision_eff = TH2D('histo_decision_eff_{a}'.format(a=iEta), 'histo_decision_eff_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
          histo_decision_eff.SetTitle('Efficiency         ')

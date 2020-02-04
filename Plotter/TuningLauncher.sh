@@ -55,7 +55,7 @@ do_scalePlot='False'
 do_efficiencyPlot='False'
 do_noiseRatePlot='False'
 do_rankingPlot='False'
-do_summaryPlot='False'
+do_summaryPlot='True'
 do_decisionPlot='False'
 do_popUpPlot='False'
 
