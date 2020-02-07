@@ -76,7 +76,7 @@ FitParameters performFit(string fileName,
    // we loop on the different ET and ETA ranges
    for(unsigned int i(0); i<ETranges.size(); ++i){
       for(unsigned int j(0); j<ETAranges.size(); ++j){
-         // we get te necessary files and histograms
+         // we get the necessary files and histograms
          TH1D* dmhist = 0;
          if(use_energy && do_binningEt){
             dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
@@ -107,22 +107,57 @@ FitParameters performFit(string fileName,
 
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
-         float mean_init = dmhist->GetMean();
-         float mean_min = 0.8*dmhist->GetMean();
+         float mean_init, mean_min;
+         cout << ETAvalue[ETAranges[j]].first << endl;
+         if(ETAvalue[ETAranges[j]].first >= 2.0){
+            mean_init = 0.9*dmhist->GetMean();
+         }
+         else{
+            mean_init = dmhist->GetMean();
+         }
+
+         if(mean_init<1.0){
+            mean_min = 0.8*dmhist->GetMean();
+         }
+         else{
+            mean_min = 0.5*dmhist->GetMean();
+         }
+
+         //float mean_min = 0.8*dmhist->GetMean();
          float mean_max = 1.2*dmhist->GetMean();
 
          float sigma_init; 
          float sigma_min = 0;
          float sigma_max; 
 
-         if(mean_init<1.96){
-            sigma_init = dmhist->GetStdDev();
-            sigma_max = 1.6*dmhist->GetStdDev();
+         //if(mean_init<1.96){
+         //   sigma_init = dmhist->GetStdDev();
+         //   sigma_max = 1.6*dmhist->GetStdDev();
+         //}
+         //else{
+         //   sigma_init = dmhist->GetStdDev()/4;
+         //   sigma_max = 1.8*dmhist->GetStdDev()/4;
+         //}
+
+         if (ETAvalue[ETAranges[j]].first >= 2.0 && ETvalue[ETranges[i]].second <= 20){
+            sigma_init = dmhist->GetStdDev()/2.5;
+            sigma_max = 1.8*dmhist->GetStdDev()/2.5;
          }
          else{
-            sigma_init = dmhist->GetStdDev()/4;
-            sigma_max = 1.8*dmhist->GetStdDev()/4;
-         }
+            sigma_init = dmhist->GetStdDev();
+            sigma_max = 1.6*dmhist->GetStdDev();
+         } 
+
+         //if (ETAvalue[ETAranges[j]].first >= 2.0){
+         //   sigma_init = dmhist->GetStdDev()/3;
+         //   sigma_max = 1.8*dmhist->GetStdDev()/3;
+         //}
+         //else{
+         //   sigma_init = dmhist->GetStdDev();
+         //   sigma_max = 1.6*dmhist->GetStdDev();
+         //}
+
+
          float alpha_1_init = 10;
          float alpha_1_min = -10;
          float alpha_1_max = 10;
@@ -135,7 +170,7 @@ FitParameters performFit(string fileName,
          float n_1_max = 50;
 
          float n_2_min = 0;
-         float n_2_max = 15;
+         float n_2_max = 35;
 
 
          /*if(ETvalue[ETranges[i]].second <= 30){
@@ -280,7 +315,7 @@ FitParameters performFit(string fileName,
          label->SetTextFont(42);
          label->SetTextAlign(11);
          TString kevt = to_string(kEvents);
-         label->AddText(kevt + "k events ");// + mean_tmp + "  " + sigma_tmp);
+         label->AddText(kevt + "k events " + mean_tmp + "  " + sigma_tmp);
          label->AddText(PFRecHit_thrs + " " + seeding_thrs);
          if(do_binningEt){
             label->AddText(getString(ETvalue[ETranges[i]].first, 0) + " < E_{T} < " + getString(ETvalue[ETranges[i]].second, 0) + "  GeV");

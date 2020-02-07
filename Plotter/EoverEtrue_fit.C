@@ -172,7 +172,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
          }
          else{
             ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
-            //ETranges = {"80_100"};
+            //ETranges.push_back({"1_5"});
          }
       }
    }
@@ -191,7 +191,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
    }
    else{
       ETAranges_EE = {"1p48_1p64", "1p64_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
-      //ETAranges_EE = {"1p48_1p64"};
+      //ETAranges_EE = {"2p00_2p20"};
    }
 
    // and adjust the boundaries
