@@ -820,8 +820,8 @@ if __name__ == "__main__":
          if iEta == '1p44_1p48':
             EtaRanges.remove(iEta)
          # provisory
-         if iEta == '2p80_3p00':
-            EtaRanges.remove(iEta)
+         #if iEta == '2p80_3p00':
+         #   EtaRanges.remove(iEta)
 
 
       nBins_energy = len(EnRanges)
@@ -955,33 +955,31 @@ if __name__ == "__main__":
             line.Draw('same')
 
 
+         lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
 
          # we draw the best score 
          score_label = []
          for iEn in EnRanges:
             for iEta in EtaRanges:
                if iEta == '1p44_1p48': continue
-               #print(selected_pair[iEn][iEta])   
                x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
                x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
                y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
                y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-               #print('{aa} {bb} {a} {b} {c} {d}').format(aa=iEn, bb=iEta, a=x1, b=x2, c=y1, d=y2)   
-               #print('{a} {b}').format(a=int(getPairInf(selected_pair[iEn][iEta])), b=getPairSup(selected_pair[iEn][iEta]))
                score_print = TPaveText(x1, y1, x2, y2)
-               #if selected_pair[iEn][iEta][0]!=' - ':
-               #print(selected_pair[iEn][iEta][0])
                if not printFromTable:
-                  if len(selected_pair[iEn][iEta])!=0 and selected_pair[iEn][iEta][0]!=' - ':
-                     #print( len(selected_pair[iEn][iEta]))
-                     #score_print.AddText(selected_pair[iEn][iEta])
-                     for iPair in selected_pair[iEn][iEta]:
-                        score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
-                     #score_print.SetTextColor(getColor(int(getPairInf(selected_pair[iEn][iEta])), int(getPairSup(selected_pair[iEn][iEta]))))
-                        score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
-                  else:
-                     score_print.AddText(' - ')
-                  #score_label.append(score_print)        
+                  if [iEn, iEta] not in lowStatBins:
+                     if len(selected_pair[iEn][iEta])!=0 and selected_pair[iEn][iEta][0]!=' - ':
+                        for iPair in selected_pair[iEn][iEta]:
+                           score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
+                           score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
+                     else:
+                        score_print.AddText(' - ')
+                     score_print.SetFillColorAlpha(0, 0)
+                  else: #we don't print pair in low stat bins
+                     score_print.SetFillColor(1)
+                     score_print.SetFillStyle(3244)
+                     
                else:
                   score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(table_pair[iEta]))), b=int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
                   score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(table_pair[iEta]))), int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
@@ -990,7 +988,6 @@ if __name__ == "__main__":
          for label in score_label:
             label.Draw('same')
             label.SetBorderSize(0)
-            label.SetFillColorAlpha(0, 0)
             label.SetTextSize(0.015)
             label.SetTextFont(62)
             label.SetTextAlign(11)

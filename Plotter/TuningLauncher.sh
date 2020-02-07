@@ -43,7 +43,7 @@ declare -a FilesArray=(
                        )
 
 
-do_writeFiles=true
+do_writeFiles=false
 
 doMatching_simFraction=true
 doMatching_deltaR=false
