@@ -1235,6 +1235,18 @@ if __name__ == "__main__":
             pad3.cd()
             label.Draw('same')
 
+         # adding ET=2GeV reference line
+         f_ET_2 = TF1('f_ET_2', '2/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+         f_ET_2.SetLineWidth(4)
+         f_ET_2.SetLineColor(6)
+         pad1.cd()
+         f_ET_2.Draw('same')
+         pad2.cd()
+         f_ET_2.Draw('same')
+         pad3.cd()
+         f_ET_2.Draw('same')
+         
+
          gStyle.SetOptStat(0)
          gStyle.SetPadRightMargin(0.36)
 
