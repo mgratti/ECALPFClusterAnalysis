@@ -450,7 +450,7 @@ if __name__ == "__main__":
                if do_resoOverScale != 'True':
                   histo.GetZaxis().SetTitle('Resolution')
                else:
-                  histo.GetZaxis().SetTitle('Resolution/Scale')
+                  histo.GetZaxis().SetTitle('Resolution')
             elif what == 'Scale':
                histo.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                if do_resoOverScale != 'True':
                   histo_ratio.GetZaxis().SetTitle('Resolution')
                else:
-                  histo_ratio.GetZaxis().SetTitle('Resolution/Scale')
+                  histo_ratio.GetZaxis().SetTitle('Resolution')
             elif what == 'Scale':
                histo_ratio.GetZaxis().SetTitle('Scale')
             elif what == 'Efficiency':
@@ -722,7 +722,7 @@ if __name__ == "__main__":
             if do_resoOverScale != 'True':
                resolutions_ranking.AddText('     Resolution')
             else:
-               resolutions_ranking.AddText('  Resolution/Scale')
+               resolutions_ranking.AddText('     Resolution')
             n_reso=0
             for item in resolutions:
                if n_reso==0: value = 'ref'
@@ -785,30 +785,32 @@ if __name__ == "__main__":
                
             c_ranking.SaveAs("{dir}/ranking_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
 
-
+   
    # those are the fixed pair of thresholds per eta bin
    table_pair = {}
-   table_pair['0p00_0p40'] = '2.0 3.0'
-   table_pair['0p40_0p80'] = '2.0 3.0'
-   table_pair['0p80_1p00'] = '2.0 3.0'
+   table_pair['0p00_0p40'] = '3.0 3.0'
+   table_pair['0p40_0p80'] = '3.0 3.0'
+   table_pair['0p80_1p00'] = '3.0 3.0'
    table_pair['1p00_1p20'] = '3.0 3.0'
    table_pair['1p20_1p44'] = '3.0 3.0'
-   table_pair['1p48_1p64'] = '2.0 4.0'
+   table_pair['1p48_1p64'] = '3.0 3.0'
    table_pair['1p64_1p85'] = '3.0 3.0'
    table_pair['1p85_2p00'] = '3.0 3.0'
-   table_pair['2p00_2p20'] = '4.0 4.0'
+   table_pair['2p00_2p20'] = '3.0 3.0'
    table_pair['2p20_2p40'] = '4.0 4.0'
-   table_pair['2p40_2p60'] = '3.0 3.0'
-   table_pair['2p60_2p80'] = '3.0 4.0'
-   table_pair['2p80_3p00'] = '3.0 3.0'
+   table_pair['2p40_2p60'] = '4.0 4.0'
+   table_pair['2p60_2p80'] = '4.0 4.0'
+   table_pair['2p80_3p00'] = '4.0 4.0'
+   
 
-
+   lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
+   
    # summary plot
    if do_summaryPlot=='True':
       print('Producing summary plot')
 
       printWithColour = True
-      printFromTable = False
+      printFromTable = True
 
       # in order not to plot the full energy range
       for iEn in EnRanges[:]:
@@ -871,7 +873,7 @@ if __name__ == "__main__":
                histo_summary.GetZaxis().SetTitle(item)
             else:
                if item == 'Resolution':
-                  histo_summary.GetZaxis().SetTitle('Resolution/Scale')
+                  histo_summary.GetZaxis().SetTitle('Resolution')
                else:
                   histo_summary.GetZaxis().SetTitle(item)
             histo_summary.GetZaxis().SetTitleSize(0.04)
@@ -881,7 +883,7 @@ if __name__ == "__main__":
             elif item == 'Efficiency':
                histo_summary.GetZaxis().SetRangeUser(0,1)
             elif item == 'NoiseRate':
-               histo_summary.GetZaxis().SetRangeUser(-0.0001,0.3)
+               histo_summary.GetZaxis().SetRangeUser(-0.0001,1)
 
          c_summary = TCanvas('c_summary_{a}'.format(a=item), 'c_summary_{a}'.format(a=item), 1500, 1500)
 
@@ -925,11 +927,15 @@ if __name__ == "__main__":
                               if do_resoOverScale != 'True':
                                  quantity = getFloat(iSample.resolution)
                               else:
-                                 quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                                 if getFloat(iSample.scale) != 0:
+                                    quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                                 else:
+                                    quantity = getFloat(iSample.resolution)
                            elif item == 'Efficiency':
                               quantity = getFloat(iSample.efficiency)
                            elif item == 'NoiseRate':
                               quantity = getFloat(iSample.noiseRate)
+                           if quantity == 0: quantity = 0.0001
                            histo_summary.Fill(iEta, iEn, quantity)
                histo_summary.Draw('colz')
          else:
@@ -955,7 +961,7 @@ if __name__ == "__main__":
             line.Draw('same')
 
 
-         lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
+         #lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
 
          # we draw the best score 
          score_label = []
@@ -981,8 +987,13 @@ if __name__ == "__main__":
                      score_print.SetFillStyle(3244)
                      
                else:
-                  score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(table_pair[iEta]))), b=int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
-                  score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(table_pair[iEta]))), int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
+                  if [iEn, iEta] not in lowStatBins:
+                     score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(table_pair[iEta]))), b=int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
+                     score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(table_pair[iEta]))), int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
+                     score_print.SetFillColorAlpha(0, 0)
+                  else:
+                     score_print.SetFillColor(1)
+                     score_print.SetFillStyle(3244)
                score_label.append(score_print)
             
          for label in score_label:
@@ -1086,7 +1097,23 @@ if __name__ == "__main__":
          else:
             c_summary.SaveAs('{a}/summaryPlot.png'.format(a=outputdir))
 
-
+   '''
+   table_pair = {}
+   table_pair['0p00_0p40'] = '3.0 3.0'
+   table_pair['0p40_0p80'] = '3.0 3.0'
+   table_pair['0p80_1p00'] = '3.0 3.0'
+   table_pair['1p00_1p20'] = '3.0 3.0'
+   table_pair['1p20_1p44'] = '3.0 3.0'
+   table_pair['1p48_1p64'] = '3.0 3.0'
+   table_pair['1p64_1p85'] = '4.0 4.0'
+   table_pair['1p85_2p00'] = '4.0 4.0'
+   table_pair['2p00_2p20'] = '4.0 4.0'
+   table_pair['2p20_2p40'] = '4.0 4.0'
+   table_pair['2p40_2p60'] = '4.0 4.0'
+   table_pair['2p60_2p80'] = '4.0 4.0'
+   table_pair['2p80_3p00'] = '4.0 4.0'
+   '''
+   
    #decision plot
    if do_decisionPlot == 'True':
       print('producing decision plot')
@@ -1112,7 +1139,7 @@ if __name__ == "__main__":
          if do_resoOverScale != 'True':
             histo_decision_reso.SetTitle('Resolution          ')
          else:
-            histo_decision_reso.SetTitle('Resolution/Scale       ')
+            histo_decision_reso.SetTitle('Resolution          ')
          
          histo_decision_reso.GetXaxis().SetTitle('#eta')
          histo_decision_reso.GetXaxis().SetLabelSize(0.052)
@@ -1126,7 +1153,7 @@ if __name__ == "__main__":
 
          histo_decision_reso.GetZaxis().SetTitleSize(0.04)
          histo_decision_reso.GetZaxis().SetTitleOffset(1.2)
-         histo_decision_reso.GetZaxis().SetRangeUser(0,0.3)
+         histo_decision_reso.GetZaxis().SetRangeUser(0,0.1)
 
          histo_decision_eff = TH2D('histo_decision_eff_{a}'.format(a=iEta), 'histo_decision_eff_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
          histo_decision_eff.SetTitle('Efficiency         ')
@@ -1143,7 +1170,7 @@ if __name__ == "__main__":
 
          histo_decision_eff.GetZaxis().SetTitleSize(0.04)
          histo_decision_eff.GetZaxis().SetTitleOffset(1.2)
-         histo_decision_eff.GetZaxis().SetRangeUser(0,1)
+         histo_decision_eff.GetZaxis().SetRangeUser(0.8,1)
 
          histo_decision_noise = TH2D('histo_decision_noise_{a}'.format(a=iEta), 'histo_decision_noise_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
          histo_decision_noise.SetTitle('NoiseRate         ')
@@ -1160,7 +1187,7 @@ if __name__ == "__main__":
 
          histo_decision_noise.GetZaxis().SetTitleSize(0.04)
          histo_decision_noise.GetZaxis().SetTitleOffset(1.2)
-         histo_decision_noise.GetZaxis().SetRangeUser(-0.0001,0.3)
+         histo_decision_noise.GetZaxis().SetRangeUser(-0.0001,0.4)
 
 
          c_decision = TCanvas('c_decision_{a}'.format(a=iEta), 'c_decision_{a}'.format(a=iEta), 1500, 1000)
@@ -1177,7 +1204,8 @@ if __name__ == "__main__":
                   if do_resoOverScale != 'True':
                      resolution = getFloat(iSample.resolution)
                   else:
-                     resolution = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                     if getFloat(iSample.scale) != 0:
+                        resolution = getFloat(iSample.resolution)/getFloat(iSample.scale)
                   histo_decision_reso.Fill(iEta, iEn, resolution)
                   efficiency = getFloat(iSample.efficiency)
                   histo_decision_eff.Fill(iEta, iEn, efficiency)
@@ -1211,7 +1239,7 @@ if __name__ == "__main__":
             pad3.cd()
             line.Draw('same')
 
-         # plotting the score
+         # plotting the pairs
          score_label = []
          for iEn in EnRanges:
                x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.15
@@ -1219,12 +1247,16 @@ if __name__ == "__main__":
                y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
                y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
                score_print = TPaveText(x1, y1, x2, y2)
-               score_print.AddText('({a}, {b})'.format(a=getFirstElement(table_pair[iEta]), b=getSecondElement(table_pair[iEta], 'all')))
-               score_label.append(score_print)         
+               if [iEn, iEta] not in lowStatBins:
+                  score_print.AddText('({a}, {b})'.format(a=getFirstElement(table_pair[iEta]), b=getSecondElement(table_pair[iEta], 'all')))
+                  score_print.SetFillColorAlpha(0, 0)
+               else:      
+                  score_print.SetFillColor(1)
+                  score_print.SetFillStyle(3244)
+               score_label.append(score_print)
          
          for label in score_label:
             label.SetBorderSize(0)
-            label.SetFillColorAlpha(0, 0)
             label.SetTextSize(0.035)
             label.SetTextFont(62)
             label.SetTextAlign(11)
@@ -1251,7 +1283,9 @@ if __name__ == "__main__":
          gStyle.SetPadRightMargin(0.36)
 
          c_decision.cd()
-         c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.png'.format(d=outputdir, a=iEta, b=getFirstElement(table_pair[iEta]), c=getSecondElement(table_pair[iEta], 'all')))
+         label1 = getFirstElement(table_pair[iEta])[0:1]
+         label2 = getSecondElement(table_pair[iEta], 'all')[0:1]
+         c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.png'.format(d=outputdir, a=iEta, b=label1, c=label2))
 
 
 

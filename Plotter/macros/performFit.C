@@ -7,6 +7,8 @@
 #include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/objects.h"
 #include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/utils.C"
 
+#include "TKey.h"
+#include "TMacro.h"
 
 using namespace RooFit;
 
@@ -77,19 +79,37 @@ FitParameters performFit(string fileName,
    for(unsigned int i(0); i<ETranges.size(); ++i){
       for(unsigned int j(0); j<ETAranges.size(); ++j){
          // we get the necessary files and histograms
-         TH1D* dmhist = 0;
+
+         TString histo_name;
          if(use_energy && do_binningEt){
-            dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
+            histo_name = "h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_Et" + ETranges[i];
          }
          else if(use_energy && do_binningEn){
-            dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_En" + ETranges[i])->Clone("dmhist");
+            histo_name = "h_PFclusters_caloMatched_eOverEtrue_Eta" + ETAranges[j] + "_En" + ETranges[i];
          }
          else if(use_simEnergy && do_binningEt){
-            dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_Et" + ETranges[i])->Clone("dmhist");
+            histo_name = "h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_Et" + ETranges[i];
          }
          else if(use_simEnergy && do_binningEn){
-            dmhist = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_En" + ETranges[i])->Clone("dmhist");
+            histo_name = "h_PFclusters_caloMatched_eOverEtrue_simEnergy_Eta" + ETAranges[j] + "_En" + ETranges[i];
          }
+         
+         inputFile->cd("EtEta_binned");
+         TDirectory *subDir = gDirectory;
+
+         TH1D* dmhist = 0;
+         if(subDir->GetListOfKeys()->Contains(histo_name)){
+            dmhist = (TH1D*) subDir->Get(histo_name)->Clone("dmhist");
+         }
+         else{
+            cout << "ERROR: Couldn't find histogram with EnRange " << ETranges[i] << " and EtaRange " << ETAranges[j] << endl;
+            cout << "Please make sure that the given bin was included in the PFClusterAnalyzer.C" << endl;
+            cout << "Or check the input bin in EoverEtrue.C" << endl;
+            cout << "--> Aborting" << endl;
+            exit(11);
+         }
+
+
          // we declare dm as a RooRealVar (for the residual) and as a RooDataHist (for the fit):
          RooRealVar* EoverEtrue = new RooRealVar("EoverEtrue","EoverEtrue" ,rangeMin,rangeMax);
          EoverEtrue ->setBins(150);
@@ -108,7 +128,6 @@ FitParameters performFit(string fileName,
          // crystal ball (gaussian + exponential decaying tails)
          // we declare all the parameters needed for the fits	
          float mean_init, mean_min;
-         cout << ETAvalue[ETAranges[j]].first << endl;
          if(ETAvalue[ETAranges[j]].first >= 2.0){
             mean_init = 0.9*dmhist->GetMean();
          }
@@ -139,9 +158,42 @@ FitParameters performFit(string fileName,
          //   sigma_max = 1.8*dmhist->GetStdDev()/4;
          //}
 
+
+         float c1, c2;
+         if(PFRecHit_thrs == "pfrh4.0" && seeding_thrs == "seed4.0"){
+            c1 = 2.3;
+            c2 = 1.98;
+         }
+         else if(PFRecHit_thrs == "pfrh3.0" && seeding_thrs == "seed4.0"){
+            c1 = 2.3;
+            c2 = 1.98;
+         }
+         else if(PFRecHit_thrs == "pfrh3.0" && seeding_thrs == "seed3.0"){
+            c1 = 2.2;
+            c2 = 2.25;
+         }
+         else if (PFRecHit_thrs == "pfrh2.0" && seeding_thrs == "seed4.0"){
+            c1 = 2.2;
+            c2 = 2.05;
+         }
+         else if (PFRecHit_thrs == "pfrh2.0" && seeding_thrs == "seed3.0"){
+            c1 = 2.2;
+            c2 = 2.2;
+         }
+         else if (PFRecHit_thrs == "pfrh2.0" && seeding_thrs == "seed2.0"){
+            c1 = 2.3;
+            c2 = 2.0;
+         }
+         else{
+            c1 = 2.3;
+            c2 = 1.98;
+         }
+
+               
+
          if (ETAvalue[ETAranges[j]].first >= 2.0 && ETvalue[ETranges[i]].second <= 20){
-            sigma_init = dmhist->GetStdDev()/2.5;
-            sigma_max = 1.8*dmhist->GetStdDev()/2.5;
+            sigma_init = dmhist->GetStdDev()/c1;
+            sigma_max = c2*dmhist->GetStdDev()/c1;
          }
          else{
             sigma_init = dmhist->GetStdDev();
