@@ -788,15 +788,15 @@ if __name__ == "__main__":
    
    # those are the fixed pair of thresholds per eta bin
    table_pair = {}
-   table_pair['0p00_0p40'] = '3.0 3.0'
-   table_pair['0p40_0p80'] = '3.0 3.0'
-   table_pair['0p80_1p00'] = '3.0 3.0'
-   table_pair['1p00_1p20'] = '3.0 3.0'
-   table_pair['1p20_1p44'] = '3.0 3.0'
-   table_pair['1p48_1p64'] = '3.0 3.0'
-   table_pair['1p64_1p85'] = '3.0 3.0'
-   table_pair['1p85_2p00'] = '3.0 3.0'
-   table_pair['2p00_2p20'] = '3.0 3.0'
+   table_pair['0p00_0p40'] = '4.0 4.0'
+   table_pair['0p40_0p80'] = '4.0 4.0'
+   table_pair['0p80_1p00'] = '4.0 4.0'
+   table_pair['1p00_1p20'] = '4.0 4.0'
+   table_pair['1p20_1p44'] = '4.0 4.0'
+   table_pair['1p48_1p64'] = '4.0 4.0'
+   table_pair['1p64_1p85'] = '4.0 4.0'
+   table_pair['1p85_2p00'] = '4.0 4.0'
+   table_pair['2p00_2p20'] = '4.0 4.0'
    table_pair['2p20_2p40'] = '4.0 4.0'
    table_pair['2p40_2p60'] = '4.0 4.0'
    table_pair['2p60_2p80'] = '4.0 4.0'
@@ -873,17 +873,21 @@ if __name__ == "__main__":
                histo_summary.GetZaxis().SetTitle(item)
             else:
                if item == 'Resolution':
-                  histo_summary.GetZaxis().SetTitle('Resolution')
-               else:
-                  histo_summary.GetZaxis().SetTitle(item)
+                  #histo_summary.GetZaxis().SetTitle('Resolution')
+                  histo_summary.GetZaxis().SetTitle('reso(4, 4)-reso(3, 3) (x100)')
+               elif item == 'Efficiency':
+                  histo_summary.GetZaxis().SetTitle('eff(4, 4)-eff(3, 3) (x100)')
+               elif item == 'NoiseRate':
+                  histo_summary.GetZaxis().SetTitle('noise(4, 4)-noise(3, 3) (x100)')
+                  #histo_summary.GetZaxis().SetTitle(item)
             histo_summary.GetZaxis().SetTitleSize(0.04)
             histo_summary.GetZaxis().SetTitleOffset(1.2)
             if item == 'Resolution':
-               histo_summary.GetZaxis().SetRangeUser(0,0.6)
+               histo_summary.GetZaxis().SetRangeUser(-15,3)
             elif item == 'Efficiency':
-               histo_summary.GetZaxis().SetRangeUser(0,1)
+               histo_summary.GetZaxis().SetRangeUser(-21,0)
             elif item == 'NoiseRate':
-               histo_summary.GetZaxis().SetRangeUser(-0.0001,1)
+               histo_summary.GetZaxis().SetRangeUser(-60,0.1)
 
          c_summary = TCanvas('c_summary_{a}'.format(a=item), 'c_summary_{a}'.format(a=item), 1500, 1500)
 
@@ -893,54 +897,52 @@ if __name__ == "__main__":
                   if iEta == '1p44_1p48': continue
                   for iSample in samples_binned[iEn][iEta]:
                      if not printFromTable:
-                        if(len(selected_pair[iEn][iEta])>2):
-                           if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
-                              if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
-                                 if item == 'Resolution':
-                                    if do_resoOverScale != 'True':
-                                       quantity = getFloat(iSample.resolution)
-                                    else:
-                                       if getFloat(iSample.scale) != 0:
-                                          quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
-                                 elif item == 'Efficiency':
-                                    quantity = getFloat(iSample.efficiency)
-                                 elif item == 'NoiseRate':
-                                    quantity = getFloat(iSample.noiseRate)
-                                    #if quantity == 0.: quantity=0.001
-                                 histo_summary.Fill(iEta, iEn, quantity)
-                        else:
-                            if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
-                              if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
-                                 if item == 'Resolution':
-                                    if do_resoOverScale != 'True':
-                                       quantity = getFloat(iSample.resolution)
-                                    else:
-                                       quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
-                                 elif item == 'Efficiency':
-                                    quantity = getFloat(iSample.efficiency)
-                                 elif item == 'NoiseRate':
-                                    quantity = getFloat(iSample.noiseRate)
-                                 histo_summary.Fill(iEta, iEn, quantity)
+                        if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
+                           if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
+                              if item == 'Resolution':
+                                 if do_resoOverScale != 'True':
+                                    quantity = getFloat(iSample.resolution)
+                                 else:
+                                    quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                              elif item == 'Efficiency':
+                                 quantity = getFloat(iSample.efficiency)
+                              elif item == 'NoiseRate':
+                                 quantity = getFloat(iSample.noiseRate)
+                              histo_summary.Fill(iEta, iEn, quantity)
                      else:
+                        #small check: take (3, 3) as ref
+                        if iSample.pfRecHit == '3.0' and iSample.seeding == '3.0':
+                           reso_ref = iSample.resolution
+                           eff_ref = iSample.efficiency
+                           noise_ref = iSample.noiseRate
+                           scale_ref = iSample.scale
                         if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
                            if item == 'Resolution':
+                              print('{aa} {bb} {a} {b} {c}'.format(aa=iEn, bb=iEta, a=getFloat(iSample.resolution), b=getFloat(reso_ref), c=(getFloat(iSample.resolution)-getFloat(reso_ref))*100))
                               if do_resoOverScale != 'True':
                                  quantity = getFloat(iSample.resolution)
                               else:
                                  if getFloat(iSample.scale) != 0:
-                                    quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                                    #quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                                    quantity = (getFloat(iSample.resolution)/getFloat(iSample.scale) - getFloat(reso_ref)/getFloat(scale_ref))*100
                                  else:
-                                    quantity = getFloat(iSample.resolution)
+                                    #quantity = getFloat(iSample.resolution)
+                                    quantity = (getFloat(iSample.resolution)-getFloat(iSample.scale))*100
                            elif item == 'Efficiency':
-                              quantity = getFloat(iSample.efficiency)
+                              #quantity = getFloat(iSample.efficiency)
+                              quantity = (getFloat(iSample.efficiency)-getFloat(eff_ref))*100
                            elif item == 'NoiseRate':
-                              quantity = getFloat(iSample.noiseRate)
-                           if quantity == 0: quantity = 0.0001
+                              #quantity = getFloat(iSample.noiseRate)
+                              #if quantity == 0: quantity = 0.0001
+                              quantity = (getFloat(iSample.noiseRate)-getFloat(noise_ref))*100
                            histo_summary.Fill(iEta, iEn, quantity)
-               histo_summary.Draw('colz')
+               histo_summary.Draw('text' + 'colz')
          else:
             histo_summary.Draw()
          
+         # so that only 1 digit is plotted in case text function is used
+         gStyle.SetPaintTextFormat(".1f");
+
 
          #draw dashed lines
          dashed_lines = []
@@ -997,7 +999,7 @@ if __name__ == "__main__":
                score_label.append(score_print)
             
          for label in score_label:
-            label.Draw('same')
+            #label.Draw('same')
             label.SetBorderSize(0)
             label.SetTextSize(0.015)
             label.SetTextFont(62)

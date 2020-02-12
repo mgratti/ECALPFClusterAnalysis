@@ -8,7 +8,6 @@
 #include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/utils.C"
 
 #include "TKey.h"
-#include "TMacro.h"
 
 using namespace RooFit;
 
