@@ -790,17 +790,17 @@ if __name__ == "__main__":
    # those are the fixed pair of thresholds per eta bin
    # needed for the decisionPlots, and for the summaryPlot depending on the option
    table_pair = {}
-   table_pair['0p00_0p40'] = '3.0 3.0'
-   table_pair['0p40_0p80'] = '3.0 3.0'
-   table_pair['0p80_1p00'] = '3.0 3.0'
-   table_pair['1p00_1p20'] = '3.0 3.0'
-   table_pair['1p20_1p44'] = '3.0 3.0'
-   table_pair['1p48_1p64'] = '3.0 3.0'
-   table_pair['1p64_1p85'] = '3.0 3.0'
-   table_pair['1p85_2p00'] = '3.0 3.0'
-   table_pair['2p00_2p20'] = '3.0 3.0'
-   table_pair['2p20_2p40'] = '3.0 3.0'
-   table_pair['2p40_2p60'] = '3.0 3.0'
+   table_pair['0p00_0p40'] = '4.0 4.0'
+   table_pair['0p40_0p80'] = '4.0 4.0'
+   table_pair['0p80_1p00'] = '4.0 4.0'
+   table_pair['1p00_1p20'] = '4.0 4.0'
+   table_pair['1p20_1p44'] = '4.0 4.0'
+   table_pair['1p48_1p64'] = '4.0 4.0'
+   table_pair['1p64_1p85'] = '4.0 4.0'
+   table_pair['1p85_2p00'] = '4.0 4.0'
+   table_pair['2p00_2p20'] = '4.0 4.0'
+   table_pair['2p20_2p40'] = '4.0 4.0'
+   table_pair['2p40_2p60'] = '4.0 4.0'
    table_pair['2p60_2p80'] = '4.0 4.0'
    table_pair['2p80_3p00'] = '4.0 4.0'
    
@@ -812,7 +812,7 @@ if __name__ == "__main__":
    if do_summaryPlot=='True':
       print('Producing summary plot')
 
-      printWithColour = False  #true means plotting the z scale (reso/eff/noise maps)
+      printWithColour = True  #true means plotting the z scale (reso/eff/noise maps)
       printFromTable = True   #true means taking fixed pairs of thresholds from table instead of outcome of selection
       printWithNumber = True #true means plotting pair, false means plotting number of z dimension
 
