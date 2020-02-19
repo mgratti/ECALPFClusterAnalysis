@@ -115,13 +115,13 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    fout->mkdir("EtEta_binned");
    fout->mkdir("perEvent");
 
-   Et_keys.push_back("0p1_1");
+   //Et_keys.push_back("0p1_1");
    Et_keys.push_back("1_5");
    Et_keys.push_back("5_10");
    Et_keys.push_back("10_15");
    Et_keys.push_back("15_20");
 
-   Et_keys.push_back("1_20");
+   //Et_keys.push_back("1_20");
    Et_keys.push_back("20_40");
    Et_keys.push_back("40_60");
    Et_keys.push_back("60_80");
@@ -212,20 +212,20 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
       Eta_edges["1p00_1p48"].second = 1.479;
    }
    if(flag_doEE){
-      Eta_keys.push_back("1p48_1p57");
+      //Eta_keys.push_back("1p48_1p57");
       Eta_keys.push_back("1p48_1p64");
-      Eta_keys.push_back("1p57_1p65");
+      //Eta_keys.push_back("1p57_1p65");
       Eta_keys.push_back("1p64_1p85");
-      Eta_keys.push_back("1p65_1p85");
+      //Eta_keys.push_back("1p65_1p85");
       Eta_keys.push_back("1p85_2p00");
       Eta_keys.push_back("2p00_2p20");
       Eta_keys.push_back("2p20_2p40");
       Eta_keys.push_back("2p40_2p60");
       Eta_keys.push_back("2p60_2p80");
       Eta_keys.push_back("2p80_3p00");
-      Eta_keys.push_back("1p48_2p00");
-      Eta_keys.push_back("2p00_2p50");
-      Eta_keys.push_back("2p50_3p00");
+      //Eta_keys.push_back("1p48_2p00");
+      //Eta_keys.push_back("2p00_2p50");
+      //Eta_keys.push_back("2p50_3p00");
 
       Eta_edges["1p48_1p57"].first = 1.479;
       Eta_edges["1p48_1p57"].second = 1.566;
@@ -275,8 +275,8 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
       h_PFClusters_caloMatched_et_EE      = new TH1F("h_PFClusters_caloMatched_et_EE","h_PFClusters_caloMatched_et_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
       h_PFClusters_caloMatched_eta_EE     = new TH1F("h_PFClusters_caloMatched_eta_EE","h_PFClusters_caloMatched_eta_EE",300,-3.,3.);
       h_PFClusters_caloMatched_phi_EE     = new TH1F("h_PFClusters_caloMatched_phi_EE","h_PFClusters_caloMatched_phi_EE",128,-3.2,3.2);
-      h_PFClusters_caloMatched_fakeRate_EE     = new TH1F("h_PFClusters_caloMatched_fakeRate_EE","h_PFClusters_caloMatched_fakeRate_EE",100,0,1);
-      h_PFClusters_caloMatched_eOverEtrue_EE = new TH1F("h_PFClusters_caloMatched_eOverEtrue_EE","h_PFClusters_caloMatched_eOverEtrue_EE",100,0.,2.);
+      h_PFClusters_caloMatched_fakeRate_EE          = new TH1F("h_PFClusters_caloMatched_fakeRate_EE","h_PFClusters_caloMatched_fakeRate_EE",100,0,1);
+      h_PFClusters_caloMatched_eOverEtrue_EE        = new TH1F("h_PFClusters_caloMatched_eOverEtrue_EE","h_PFClusters_caloMatched_eOverEtrue_EE",100,0.,2.);
       h_PFClusters_caloMatched_eOverEtrue_simEnergy_EE = new TH1F("h_PFClusters_caloMatched_eOverEtrue_simEnergy_EE","h_PFClusters_caloMatched_eOverEtrue_simEnergy_EE",100,0.,2.);
       h_PFClusters_caloMatched_nRecHit_vs_energy_EE = new TH2F("h_PFClusters_caloMatched_nRecHit_vs_energy_EE", "h_PFClusters_caloMatched_nRecHit_vs_energy_EE", 30, 0., 30., nBins_energy, rangeMin_energy, rangeMax_energy);
       h_PFClusters_caloMatched_nPFClusters_vs_energy_EE = new TH2F("h_PFClusters_caloMatched_nPFClusters_vs_energy_EE", "h_PFClusters_caloMatched_nPFCLusters_vs_energy_EE", 8, 0., 8., nBins_energy, rangeMin_energy, rangeMax_energy);
@@ -423,7 +423,9 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
          TString histo_name_fakeRate = "h_PFclusters_caloMatched_fakeRate_Eta" + Eta_key + "_En" + Et_key;
          h_PFclusters_caloMatched_fakeRate_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_fakeRate,histo_name_fakeRate,110,0,1.1);
-
+         TString histo_name_noiseOccupancy = "h_PFclusters_nonCaloMatched_noiseOccupancy_Eta" + Eta_key + "_En" + Et_key;
+         h_PFclusters_nonCaloMatched_noiseOccupancy_EtaEnBinned[Eta_key][Et_key] = new TH1F(histo_name_noiseOccupancy,histo_name_noiseOccupancy,100,0,100);
+         
          TString histo_name_size             = "h_caloParticle_size_Eta" + Eta_key + "_Et" + Et_key;
          h_caloParticle_size_EtaEtBinned[Eta_key][Et_key] = new TH1F(histo_name_size,histo_name_size,nBins_binned,rangeMin_binned,rangeMax_binned);
          TString histo_name_size_simEnergy   = "h_caloParticle_size_simEnergy_Eta" + Eta_key + "_Et" + Et_key;
@@ -485,7 +487,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
    if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
 
-   //if(entry>1){ throw std::invalid_argument("aborting");}
+   //if(entry>5){ throw std::invalid_argument("aborting");}
 
    //cout << endl << endl << "EVENT " << entry << endl;
 
@@ -766,8 +768,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             }
          }
       }
-
-
+      
       for(unsigned int iMatched(0); iMatched<vector_matched_indices.size(); ++iMatched){
          int matched_index = vector_matched_indices[iMatched];
          int nOccurrences;  //count(vector_matched_indices.begin(), vector_matched_indices.end(), vector_matched_indices[iMatched]);
@@ -933,7 +934,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                   //if(N_PFmatched_binned[Eta_key][Et_key]!=0) cout << Eta_key << " " << Et_key << " matched:" << N_PFmatched_binned[Eta_key][Et_key] << endl;
                }
             }
-
+       
 
             //plot number of recHit related to energy and eta
             //h_PFClusters_caloMatched_nPFClusters_vs_energy->Fill(N_pfCl, filling_energy);
@@ -998,8 +999,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
    for(TString Eta_key: Eta_keys){
       for(TString Et_key: Et_keys){
          if(N_PFtot_binned[Eta_key][Et_key]!=0){
-            //cout << Eta_key << " " << Et_key << " " << " Ntot: " << N_PFtot_binned[Eta_key][Et_key] << " Nmatched: " << N_PFmatched_binned[Eta_key][Et_key]  << " fake rate: " << 1-N_PFmatched_binned[Eta_key][Et_key] / N_PFtot_binned[Eta_key][Et_key]<< endl;
+            //cout << Eta_key << " " << Et_key << " " << " Ntot: " << N_PFtot_binned[Eta_key][Et_key] << " Nmatched: " << N_PFmatched_binned[Eta_key][Et_key]  << " fake rate: " << 1-N_PFmatched_binned[Eta_key][Et_key] / N_PFtot_binned[Eta_key][Et_key] << " noise occupancy: " << N_PFtot_binned[Eta_key][Et_key]-N_PFmatched_binned[Eta_key][Et_key] << endl;
             h_PFclusters_caloMatched_fakeRate_EtaEnBinned[Eta_key][Et_key]->Fill(1-N_PFmatched_binned[Eta_key][Et_key]/N_PFtot_binned[Eta_key][Et_key]);
+            h_PFclusters_nonCaloMatched_noiseOccupancy_EtaEnBinned[Eta_key][Et_key]->Fill(N_PFtot_binned[Eta_key][Et_key]-N_PFmatched_binned[Eta_key][Et_key]);
          }
       }
    }

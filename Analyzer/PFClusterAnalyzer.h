@@ -156,7 +156,8 @@ class PFClusterAnalyzer : public TSelector {
       std::map<TString, std::map<TString, TH1F*>> h_caloParticle_size_EtaEnBinned_simEnergy;
 
       std::map<TString, std::map<TString, TH1F*>> h_PFclusters_caloMatched_fakeRate_EtaEnBinned;
- 
+      std::map<TString, std::map<TString, TH1F*>> h_PFclusters_nonCaloMatched_noiseOccupancy_EtaEnBinned;
+
 
       // PFClusters 
       TH1F* h_PFClusters_caloMatched_size_EB;

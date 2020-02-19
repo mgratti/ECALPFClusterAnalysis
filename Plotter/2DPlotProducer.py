@@ -14,7 +14,7 @@ from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed,
 
 # define a class Sample which has all the attributes to be retrieved from the samples
 class Sample(object):
-   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0, resolution_error=0, efficiency_error=0, noiseRate_error=0, scale_error=0):
+   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0, resolution_error=0, efficiency_error=0, noiseRate_error=0, scale_error=0, noiseOccupancy=0):
       self.energy = energy
       self.eta = eta
       self.pfRecHit = pfRecHit
@@ -27,6 +27,7 @@ class Sample(object):
       self.efficiency_error = efficiency_error
       self.noiseRate_error = noiseRate_error
       self.scale_error = scale_error
+      self.noiseOccupancy = noiseOccupancy
       
 # get the parser options
 def getOptions():
@@ -111,9 +112,12 @@ def getSampleItems(inputfile):
          index11 = line.find(' ', index10+1)
          scale_err = line[index10+1:index11]
 
+         index12 = line.find(' ', index11+1)
+         noiseOcc = line[index11+1:index12]
+
          #print('pfrechit {t1} seeding {t2} energyBin {a1} etaBin {a2} reso {a3} mean {a4} eff {a5}').format(t1=PFRecHitThrs, t2=seedThrs, a1=energyBin, a2=etaBin, a3=reso, a4=mean, a5=eff)
       
-         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise, resolution_error = reso_err, efficiency_error = eff_err, noiseRate_error = noise_err, scale_error=scale_err)
+         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise, resolution_error = reso_err, efficiency_error = eff_err, noiseRate_error = noise_err, scale_error=scale_err, noiseOccupancy=noiseOcc)
          output.append(thisSample)
  
          if energyBin not in EnBins and energyBin != 'ETranges':
@@ -790,19 +794,19 @@ if __name__ == "__main__":
    # those are the fixed pair of thresholds per eta bin
    # needed for the decisionPlots, and for the summaryPlot depending on the option
    table_pair = {}
-   table_pair['0p00_0p40'] = '4.0 4.0'
-   table_pair['0p40_0p80'] = '4.0 4.0'
-   table_pair['0p80_1p00'] = '4.0 4.0'
-   table_pair['1p00_1p20'] = '4.0 4.0'
-   table_pair['1p20_1p44'] = '4.0 4.0'
-   table_pair['1p48_1p64'] = '4.0 4.0'
-   table_pair['1p64_1p85'] = '4.0 4.0'
-   table_pair['1p85_2p00'] = '4.0 4.0'
-   table_pair['2p00_2p20'] = '4.0 4.0'
-   table_pair['2p20_2p40'] = '4.0 4.0'
-   table_pair['2p40_2p60'] = '4.0 4.0'
-   table_pair['2p60_2p80'] = '4.0 4.0'
-   table_pair['2p80_3p00'] = '4.0 4.0'
+   table_pair['0p00_0p40'] = '1.0 1.0'
+   table_pair['0p40_0p80'] = '1.0 1.0'
+   table_pair['0p80_1p00'] = '1.0 1.0'
+   table_pair['1p00_1p20'] = '1.0 1.0'
+   table_pair['1p20_1p44'] = '1.0 1.0'
+   table_pair['1p48_1p64'] = '1.0 1.0'
+   table_pair['1p64_1p85'] = '1.0 1.0'
+   table_pair['1p85_2p00'] = '1.0 1.0'
+   table_pair['2p00_2p20'] = '1.0 1.0'
+   table_pair['2p20_2p40'] = '1.0 1.0'
+   table_pair['2p40_2p60'] = '1.0 1.0'
+   table_pair['2p60_2p80'] = '1.0 1.0'
+   table_pair['2p80_3p00'] = '1.0 1.0'
    
    # bins where the statistics is too low to be tuned on
    lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
@@ -857,7 +861,7 @@ if __name__ == "__main__":
 
       whichQuantities = ['']
       if printWithColour:
-         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate']
+         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'NoiseOccupancy']
       
       for item in whichQuantities:
          if printWithColour:
@@ -892,6 +896,8 @@ if __name__ == "__main__":
                histo_summary.GetZaxis().SetRangeUser(0,1)
             elif item == 'NoiseRate':
                histo_summary.GetZaxis().SetRangeUser(-0.0001,1)
+            elif item == 'NoiseOccupancy':
+               histo_summary.GetZaxis().SetRangeUser(0, 20)
 
          c_summary = TCanvas('c_summary_{a}'.format(a=item), 'c_summary_{a}'.format(a=item), 1500, 1500)
 
@@ -915,6 +921,8 @@ if __name__ == "__main__":
                                  elif item == 'NoiseRate':
                                     quantity = getFloat(iSample.noiseRate)
                                     #if quantity == 0.: quantity=0.001
+                                 elif item == 'NoiseOccupancy':
+                                    quantity = getFloat(iSample.noiseOccupancy)
                                  histo_summary.Fill(iEta, iEn, quantity)
                         else:
                             if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
@@ -928,6 +936,8 @@ if __name__ == "__main__":
                                     quantity = getFloat(iSample.efficiency)
                                  elif item == 'NoiseRate':
                                     quantity = getFloat(iSample.noiseRate)
+                                 elif item == 'NoiseOccupancy':
+                                    quantity = getFloat(iSample.noiseOccupancy)
                                  histo_summary.Fill(iEta, iEn, quantity)
                      else:
                         if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
@@ -943,6 +953,8 @@ if __name__ == "__main__":
                               quantity = getFloat(iSample.efficiency)
                            elif item == 'NoiseRate':
                               quantity = getFloat(iSample.noiseRate)
+                           elif item == 'NoiseOccupancy':
+                              quantity = getFloat(iSample.noiseOccupancy)
                            if quantity == 0: quantity = 0.0001
                            histo_summary.Fill(iEta, iEn, quantity)
                if printWithNumber == True:
@@ -1107,6 +1119,8 @@ if __name__ == "__main__":
             c_summary.SaveAs('{a}/summaryPlot_efficiency.png'.format(a=outputdir))
          elif item == 'NoiseRate':
             c_summary.SaveAs('{a}/summaryPlot_noiseRate.png'.format(a=outputdir))
+         elif item == 'NoiseOccupancy':
+            c_summary.SaveAs('{a}/summaryPlot_noiseOccupancy.png'.format(a=outputdir))
          else:
             c_summary.SaveAs('{a}/summaryPlot.png'.format(a=outputdir))
 

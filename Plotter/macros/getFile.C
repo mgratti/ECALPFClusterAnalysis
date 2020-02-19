@@ -2,7 +2,7 @@
  
   - This function writes the parameters of the fits in a txt file
   
-  - The output file is for instance needed for the python framework to work
+  - The output file is for instance needed for the python framework to run
 
 
 ******************************/
@@ -19,7 +19,7 @@ void getFile(string fileName,
       vector<TString> ETAranges){
 
    ofstream outFile("/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
-   outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate resolution_error efficiency_error noiseRate_error scale_error" << endl;
+   outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate resolution_error efficiency_error noiseRate_error scale_error noiseOccupancy" << endl;
    TString label = fileName.c_str();
    TString filename;
    if(do_EB){
@@ -66,7 +66,11 @@ void getFile(string fileName,
          noiseRate = hist->GetMean();
          noiseRate_error = hist->GetMeanError();
 
-         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << " " << noiseRate << " " << resolution_error << " " << efficiency_error << " " << noiseRate_error << " " << scale_error << endl;
+         float noiseOccupancy;
+         TH1D* hist_noise = (TH1D*) inputFile->Get("EtEta_binned/h_PFclusters_nonCaloMatched_noiseOccupancy_Eta" + ETAranges[iEta] + "_En" + ETranges[iEn])->Clone("hist_noise");
+         noiseOccupancy = hist_noise->GetMean();
+
+         outFile << ETranges[iEn] << " " << ETAranges[iEta] << " " << chisquare << " " << resolution << " " << scale << " " << efficiency << " " << noiseRate << " " << resolution_error << " " << efficiency_error << " " << noiseRate_error << " " << scale_error << " " << noiseOccupancy << endl;
       }
    }
    
