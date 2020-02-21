@@ -29,6 +29,7 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TMath.h>
+#include <TVector2.h>
 
 bool compareSCpt(const std::pair<int, double>&, const std::pair<int, double>&);
 bool compareCPdr(const std::tuple<int, double, double>&, const std::tuple<int, double, double>&);
@@ -48,8 +49,28 @@ void SCAnalyzer::SlaveBegin(TTree * /*tree*/)
    // When running with PROOF SlaveBegin() is called on each slave server.
    // The tree argument is deprecated (on PROOF 0 is passed).
 
-   TString option = GetOption();
+   TString foutName = GetOption();
+   // prepare output
+   fout = new TFile(foutName, "RECREATE"); 
+   if(!fout->IsOpen()) throw std::runtime_error("Output file could not be created");
+   Info("SlaveBegin", "Writing on %s", foutName.Data());
+   fout->mkdir("SClusters");
+   fout->cd("SClusters"); 
+   h_goodSC_R9 = new TH1F("h_goodSC_R9", "h_goodSC_R9", 200,0.,2.);
+   h_goodSC_SigmaIetaIeta = new TH1F("h_goodSC_SigmaIetaIeta", "h_goodSC_SigmaIetaIeta", 200,0.,0.1);
+   h_goodSC_SigmaIphiIphi = new TH1F("h_goodSC_SigmaIphiIphi", "h_goodSC_SigmaIphiIphi", 200,0.,0.5);
+   h_goodSC_fullR9 = new TH1F("h_goodSC_fullR9", "h_goodSC_fullR9", 200,0.,2.);
+   h_goodSC_fullSigmaIetaIeta = new TH1F("h_goodSC_fullSigmaIetaIeta", "h_goodSC_fullSigmaIetaIeta", 200,0.,0.1);
+   h_goodSC_fullSigmaIphiIphi = new TH1F("h_goodSC_fullSigmaIphiIphi", "h_goodSC_fullSigmaIphiIphi", 200,0.,0.5);
+   h_fakeSC_R9 = new TH1F("h_fakeSC_R9", "h_fakeSC_R9", 200,0.,2.);
+   h_fakeSC_SigmaIetaIeta = new TH1F("h_fakeSC_SigmaIetaIeta", "h_fakeSC_SigmaIetaIeta", 200,0.,0.1);
+   h_fakeSC_SigmaIphiIphi = new TH1F("h_fakeSC_SigmaIphiIphi", "h_fakeSC_SigmaIphiIphi", 200,0.,0.5);
+   h_fakeSC_fullR9 = new TH1F("h_fakeSC_fullR9", "h_fakeSC_fullR9", 200,0.,2.);
+   h_fakeSC_fullSigmaIetaIeta = new TH1F("h_fakeSC_fullSigmaIetaIeta", "h_fakeSC_fullSigmaIetaIeta", 200,0.,0.1);
+   h_fakeSC_fullSigmaIphiIphi = new TH1F("h_fakeSC_fullSigmaIphiIphi", "h_fakeSC_fullSigmaIphiIphi", 200,0.,0.5);
 
+   Info("SalveBegin", "Booked Histograms");
+   
 }
 
 Bool_t SCAnalyzer::Process(Long64_t entry)
@@ -72,7 +93,7 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
 
    fReader.SetLocalEntry(entry);
    if (entry % 100 == 0) Info("Process", "processing event %d", (Int_t)entry);
-   std::cout << "Event number = " << *eventId << std::endl;
+   if(doDebug) std::cout << "Event number = " << *eventId << std::endl;
 
    // selection - only events with at least one sim photon with pt > 2 GeV
    bool keep_me=false;
@@ -103,7 +124,7 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
    //for (auto i : SC_idx_pt) std::cout << " " << i.second << " " << i.first << std::endl;
 
    // then start from high pt and look for a good truth match, otherwise go to next supercluster
-   int idx_cand_SC = -1;
+   int idx_goodSC = -1;
    int idx_cand_CP = -1;
 
    // loop over superclusters ordered indices
@@ -117,7 +138,8 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
 
        if(caloParticle_id[iCP]!=22) continue;
        double Deta = abs(caloParticle_simEta[iCP]-superCluster_eta[iSC]);
-       double Dphi = abs(caloParticle_simPhi[iCP]-superCluster_phi[iSC]);
+       //double Dphi = abs(caloParticle_simPhi[iCP]-superCluster_phi[iSC]); BUG!
+       double Dphi = abs(TVector2::Phi_mpi_pi(caloParticle_simPhi[iCP]-superCluster_phi[iSC]));
        double DR = sqrt(Deta*Deta+Dphi*Dphi);
        double DE = abs(caloParticle_simEnergy[iCP]-superCluster_energy[iSC])/superCluster_energy[iSC];
        //std::cout << "DR=" << DR << " DE=" << DE << std::endl;
@@ -136,19 +158,64 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
 
        if(iCP_DR <= max_DR && iCP_DE <= max_DE){
          //std::cout << "DR=" << iCP_DR << " DE=" << iCP_DE << std::endl;
-         idx_cand_SC = iSC;
+         idx_goodSC = iSC;
          idx_cand_CP = iCP_idx;
          break; // you found a candidate SP matched with a candidate CP
        }
        // else go on the next caloParticle
      }
    }
-   if(idx_cand_SC==-1) {
+   if(idx_goodSC==-1) {
      std::cout << "Did not find a candidate Good SuperCluster in the event, going to next event" << std::endl;
+     return kTRUE;
    } else {
-     std::cout << "Candidate SC=" << idx_cand_SC << " eta=" << superCluster_eta[idx_cand_SC] << " energy=" << superCluster_energy[idx_cand_SC] << std::endl;
-     std::cout << "Candidate CP=" << idx_cand_CP << " eta=" << caloParticle_simEta[idx_cand_CP] << " energy=" << caloParticle_simEnergy[idx_cand_CP] << std::endl;
+     if(doDebug) std::cout << "Candidate SC=" << idx_goodSC << " eta=" << superCluster_eta[idx_goodSC] << " energy=" << superCluster_energy[idx_goodSC] 
+                           << " phi=" << superCluster_phi[idx_goodSC] << std::endl;
+     if(doDebug) std::cout << "Candidate CP=" << idx_cand_CP << " eta=" << caloParticle_simEta[idx_cand_CP] << " energy=" << caloParticle_simEnergy[idx_cand_CP] 
+                           << " phi=" << caloParticle_simPhi[idx_cand_CP] << std::endl;
    }
+
+   // ************************
+   // Now identify the SC from the jet... 
+   // ************************
+   // loop over the superclusters, ordered in pt, find the supercluster with DeltaPhi~3.14
+   // find the highest in pt which has pi-tol<DeltaPhi<pi+tol
+   int idx_fakeSC = -1;
+   double tol = 0.3;
+   for(auto SC_idx_pt_el : SC_idx_pt){
+     int iSC = SC_idx_pt_el.first;
+     if(iSC==idx_goodSC) continue;
+     double Dphi = TVector2::Phi_mpi_pi(superCluster_phi[iSC]-superCluster_phi[idx_goodSC]);
+     if(abs(Dphi)< TMath::Pi()+tol && abs(Dphi)>TMath::Pi()-tol){
+       idx_fakeSC = iSC;
+       break;
+     }
+   }
+   if(idx_fakeSC==-1){
+     std::cout << "Did not find a candidate Fake SuperCluster in the envent, going to next event" << std::endl;
+     return kTRUE;
+   } else {
+     if(doDebug) std::cout << "Candidate fake SC=" << idx_fakeSC << " eta=" << superCluster_eta[idx_fakeSC] << " energy=" << superCluster_energy[idx_fakeSC] 
+                           << " phi=" << superCluster_phi[idx_fakeSC] << std::endl;
+   
+   }
+
+
+   // At this point you have two two clusters of interest, just fill the histograms
+   h_goodSC_R9->Fill(superCluster_r9[idx_goodSC]);
+   h_goodSC_SigmaIetaIeta->Fill(superCluster_sigmaIetaIeta[idx_goodSC]);
+   h_goodSC_SigmaIphiIphi->Fill(superCluster_sigmaIphiIphi[idx_goodSC]);
+   h_goodSC_fullR9->Fill(superCluster_full5x5_r9[idx_goodSC]);
+   h_goodSC_fullSigmaIetaIeta->Fill(superCluster_full5x5_sigmaIetaIeta[idx_goodSC]);
+   h_goodSC_fullSigmaIphiIphi->Fill(superCluster_full5x5_sigmaIphiIphi[idx_goodSC]);
+
+   h_fakeSC_R9->Fill(superCluster_r9[idx_fakeSC]);
+   h_fakeSC_SigmaIetaIeta->Fill(superCluster_sigmaIetaIeta[idx_fakeSC]);
+   h_fakeSC_SigmaIphiIphi->Fill(superCluster_sigmaIphiIphi[idx_fakeSC]);
+   h_fakeSC_fullR9->Fill(superCluster_full5x5_r9[idx_fakeSC]);
+   h_fakeSC_fullSigmaIetaIeta->Fill(superCluster_full5x5_sigmaIetaIeta[idx_fakeSC]);
+   h_fakeSC_fullSigmaIphiIphi->Fill(superCluster_full5x5_sigmaIphiIphi[idx_fakeSC]);
+    
 
    return kTRUE;
 }
@@ -158,6 +225,11 @@ void SCAnalyzer::SlaveTerminate()
    // The SlaveTerminate() function is called after all entries or objects
    // have been processed. When running with PROOF SlaveTerminate() is called
    // on each slave server.
+   fout->Write();
+   Info("SlaveTerminate", "Output file was written");
+   fout->Close();
+   Info("SlaveTerminate", "Closed output file"); 
+
 
 }
 

@@ -10,7 +10,8 @@
 void start_SCAnalyzer(){
 
   std::vector<TString> inFileNames = {
-    "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/gjetEM_test_y2021_G1_v1_t33_n-1.root"
+    //"/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/gjetEM_test_y2021_G1_v1_t33_n-1.root"
+    "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/gjetEM_Et40toInfGeV_wTk_all_wPU_pfrh3.0_seed3.0_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_G1_v1_t33_n-1.root"
   };  
   std::vector<TString> outFileNames = {
     "./outputfiles/gjetEM_test_y2021_G1_v1_t33_n-1.root"
