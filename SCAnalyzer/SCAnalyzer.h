@@ -16,10 +16,10 @@
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
 
-// Headers needed by this particular selector
+// C++ libraries 
 #include <vector>
-
-
+#include <map>
+#include <cmath>
 
 class SCAnalyzer : public TSelector {
 public :
@@ -151,22 +151,28 @@ public :
    TTreeReaderArray<float> superCluster_full5x5_sigmaIphiIphi = {fReader, "superCluster_full5x5_sigmaIphiIphi"};
 
    // histograms
-   TH1F *h_goodSC_R9;
-   TH1F *h_goodSC_SigmaIetaIeta;
-   TH1F *h_goodSC_SigmaIphiIphi;
-   TH1F *h_goodSC_fullR9;
-   TH1F *h_goodSC_fullSigmaIetaIeta;
-   TH1F *h_goodSC_fullSigmaIphiIphi;
-   TH1F *h_fakeSC_R9;
-   TH1F *h_fakeSC_SigmaIetaIeta;
-   TH1F *h_fakeSC_SigmaIphiIphi;
-   TH1F *h_fakeSC_fullR9;
-   TH1F *h_fakeSC_fullSigmaIetaIeta;
-   TH1F *h_fakeSC_fullSigmaIphiIphi;
+   std::map<TString,TH1F*> h_goodSC_R9;
+   std::map<TString,TH1F*> h_goodSC_SigmaIetaIeta;
+   std::map<TString,TH1F*> h_goodSC_SigmaIphiIphi;
+   std::map<TString,TH1F*> h_goodSC_fullR9;
+   std::map<TString,TH1F*> h_goodSC_fullSigmaIetaIeta;
+   std::map<TString,TH1F*> h_goodSC_fullSigmaIphiIphi;
+   std::map<TString,TH1F*> h_fakeSC_R9;
+   std::map<TString,TH1F*> h_fakeSC_SigmaIetaIeta;
+   std::map<TString,TH1F*> h_fakeSC_SigmaIphiIphi;
+   std::map<TString,TH1F*> h_fakeSC_fullR9;
+   std::map<TString,TH1F*> h_fakeSC_fullSigmaIetaIeta;
+   std::map<TString,TH1F*> h_fakeSC_fullSigmaIphiIphi;
 
    // other algorithm variables
    TFile *fout;
    bool doDebug=false;
+   int NcandEvents=0;
+   int NtotEvents=0;
+
+   //std::vector<TString> detBinNames = {"all", "EB", "closeEE", "farEE"};
+   std::map<TString,std::pair<double,double>> detBins;
+
    SCAnalyzer(TTree * /*tree*/ =0) { }
    virtual ~SCAnalyzer() { }
    virtual Int_t   Version() const { return 2; }
