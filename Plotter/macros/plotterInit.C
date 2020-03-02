@@ -91,12 +91,12 @@ void plotterInit(vector<string> fileName,
          do_0to100GeV.push_back(false);
          do_0p1to200GeV.push_back(false);
       }
-      else if(fileName[iFile].find("0to100GeV") != std::string::npos || fileName[iFile].find("1.0to100GeV") != std::string::npos){
+      else if(fileName[iFile].find("0to100GeV") != std::string::npos || fileName[iFile].find("1.0to100GeV") != std::string::npos || fileName[iFile].find("1to100GeV") != std::string::npos){
          do_0to20GeV.push_back(false);
          do_0to100GeV.push_back(true);
          do_0p1to200GeV.push_back(false);
       }
-      else if((fileName[iFile].find("0.1to200GeV") != std::string::npos) || (fileName[iFile].find("0to200GeV") != std::string::npos)){
+      else if((fileName[iFile].find("0.1to200GeV") != std::string::npos) || (fileName[iFile].find("0to200GeV") != std::string::npos) || (fileName[iFile].find("1to200GeV") != std::string::npos)){
          do_0to20GeV.push_back(false);
          do_0to100GeV.push_back(false);
          do_0p1to200GeV.push_back(true);

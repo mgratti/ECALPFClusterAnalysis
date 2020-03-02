@@ -794,19 +794,19 @@ if __name__ == "__main__":
    # those are the fixed pair of thresholds per eta bin
    # needed for the decisionPlots, and for the summaryPlot depending on the option
    table_pair = {}
-   table_pair['0p00_0p40'] = '1.0 1.0'
-   table_pair['0p40_0p80'] = '1.0 1.0'
-   table_pair['0p80_1p00'] = '1.0 1.0'
-   table_pair['1p00_1p20'] = '1.0 1.0'
-   table_pair['1p20_1p44'] = '1.0 1.0'
-   table_pair['1p48_1p64'] = '1.0 1.0'
-   table_pair['1p64_1p85'] = '1.0 1.0'
-   table_pair['1p85_2p00'] = '1.0 1.0'
-   table_pair['2p00_2p20'] = '1.0 1.0'
-   table_pair['2p20_2p40'] = '1.0 1.0'
-   table_pair['2p40_2p60'] = '1.0 1.0'
-   table_pair['2p60_2p80'] = '1.0 1.0'
-   table_pair['2p80_3p00'] = '1.0 1.0'
+   table_pair['0p00_0p40'] = '3.0 3.0'
+   table_pair['0p40_0p80'] = '3.0 3.0'
+   table_pair['0p80_1p00'] = '3.0 3.0'
+   table_pair['1p00_1p20'] = '3.0 3.0'
+   table_pair['1p20_1p44'] = '3.0 3.0'
+   table_pair['1p48_1p64'] = '3.0 3.0'
+   table_pair['1p64_1p85'] = '3.0 3.0'
+   table_pair['1p85_2p00'] = '3.0 3.0'
+   table_pair['2p00_2p20'] = '3.0 3.0'
+   table_pair['2p20_2p40'] = '3.0 3.0'
+   table_pair['2p40_2p60'] = '3.0 3.0'
+   table_pair['2p60_2p80'] = '3.0 3.0'
+   table_pair['2p80_3p00'] = '3.0 3.0'
    
    # bins where the statistics is too low to be tuned on
    lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
@@ -965,7 +965,7 @@ if __name__ == "__main__":
             histo_summary.Draw()
         
          #make so that only 1 digit is printed when using text function
-         gStyle.SetPaintTextFormat(".1f");
+         gStyle.SetPaintTextFormat(".2f");
 
          #draw dashed lines
          dashed_lines = []
