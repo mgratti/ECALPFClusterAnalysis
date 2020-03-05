@@ -4,7 +4,11 @@ import os
 import array
 import argparse
 sys.path.append('/work/mratti/plotting/myplotting')
+sys.path.append('../Plotter')
 from spares import *
+from analyzeRecHits import beautify1DPlot
+#def beautify1DPlot(outputdir, inputfile, inputdir, histoname, xtitle, ytitle, xrange):
+
 
 colors =[   
     ROOT.kOrange+1, ROOT.kRed, ROOT.kMagenta+2, ROOT.kViolet+8, ROOT.kAzure-8, ROOT.kAzure+6 ,
@@ -21,16 +25,18 @@ def doBinnedROCAnalysis(inputfile, outputdir, var, varname, det, detname, doNorm
   f= ROOT.TFile.Open(inputfile,'READ')
   if not f: raise RuntimeError('file not found')
 
-  hgood_temp = f.Get('SClusters/h_goodSC_{}_{}'.format(var,det))
-  hfake_temp = f.Get('SClusters/h_fakeSC_{}_{}'.format(var,det))
+  hgood_temp = f.Get('SClusters/h_goodSC_{}{}'.format(var,det))
+  hfake_temp = f.Get('SClusters/h_fakeSC_{}{}'.format(var,det))
+  
+  if not hgood_temp or not hfake_temp: 
+    print 'hgood_temp or hfake_temp not available, SClusters/h_goodSC_{}{}'.format(var,det)
+    return gROC 
+  #  raise RuntimeError('histogram missing, {}, {}'.format(hgood,hfake))
 
   # get overflowed histo
   hgood = getOverflowedHisto(hgood_temp)
   hfake = getOverflowedHisto(hfake_temp)
    
-  if not hgood or not hfake: 
-    raise RuntimeError('histogram missing, {}, {}'.format(hgood,hfake))
-
   # set the style
   hgood.SetLineColor(ROOT.kRed)
   hgood.SetFillColor(ROOT.kRed)
@@ -46,36 +52,41 @@ def doBinnedROCAnalysis(inputfile, outputdir, var, varname, det, detname, doNorm
   hgood.GetXaxis().SetTitle(varname)
   hgood.GetYaxis().SetTitle('a.u.')
 
+  # draw the histograms 
   c = ROOT.TCanvas()
-  #c.SetLogy()
+  cNorm = ROOT.TCanvas()
+  cs=[c,cNorm]
+  
+  for i,c in enumerate(cs):
+    c.cd()
 
-  max_y = max(hgood.GetMaximum(),hfake.GetMaximum())
-  hgood.GetYaxis().SetRangeUser(0,max_y*1.4)
+    if i==0: # not norm
+      norm = ''
+      hgood.Draw('hist')
+      hfake.Draw('histsame')
+      max_y = max(hgood.GetMaximum(),hfake.GetMaximum())
+      hgood.GetYaxis().SetRangeUser(0,max_y*1.4)
+    elif i==1: # norm
+      norm = '_norm'
+      hgood.DrawNormalized('hist')
+      hfake.DrawNormalized('histsame')
 
-  if not doNorm:
-    hgood.Draw('hist')
-    hfake.Draw('histsame')
-  else:
-    hgood.DrawNormalized('hist')
-    hfake.DrawNormalized('histsame')
+    leg = ROOT.TLegend() 
+    leg=defaultLegend(x1=0.6,y1=0.7,x2=0.95,y2=0.90)
+    leg.AddEntry(hgood, 'signal #gamma', 'F')   
+    leg.AddEntry(hfake, 'fake #gamma', 'F')   
+    leg.Draw('same')
 
-  leg = ROOT.TLegend() 
-  leg=defaultLegend(x1=0.6,y1=0.7,x2=0.95,y2=0.90)
-  leg.AddEntry(hgood, 'signal #gamma', 'F')   
-  leg.AddEntry(hfake, 'fake #gamma', 'F')   
-  leg.Draw('same')
+    # Tlatex with detector information
+    defaultLabels([detname], x=0.6, y=0.65, spacing = 0.04, size = 0.03, dx = 0.12)
 
-  # Tlatex with detector information
-  defaultLabels([detname], x=0.6, y=0.65, spacing = 0.04, size = 0.03, dx = 0.12)
-
-  c.SaveAs(outputdir + '/h_' + var + '_' + det + '.pdf')
-  c.SaveAs(outputdir + '/h_' + var + '_' + det + '.png')
-  c.SaveAs(outputdir + '/h_' + var + '_' + det + '.root')
+    c.SaveAs(outputdir + '/h_' + var + det + norm + '.pdf')
+    c.SaveAs(outputdir + '/h_' + var + det + norm + '.png')
+    c.SaveAs(outputdir + '/h_' + var + det + norm + '.root')
 
   # now get the roc curve
   for i in range(hgood.GetNbinsX()):
-    # NOTE: assumes that cut will require var < threshold
-    # TODO: check other way around
+    # TODO: check for other variables
     eff_sig = hgood.Integral(1, i + 1) / hgood.Integral()
     eff_bkg = hfake.Integral(1, i + 1) / hfake.Integral()
     if 'R9' in var:
@@ -99,9 +110,9 @@ def doBinnedROCAnalysis(inputfile, outputdir, var, varname, det, detname, doNorm
   leg.Draw('same')
   defaultLabels([detname], x=0.7, y=0.7, spacing = 0.04, size = 0.03, dx = 0.12)
 
-  cROC.SaveAs(outputdir + '/roc_'+ var + '_' + det + '.pdf')
-  cROC.SaveAs(outputdir + '/roc_'+ var + '_' + det + '.png')
-  cROC.SaveAs(outputdir + '/roc_'+ var + '_' + det + '.root')
+  cROC.SaveAs(outputdir + '/roc_'+ var + det + '.pdf')
+  cROC.SaveAs(outputdir + '/roc_'+ var + det + '.png')
+  cROC.SaveAs(outputdir + '/roc_'+ var + det + '.root')
 
 
   return gROC
@@ -123,6 +134,9 @@ def doROCAnalysis(inputfile, outputdir, variables={'R9':'R9'}, dets={'all':'EB+E
 
   return gROCs
 
+'''
+Plots the comparison between rocs for specified variables and detectors
+'''
 def plotROCcomparison(gROCs,  variables={'R9':'R9'}, dets={'all':'EB+EE'}):
 
   for det,detname in dets.items():
@@ -151,8 +165,8 @@ def plotROCcomparison(gROCs,  variables={'R9':'R9'}, dets={'all':'EB+EE'}):
 def getOptions():
 
   parser = argparse.ArgumentParser(description='plotter for good vs fake photon study', add_help=True)
-  parser.add_argument('--pl1', type=str, dest='pl1', help='production label for analysis 1', default='photon_bla')
-  parser.add_argument('--pl2', type=str, dest='pl2', help='production label for analysis 2', default='photon_bla')
+  parser.add_argument('--pl1', type=str, dest='pl1', help='production label for analysis 1', default=None)
+  parser.add_argument('--pl2', type=str, dest='pl2', help='production label for analysis 2', default=None)
   # TODO: in the future could be a comma separated list of production labels
   args = parser.parse_args()
   return args
@@ -173,30 +187,43 @@ if __name__ == "__main__":
     'fullR9' : 'r_{9} (full 5x5)',
     'fullSigmaIetaIeta' : '#sigma_{i#eta i#eta} (full 5x5)' ,
     'fullSigmaIphiIphi' : '#sigma_{i#phi i#phi} (full 5x5)',
+    'kineta' : "#eta",
+    'kinphi' : "#phi",
+    'kinet' : "E_{T} (GeV)",
+    'kinenergy' : "Energy (GeV)",
   }
 
   dets = {
-    'all' : 'EB+EE',
-    'EB'  : 'EB, |eta|<1.44',
-    'EEclose' : 'EE, 1.48<|#eta|<2.2',
-    'EEfar' : 'EE, |#eta|>2.2',
+    '_all' : 'EB+EE',
+    '_EB'  : 'EB, |eta|<1.44',
+    '_EEclose' : 'EE, 1.48<|#eta|<2.2',
+    '_EEfar' : 'EE, |#eta|>2.2',
+    '': ' ',
   }
 
   # do analysis for pl1
   inputfile = './outputfiles/' + opt.pl1 + '.root'
   outputdir = './plots/' + opt.pl1 
  
-  gROCs_pl1 = doROCAnalysis(inputfile=inputfile, outputdir=outputdir, variables=variables, dets=dets) 
-  print gROCs_pl1
+  gROCs_pl1 = doROCAnalysis(inputfile=inputfile, outputdir=outputdir, variables=variables, dets=dets, doNorm=True) 
+  #print gROCs_pl1
+
+  ## for pl1 only, also look at basic distributions...
+  #beautify1DPlot(outputdir, inputfile, inputdir='SClusters', histoname='h_goodSC', xtitle='', ytitle='', xrange='')
 
   # do analysis for pl2
-  inputfile = './outputfiles/' + opt.pl2 + '.root'
-  outputdir = './plots/' + opt.pl2 
+  if opt.pl2!=None:
+    inputfile = './outputfiles/' + opt.pl2 + '.root'
+    outputdir = './plots/' + opt.pl2 
   
-  gROCs_pl2 = doROCAnalysis(inputfile=inputfile, outputdir=outputdir, variables=variables, dets=dets) 
-  
-  gROCs = {}
-  gROCs[opt.pl1] = gROCs_pl1
-  gROCs[opt.pl2] = gROCs_pl2
+    gROCs_pl2 = doROCAnalysis(inputfile=inputfile, outputdir=outputdir, variables=variables, dets=dets) 
 
-  plotROCcomparison(gROCs,variables,dets)
+    # now compare
+    gROCs = {}
+    gROCs[opt.pl1] = gROCs_pl1
+    gROCs[opt.pl2] = gROCs_pl2
+
+    plotROCcomparison(gROCs,variables,dets)
+
+
+

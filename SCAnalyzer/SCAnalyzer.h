@@ -9,6 +9,8 @@
 #define SCAnalyzer_h
 
 #include <TROOT.h>
+#include <TH1.h>
+#include <TH2.h>
 #include <TChain.h>
 #include <TFile.h>
 #include <TSelector.h>
@@ -163,6 +165,37 @@ public :
    std::map<TString,TH1F*> h_fakeSC_fullR9;
    std::map<TString,TH1F*> h_fakeSC_fullSigmaIetaIeta;
    std::map<TString,TH1F*> h_fakeSC_fullSigmaIphiIphi;
+
+   TH1F *h_goodSC_eta;
+   TH1F *h_goodSC_phi;
+   TH1F *h_goodSC_et;
+   TH1F *h_goodSC_energy;
+   
+   TH1F *h_fakeSC_eta;
+   TH1F *h_fakeSC_phi;
+   TH1F *h_fakeSC_et;
+   TH1F *h_fakeSC_energy;
+
+   TH1F *h_goodFakeSC_deta;
+   TH1F *h_goodFakeSC_dphi;
+   TH1F *h_goodFakeSC_detrel;
+   TH1F *h_goodFakeSC_denergyrel;
+
+   TH1F *h_phGenLead_et;
+   TH1F *h_phGenLead_eta;
+   TH1F *h_phSimLead_et;
+   TH1F *h_phSimLead_eta;
+   TH1F *h_leadSCmatched_et;
+   TH1F *h_leadSCmatched_eta;
+   TH1F *h_phSimMatched_et;
+   TH1F *h_phSimMatched_eta;
+   TH1F *h_ptleading;
+   TH1F *h_goodSCptOverCPpt_below15;
+   TH1F *h_goodSCptOverCPpt_above15;
+   TH2F *h_below15_EB_ietaiphi;
+   TH2F *h_below15_EE_ietaiphi;
+   TH2F *h_below15_rOtbelow80_EB_ietaiphi;
+   TH2F *h_below15_rOtbelow80_EE_ietaiphi;
 
    // other algorithm variables
    TFile *fout;
