@@ -14,6 +14,8 @@ Performs average over ring
 
 Outputs separate TGraphs for EB and EE at 1 sigma of the noise, as a function of eta 
 
+Also outputs the proposed thresholds for Run-3 in a txt file
+
 root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_2023.txt\"\)
 
 */
@@ -34,6 +36,27 @@ float getNoiseValue(float value, int ix_ieta, int iy_iphi, bool isEB, float outS
   return noiseValue;
 }
 
+float getPropThrValue(float value, int ix_ieta, int iy_iphi, bool isEB, float outSigma=1.){
+
+  // proposed thresholds for Run3:
+  //   - 3.0 x sigma_2023 for eta<2.5
+  //   - 4.0 x sigma_2023 for eta>2.5
+
+  float noiseValue=0;
+  if(isEB)
+    noiseValue = value/2.2*3.;
+  else{
+    float eta= -log(tan(0.5*atan(sqrt((ix_ieta-50.5)*(ix_ieta-50.5)+(iy_iphi-50.5)*(iy_iphi-50.5))*2.98/328.)));
+    if(abs(eta)<2.5)
+      noiseValue = value/2.2*3.;
+    else {
+      noiseValue = value/3.3*4.;  
+      std::cout << "eta= " << eta << " " << ix_ieta << " " << iy_iphi << " " << noiseValue << std::endl;
+    }
+  }
+  return noiseValue;
+}
+
 
 void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer__since_00000001_till_18446744073709551615.dat", float outSigma=1.)
 {
@@ -47,6 +70,7 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
   std::vector<int> iy_iphi;
   std::vector<int> iz;
   std::vector<float> Object;
+  std::vector<float> ObjectToSave;
   std::ifstream file (nameInputFile.c_str());
   std::string buffer;
 
@@ -74,6 +98,8 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
       line >> value;
       float noiseValue = getNoiseValue(value, single_ix_ieta, single_iy_iphi, isEB);
       Object.push_back(noiseValue);
+      float propThrValue = getPropThrValue(value, single_ix_ieta, single_iy_iphi, isEB);
+      ObjectToSave.push_back(propThrValue);
     }
   }
 
@@ -82,6 +108,17 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
   if (ix_ieta.size() > 75848) {
     std::cout << " ERROR: you may have appended the tag twice or the input is not of the desired format !" << std::endl;
   }
+
+  // --------------
+  // Write proposed thresholds to txt file
+  // --------------
+  std::ofstream ofile ("proposedThresholds_34sigma_2023.txt", ios::out); // now open
+  for (int iter=0; iter<ObjectToSave.size(); iter++){
+    //std::cout << "IN " << ix_ieta.at(iter) << " " << iy_iphi.at(iter) << " " << iz.at(iter) <<  " "  << Object.at(iter) << std::endl; 
+    //std::cout << "OUT " << ix_ieta.at(iter) << " " << iy_iphi.at(iter) << " " << iz.at(iter) <<  " "  << ObjectToSave.at(iter) << std::endl; 
+    ofile << ix_ieta.at(iter) << " " << iy_iphi.at(iter) << " " << iz.at(iter) <<  " "  << ObjectToSave.at(iter) << std::endl; 
+  }
+  ofile.close();
 
   // ---------------
   // EE
