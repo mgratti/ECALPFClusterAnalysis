@@ -71,6 +71,10 @@ def getSampleItems(inputfile):
       indexPFRecHitsup = inputfile.find('_', indexPFRecHitinf)
       PFRecHitThrs = inputfile[indexPFRecHitinf+4:indexPFRecHitsup]
 
+      # insert dummy value in case of reference thresholds
+      if seedThrs == 'Ref': seedThrs = '0.0'
+      if PFRecHitThrs == 'Ref': PFRecHitThrs = '0.0'
+
       if float(seedThrs) not in Seeding: 
          Seeding.append(float(seedThrs))
 
@@ -257,7 +261,8 @@ def getColor(a, b):
       return kGreen+3
    elif a==4 and b==4:
       return kBlue+2
-
+   elif a==0 and b==0:
+      return kWhite
 
 if __name__ == "__main__":
  
@@ -283,7 +288,7 @@ if __name__ == "__main__":
 
  
    samples, EnRanges, EtaRanges, pfRechitThrs, seedingThrs = getSampleItems('fileSamples.txt')
-  
+
    #EnRanges  = ["80_100"] #, "5_10", "10_15", "15_20", "20_40", "40_60", "60_80"]
    #EtaRanges = ["0p00_0p40"] #, "0p40_0p80"]
 
@@ -794,19 +799,19 @@ if __name__ == "__main__":
    # those are the fixed pair of thresholds per eta bin
    # needed for the decisionPlots, and for the summaryPlot depending on the option
    table_pair = {}
-   table_pair['0p00_0p40'] = '3.0 3.0'
-   table_pair['0p40_0p80'] = '3.0 3.0'
-   table_pair['0p80_1p00'] = '3.0 3.0'
-   table_pair['1p00_1p20'] = '3.0 3.0'
-   table_pair['1p20_1p44'] = '3.0 3.0'
-   table_pair['1p48_1p64'] = '3.0 3.0'
-   table_pair['1p64_1p85'] = '3.0 3.0'
-   table_pair['1p85_2p00'] = '3.0 3.0'
-   table_pair['2p00_2p20'] = '3.0 3.0'
-   table_pair['2p20_2p40'] = '3.0 3.0'
-   table_pair['2p40_2p60'] = '3.0 3.0'
-   table_pair['2p60_2p80'] = '3.0 3.0'
-   table_pair['2p80_3p00'] = '3.0 3.0'
+   table_pair['0p00_0p40'] = '0.0 0.0'
+   table_pair['0p40_0p80'] = '0.0 0.0'
+   table_pair['0p80_1p00'] = '0.0 0.0'
+   table_pair['1p00_1p20'] = '0.0 0.0'
+   table_pair['1p20_1p44'] = '0.0 0.0'
+   table_pair['1p48_1p64'] = '0.0 0.0'
+   table_pair['1p64_1p85'] = '0.0 0.0'
+   table_pair['1p85_2p00'] = '0.0 0.0'
+   table_pair['2p00_2p20'] = '0.0 0.0'
+   table_pair['2p20_2p40'] = '0.0 0.0'
+   table_pair['2p40_2p60'] = '0.0 0.0'
+   table_pair['2p60_2p80'] = '0.0 0.0'
+   table_pair['2p80_3p00'] = '0.0 0.0'
    
    # bins where the statistics is too low to be tuned on
    lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
@@ -891,9 +896,9 @@ if __name__ == "__main__":
             histo_summary.GetZaxis().SetTitleSize(0.04)
             histo_summary.GetZaxis().SetTitleOffset(1.2)
             if item == 'Resolution':
-               histo_summary.GetZaxis().SetRangeUser(0,0.6)
+               histo_summary.GetZaxis().SetRangeUser(-0.0001,0.6)
             elif item == 'Efficiency':
-               histo_summary.GetZaxis().SetRangeUser(0,1)
+               histo_summary.GetZaxis().SetRangeUser(-0.0001,1)
             elif item == 'NoiseRate':
                histo_summary.GetZaxis().SetRangeUser(-0.0001,1)
             elif item == 'NoiseOccupancy':

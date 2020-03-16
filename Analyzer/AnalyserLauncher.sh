@@ -10,8 +10,8 @@
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=false
-doPlotter=true
+doAnalyser=true
+doPlotter=false
 
 
 # Enter the production label of the files that you want to analyse
@@ -58,12 +58,26 @@ declare -a FilesArray=(
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh2.0_seed2.0_thrRingEBXtalEE_shs1.0_y2023_T5_v4_t22_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh3.0_seed3.0_thrRingEBXtalEE_shs1.0_y2023_T5_v4_t33_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_wPU_pfrh4.0_seed4.0_thrRingEBXtalEE_shs1.0_y2023_T5_v4_t44_n30000"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_pfrh2.0_seed2.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t22_n30000"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t33_n30000"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t44_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_pfrh2.0_seed2.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t22_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t33_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t44_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed2.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t22_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t33_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t44_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_wMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T8_v1_t3_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_wMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T8_v2_t3_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0-4.0_seed3.0-4.0_wMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T8_v1_t3-4_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0-4.0_seed3.0-4.0_wMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T8_v2_t3-4_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_wMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T8_v1_t4_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_wMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T8_v2_t4_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v1_t0_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v2_t0_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t0_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t33_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t44_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t0_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000"
                         )
 
 
