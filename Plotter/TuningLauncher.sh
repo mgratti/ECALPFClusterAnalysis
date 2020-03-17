@@ -65,15 +65,15 @@ declare -a FilesArray=(
                         #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v1_t0_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v2_t0_n30000"
                         "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t0_n30000"
-                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t33_n30000"
-                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t44_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t33_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t44_n30000"
                         "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t0_n30000"
-                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000"
-                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000"
                         )
 
 
-do_writeFiles=true
+do_writeFiles=false
 
 doMatching_simFraction=true
 doMatching_deltaR=false
