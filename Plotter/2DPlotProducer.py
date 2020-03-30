@@ -799,7 +799,7 @@ if __name__ == "__main__":
    # those are the fixed pair of thresholds per eta bin
    # needed for the decisionPlots, and for the summaryPlot depending on the option
    table_pair = {}
-   ''' 
+    
    table_pair['0p00_0p40'] = '0.0 0.0'
    table_pair['0p40_0p80'] = '0.0 0.0'
    table_pair['0p80_1p00'] = '0.0 0.0'
@@ -828,7 +828,7 @@ if __name__ == "__main__":
    table_pair['2p40_2p60'] = '3.0 3.0'
    table_pair['2p60_2p80'] = '4.0 4.0'
    table_pair['2p80_3p00'] = '4.0 4.0'
-   
+   '''   
    # bins where the statistics is too low to be tuned on
    lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
    
@@ -845,7 +845,7 @@ if __name__ == "__main__":
       if printWithColour == False:
          printWithNumber = False
 
-      #fileQte = open("noiserate_2021_t3-4.txt", "w+")
+      #fileQte = open("resolution_2021_t0.txt", "w+")
       
       # in order not to plot the full energy range
       for iEn in EnRanges[:]:
@@ -978,17 +978,19 @@ if __name__ == "__main__":
                            if iEn == ETrange and iEta ==ETArange:
                            
                               if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
-                                 quantity = float(iLine[index1_b+1:index1_c])
-                                 '''
+                                 #quantity = float(iLine[index1_b+1:index1_c])
+                                 
                                  if item == 'Resolution':
                                     if do_resoOverScale != 'True':
                                        quantity = getFloat(iSample.resolution)
                                     else:
-                                       if getFloat(iSample.scale) != 0:
+                                       if getFloat(iSample.scale) != 0 and getFloat(iSample.resolution) != 0:
                                           quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                                          quantity_error = quantity * (getFloat(iSample.resolution_error)/getFloat(iSample.resolution) + getFloat(iSample.scale_error)/getFloat(iSample.scale))
                                        else:
                                           quantity = getFloat(iSample.resolution)
-                                    #fileQte.write('{a} {b} {c} \n'.format(a=iEn, b=iEta, c=quantity))
+                                          quantity_error = getFloat(iSample.resolution_error)
+                                    #fileQte.write('{a} {b} {c} {d} \n'.format(a=iEn, b=iEta, c=quantity, d=quantity_error))
                                  elif item == 'Efficiency':
                                     quantity = getFloat(iSample.efficiency)
                                     #fileQte.write('{a} {b} {c} \n'.format(a=iEn, b=iEta, c=quantity))
@@ -998,7 +1000,7 @@ if __name__ == "__main__":
                                  elif item == 'NoiseOccupancy':
                                     quantity = getFloat(iSample.noiseOccupancy)
                                  if quantity == 0: quantity = 0.0001
-                                 '''
+                                 
                                  histo_summary.Fill(iEta, iEn, quantity)
                if printWithNumber == True:
                   histo_summary.Draw('text' + 'colz')
@@ -1358,9 +1360,9 @@ if __name__ == "__main__":
          c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.png'.format(d=outputdir, a=iEta, b=label1, c=label2))
 
 
-filer = open("noiserate_2021_ratio.txt", "w+")
-file1 = open("noiserate_2021_t3-4.txt", "r")
-file2 = open("noiserate_2021_t0.txt")
+filer = open("resolution_2021_ratio.txt", "w+")
+file1 = open("resolution_2021_t3-4.txt", "r")
+file2 = open("resolution_2021_t0.txt")
 lines1 = file1.readlines()
 lines2 = file2.readlines()
 
@@ -1370,25 +1372,30 @@ for line1 in lines1:
       index1_a = line1.find(' ')
       index1_b = line1.find(' ', index1_a+1)
       index1_c = line1.find(' ', index1_b+1)
+      index1_d = line1.find(' ', index1_c+1)
       ETrange1  = line1[0:index1_a]
       ETArange1 = line1[index1_a+1:index1_b]
       quantity1 = line1[index1_b+1:index1_c]
-
+      error1 = line1[index1_c+1:index1_d]
 
       index2_a = line2.find(' ')
       index2_b = line2.find(' ', index2_a+1)
       index2_c = line2.find(' ', index2_b+1)
+      index2_d = line2.find(' ', index2_c+1)
       ETrange2  = line2[0:index2_a]
       ETArange2 = line2[index2_a+1:index2_b]
       quantity2 = line2[index2_b+1:index2_c]
+      error2 = line2[index2_c+1:index2_d]
 
       if ETrange1 == ETrange2:
          if ETArange1 == ETArange2:
-            if float(quantity2) != 0:
-               ratio = float(quantity1)/float(quantity2)
+            if float(quantity2) != 0 and float(quantity1) != 0:
+               ratio = (float(quantity1)/float(quantity2)-1)*100
+               #ratio_err = ratio * (float(error1)/float(quantity1) + float(error2)/float(quantity2))
+               ratio_err = 100*float(error1)/float(quantity2) + 100*float(quantity1)*float(error2)/(float(quantity2)*float(quantity2)) 
             else:
                ratio = 1
-            filer.write('{a} {b} {c} \n'.format(a=ETrange1, b=ETArange1, c=(ratio-1)*100))
+            filer.write('{a} {b} {c} {d} \n'.format(a=ETrange1, b=ETArange1, c=(ratio), d=(ratio_err)))
 
 
 
