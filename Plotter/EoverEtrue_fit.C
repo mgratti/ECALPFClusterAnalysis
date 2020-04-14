@@ -164,6 +164,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
          }
          else{
             ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
+            //ETranges.push_back({"10_15"});
          }
       }
       else if(do_0p1to200GeV[iFile]){
@@ -172,7 +173,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
          }
          else{
             ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
-            //ETranges.push_back({"15_20"});
+            //ETranges.push_back({"10_15"});
          }
       }
    }
@@ -183,6 +184,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
    }
    else{
       ETAranges_EB = {"0p00_0p40", "0p40_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
+      //ETAranges_EB = {"0p00_0p40"};
    }
 
    vector<TString> ETAranges_EE;

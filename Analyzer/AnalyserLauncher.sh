@@ -18,6 +18,8 @@ doPlotter=false
 declare -a FilesArray=(
                         #"T2_v1_t11_nj1"
                         #"T2_v1_t12_nj1"
+                        #"T2_v1_t12_EB"
+                        #"T2_v1_t22_EB"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh0.5_seedRef_V04_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seed3.0_V02_v01_n30000"
                         #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_V03_v01_n30000"
@@ -72,12 +74,14 @@ declare -a FilesArray=(
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_wMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T8_v2_t4_n30000"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v1_t0_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v2_t0_n30000"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t0_n30000"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t33_n30000"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t44_n30000"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t0_n30000"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t0_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t33_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t44_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t0_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000"
+                         "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t0_n30000_njd0"
+                         "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t0_n30000_njd0"
                         )
 
 

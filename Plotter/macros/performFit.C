@@ -145,7 +145,7 @@ FitParameters performFit(string fileName,
          float mean_max = 1.2*dmhist->GetMean();
 
          float sigma_init; 
-         float sigma_min = 0;
+         float sigma_min = 0.01*dmhist->GetStdDev();
          float sigma_max; 
 
          //if(mean_init<1.96){
@@ -188,14 +188,12 @@ FitParameters performFit(string fileName,
             c2 = 1.98;
          }
 
-               
-
          if (ETAvalue[ETAranges[j]].first >= 2.0 && ETvalue[ETranges[i]].second <= 20){
             sigma_init = dmhist->GetStdDev()/c1;
             sigma_max = c2*dmhist->GetStdDev()/c1;
          }
          else{
-            sigma_init = dmhist->GetStdDev();
+            sigma_init = 0.5*dmhist->GetStdDev();
             sigma_max = 1.6*dmhist->GetStdDev();
          } 
 
