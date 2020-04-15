@@ -34,6 +34,8 @@ public :
    TTreeReaderValue<Int_t> runId = {fReader, "runId"};
 //   TTreeReaderValue<Int_t> nVtx = {fReader, "nVtx"};
    TTreeReaderArray<int> genParticle_id = {fReader, "genParticle_id"};
+   //   TTreeReaderValue<vector<bool>> genParticle_isGammaFromMeson = {fReader, "genParticle_isGammaFromMeson"};
+   TTreeReaderArray<bool>  genParticle_isGammaFromMeson = {fReader, "genParticle_isGammaFromMeson"};
    TTreeReaderArray<float> genParticle_energy = {fReader, "genParticle_energy"};
    TTreeReaderArray<float> genParticle_pt = {fReader, "genParticle_pt"};
    TTreeReaderArray<float> genParticle_eta = {fReader, "genParticle_eta"};
@@ -116,11 +118,11 @@ public :
    TTreeReaderArray<int> superCluster_ieta = {fReader, "superCluster_ieta"};
    TTreeReaderArray<int> superCluster_iphi = {fReader, "superCluster_iphi"};
    TTreeReaderArray<int> superCluster_iz = {fReader, "superCluster_iz"};
-   TTreeReaderArray<int> superCluster_seedIndex = {fReader, "superCluster_seedIndex"};
-   TTreeReaderArray<vector<int>> superCluster_pfClustersIndex = {fReader, "superCluster_pfClustersIndex"};
-   TTreeReaderArray<vector<float>> psCluster_energy = {fReader, "psCluster_energy"};
-   TTreeReaderArray<vector<float>> psCluster_eta = {fReader, "psCluster_eta"};
-   TTreeReaderArray<vector<float>> psCluster_phi = {fReader, "psCluster_phi"};
+   //TTreeReaderArray<int> superCluster_seedIndex = {fReader, "superCluster_seedIndex"};
+   //TTreeReaderArray<vector<int>> superCluster_pfClustersIndex = {fReader, "superCluster_pfClustersIndex"};
+//   TTreeReaderArray<vector<float>> psCluster_energy = {fReader, "psCluster_energy"};
+//   TTreeReaderArray<vector<float>> psCluster_eta = {fReader, "psCluster_eta"};
+//   TTreeReaderArray<vector<float>> psCluster_phi = {fReader, "psCluster_phi"};
 //   TTreeReaderArray<int> superCluster_dR_genScore_MatchedIndex = {fReader, "superCluster_dR_genScore_MatchedIndex"};
 //   TTreeReaderArray<int> superCluster_dR_simScore_MatchedIndex = {fReader, "superCluster_dR_simScore_MatchedIndex"};
 //   TTreeReaderArray<int> superCluster_n_shared_xtals_MatchedIndex = {fReader, "superCluster_n_shared_xtals_MatchedIndex"};
@@ -159,12 +161,17 @@ public :
    std::map<TString,TH1F*> h_goodSC_fullR9;
    std::map<TString,TH1F*> h_goodSC_fullSigmaIetaIeta;
    std::map<TString,TH1F*> h_goodSC_fullSigmaIphiIphi;
+   std::map<TString,TH1F*> h_goodSC_etaWidth;
+   std::map<TString,TH1F*> h_goodSC_phiWidth;
    std::map<TString,TH1F*> h_fakeSC_R9;
    std::map<TString,TH1F*> h_fakeSC_SigmaIetaIeta;
    std::map<TString,TH1F*> h_fakeSC_SigmaIphiIphi;
    std::map<TString,TH1F*> h_fakeSC_fullR9;
    std::map<TString,TH1F*> h_fakeSC_fullSigmaIetaIeta;
    std::map<TString,TH1F*> h_fakeSC_fullSigmaIphiIphi;
+   std::map<TString,TH1F*> h_fakeSC_etaWidth;
+   std::map<TString,TH1F*> h_fakeSC_phiWidth;
+
 
    TH1F *h_goodSC_eta;
    TH1F *h_goodSC_phi;
@@ -189,13 +196,21 @@ public :
    TH1F *h_leadSCmatched_eta;
    TH1F *h_phSimMatched_et;
    TH1F *h_phSimMatched_eta;
-   TH1F *h_ptleading;
    TH1F *h_goodSCptOverCPpt_below15;
    TH1F *h_goodSCptOverCPpt_above15;
    TH2F *h_below15_EB_ietaiphi;
    TH2F *h_below15_EE_ietaiphi;
    TH2F *h_below15_rOtbelow80_EB_ietaiphi;
    TH2F *h_below15_rOtbelow80_EE_ietaiphi;
+
+   TH1F *h_fakeSC_et_nullsieie_EB;
+   TH1F *h_fakeSC_eta_nullsieie_EB;
+   TH1F *h_fakeSC_et_nullsieie_EE;
+   TH1F *h_fakeSC_eta_nullsieie_EE;
+   TH1F *h_fakeSC_et_oksieie_EB;
+   TH1F *h_fakeSC_eta_oksieie_EB;
+   TH1F *h_fakeSC_et_oksieie_EE;
+   TH1F *h_fakeSC_eta_oksieie_EE;
 
    // other algorithm variables
    TFile *fout;

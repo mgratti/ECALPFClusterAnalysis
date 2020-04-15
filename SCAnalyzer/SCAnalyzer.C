@@ -68,12 +68,16 @@ void SCAnalyzer::SlaveBegin(TTree * /*tree*/)
      h_goodSC_fullR9[detBin.first] = new TH1F("h_goodSC_fullR9_"+detBin.first, "h_goodSC_fullR9_"+detBin.first, 200,0.,2.);
      h_goodSC_fullSigmaIetaIeta[detBin.first] = new TH1F("h_goodSC_fullSigmaIetaIeta_"+detBin.first, "h_goodSC_fullSigmaIetaIeta_"+detBin.first, 200,0.,0.1);
      h_goodSC_fullSigmaIphiIphi[detBin.first] = new TH1F("h_goodSC_fullSigmaIphiIphi_"+detBin.first, "h_goodSC_fullSigmaIphiIphi_"+detBin.first, 200,0.,0.1);
+     h_goodSC_etaWidth[detBin.first] = new TH1F("h_goodSC_etaWidth_"+detBin.first, "h_goodSC_etaWidth_"+detBin.first, 200,0.,0.1);
+     h_goodSC_phiWidth[detBin.first] = new TH1F("h_goodSC_phiWidth_"+detBin.first, "h_goodSC_phiWidth_"+detBin.first, 200,0.,0.4);
      h_fakeSC_R9[detBin.first] = new TH1F("h_fakeSC_R9_"+detBin.first, "h_fakeSC_R9_"+detBin.first, 200,0.,2.);
      h_fakeSC_SigmaIetaIeta[detBin.first] = new TH1F("h_fakeSC_SigmaIetaIeta_"+detBin.first, "h_fakeSC_SigmaIetaIeta_"+detBin.first, 200,0.,0.1);
      h_fakeSC_SigmaIphiIphi[detBin.first] = new TH1F("h_fakeSC_SigmaIphiIphi_"+detBin.first, "h_fakeSC_SigmaIphiIphi_"+detBin.first, 200,0.,0.1);
      h_fakeSC_fullR9[detBin.first] = new TH1F("h_fakeSC_fullR9_"+detBin.first, "h_fakeSC_fullR9_"+detBin.first, 200,0.,2.);
      h_fakeSC_fullSigmaIetaIeta[detBin.first] = new TH1F("h_fakeSC_fullSigmaIetaIeta_"+detBin.first, "h_fakeSC_fullSigmaIetaIeta_"+detBin.first, 200,0.,0.1);
      h_fakeSC_fullSigmaIphiIphi[detBin.first] = new TH1F("h_fakeSC_fullSigmaIphiIphi_"+detBin.first, "h_fakeSC_fullSigmaIphiIphi_"+detBin.first, 200,0.,0.1);
+     h_fakeSC_etaWidth[detBin.first] = new TH1F("h_fakeSC_etaWidth_"+detBin.first, "h_fakeSC_etaWidth_"+detBin.first, 200,0.,0.1);
+     h_fakeSC_phiWidth[detBin.first] = new TH1F("h_fakeSC_phiWidth_"+detBin.first, "h_fakeSC_phiWidth_"+detBin.first, 200,0.,0.4);
    }
 
    h_goodSC_eta = new TH1F("h_goodSC_kineta", "h_goodSC_kineta", 60,0.,3.);
@@ -91,7 +95,6 @@ void SCAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_goodFakeSC_detrel = new TH1F("h_goodFakeSC_kindetrel", "h_goodFakeSC_kindetrel", 100,0.,10.);
    h_goodFakeSC_denergyrel = new TH1F("h_goodFakeSC_kindenergyrel", "h_goodFakeSC_kindenergyrel", 100,0.,10.);
 
-   h_ptleading = new TH1F("h_ptleading", "h_ptleading", 100,0.,100.);
    h_leadSCmatched_et = new TH1F("h_leadSCmatched_et", "h_leadSCmatched_et", 100,0.,100.);
    h_leadSCmatched_eta = new TH1F("h_leadSCmatched_eta", "h_leadSCmatched_eta", 60,0.,3.);
    h_phSimMatched_et = new TH1F("h_phSimMatched_kinet", "h_phSimMatched_kinet", 100,0.,100.);
@@ -107,6 +110,15 @@ void SCAnalyzer::SlaveBegin(TTree * /*tree*/)
    h_below15_rOtbelow80_EB_ietaiphi = new TH2F("h_below15_rOtbelow80_EB_ietaiphi", "h_below15_rOtbelow80_EB_ietaiphi",  200, -100., 100., 360,0.,360.);
    h_below15_rOtbelow80_EE_ietaiphi = new TH2F("h_below15_rOtbelow80_EE_ietaiphi", "h_below15_rOtbelow80_EE_ietaiphi",  100, 0., 100., 100,0.,100.);
 
+   h_fakeSC_et_nullsieie_EB = new TH1F("h_fakeSC_et_nullsieie_EB", "h_fakeSC_et_nullsieie_EB", 100,0.,100.);
+   h_fakeSC_eta_nullsieie_EB = new TH1F("h_fakeSC_eta_nullsieie_EB", "h_fakeSC_eta_nullsieie_EB", 60,0.,3.);
+   h_fakeSC_et_oksieie_EB = new TH1F("h_fakeSC_et_oksieie_EB", "h_fakeSC_et_oksieie_EB", 100,0.,100.);
+   h_fakeSC_eta_oksieie_EB = new TH1F("h_fakeSC_eta_oksieie_EB", "h_fakeSC_eta_oksieie_EB", 60,0.,3.);
+   h_fakeSC_et_nullsieie_EE = new TH1F("h_fakeSC_et_nullsieie_EE", "h_fakeSC_et_nullsieie_EE", 100,0.,100.);
+   h_fakeSC_eta_nullsieie_EE = new TH1F("h_fakeSC_eta_nullsieie_EE", "h_fakeSC_eta_nullsieie_EE", 60,0.,3.);
+   h_fakeSC_et_oksieie_EE = new TH1F("h_fakeSC_et_oksieie_EE", "h_fakeSC_et_oksieie_EE", 100,0.,100.);
+   h_fakeSC_eta_oksieie_EE = new TH1F("h_fakeSC_eta_oksieie_EE", "h_fakeSC_eta_oksieie_EE", 60,0.,3.);
+
    Info("SalveBegin", "Booked Histograms");
    
 }
@@ -115,7 +127,7 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
 {
 
    fReader.SetLocalEntry(entry);
-   if (entry % 100 == 0) Info("Process", "processing event %d", (Int_t)entry);
+   if (entry % 1000 == 0) Info("Process", "processing event %d", (Int_t)entry);
    if(doDebug) { if ((Int_t)entry == 5000) throw std::runtime_error("exiting");}
    if(doDebug) std::cout << "Event number = " << *eventId << std::endl;
    NtotEvents++;
@@ -186,7 +198,6 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
 
    //if (iSC_pt < etmin) return kTRUE;
    //if (abs(superCluster_eta[iSC])>1.44 && abs(superCluster_eta[iSC])<1.48) return kTRUE;
-   h_ptleading->Fill(superCluster_energy[iSC]/TMath::CosH(superCluster_eta[iSC]));
 
    //}
 
@@ -267,19 +278,56 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
    // check if diff in pt wrt good is within given tolerance
    int idx_fakeSC = -1;
    double tol_Dphi = 0.3;
-   //double tol_Detrel = 0.20;
+   float etmin_fakeSC = 0.;
+   //double tol_Detrel = 0.80;
    for(auto SC_idx_pt_el : SC_idx_pt){
      int iSC = SC_idx_pt_el.first;
      if(iSC==idx_goodSC) continue;
      double Dphi = TVector2::Phi_mpi_pi(superCluster_phi[iSC]-superCluster_phi[idx_goodSC]);
      double Detrel = 1 - (superCluster_energy[iSC]/TMath::CosH(superCluster_eta[iSC])) / (superCluster_energy[idx_goodSC]/TMath::CosH(superCluster_eta[idx_goodSC]));
      //if(abs(Detrel)<tol_Detrel){
+     //if(superCluster_energy[iSC]/TMath::CosH(superCluster_eta[iSC])>etmin_fakeSC){
      //if(abs(Dphi)<TMath::Pi()+tol_Dphi && abs(Dphi)>TMath::Pi()-tol_Dphi && abs(Detrel)<tol_Detrel){
-     if(abs(Dphi)<TMath::Pi()+tol_Dphi && abs(Dphi)>TMath::Pi()-tol_Dphi){
+     //if(abs(Dphi)<TMath::Pi()+tol_Dphi && abs(Dphi)>TMath::Pi()-tol_Dphi){
+
        idx_fakeSC = iSC;
+
+       // checks
+//       if(superCluster_sigmaIetaIeta[idx_fakeSC]==0){
+//         if(abs(superCluster_eta[idx_fakeSC])< 1.44){
+//           h_fakeSC_et_nullsieie_EB->Fill(superCluster_energy[idx_fakeSC]/TMath::CosH(superCluster_eta[idx_fakeSC]));
+//           h_fakeSC_eta_nullsieie_EB->Fill(superCluster_eta[idx_fakeSC]);
+//         } else {
+//           h_fakeSC_et_nullsieie_EE->Fill(superCluster_energy[idx_fakeSC]/TMath::CosH(superCluster_eta[idx_fakeSC]));
+//           h_fakeSC_eta_nullsieie_EE->Fill(superCluster_eta[idx_fakeSC]); 
+//         }
+//       } else {
+//         if(abs(superCluster_eta[idx_fakeSC])< 1.44){
+//           h_fakeSC_et_oksieie_EB->Fill(superCluster_energy[idx_fakeSC]/TMath::CosH(superCluster_eta[idx_fakeSC]));
+//           h_fakeSC_eta_oksieie_EB->Fill(superCluster_eta[idx_fakeSC]);
+//         } else {
+//           h_fakeSC_et_oksieie_EE->Fill(superCluster_energy[idx_fakeSC]/TMath::CosH(superCluster_eta[idx_fakeSC]));
+//           h_fakeSC_eta_oksieie_EE->Fill(superCluster_eta[idx_fakeSC]); 
+//         }
+//       }
        break;
-     }
-   }
+     //}// end if 
+     
+//     // match with gen photon from meson
+//     for(int iGP=0; iGP<genParticle_pt.GetSize();iGP++){
+//       if(doDebug) std::cout << "iGP=" << iGP << " isGfromMeson=" <<  genParticle_isGammaFromMeson[iGP] << std::endl;
+//       if(genParticle_isGammaFromMeson[iGP]==true){
+//         double iGP_Deta = abs(genParticle_eta[iGP]-superCluster_eta[iSC]);
+//         double iGP_Dphi = abs(TVector2::Phi_mpi_pi(genParticle_phi[iGP]-superCluster_phi[iSC]));
+//         double iGP_DR = sqrt(iGP_Deta*iGP_Deta+iGP_Dphi*iGP_Dphi);
+//         if(iGP_DR<max_DR){
+//           idx_fakeSC = iSC;
+//           break;
+//         }
+//       }
+//     } // end loop over gen particles
+   } // end loop over superclusters
+
    if(idx_fakeSC==-1){
      if(doDebug) std::cout << "Did not find a candidate Fake SuperCluster in the envent, going to next event" << std::endl;
      return kTRUE;
@@ -301,6 +349,8 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
        h_goodSC_fullR9[detBin.first]->Fill(superCluster_full5x5_r9[idx_goodSC]);
        h_goodSC_fullSigmaIetaIeta[detBin.first]->Fill(superCluster_full5x5_sigmaIetaIeta[idx_goodSC]);
        h_goodSC_fullSigmaIphiIphi[detBin.first]->Fill(superCluster_full5x5_sigmaIphiIphi[idx_goodSC]);
+       h_goodSC_etaWidth[detBin.first]->Fill(superCluster_etaWidth[idx_goodSC]);
+       h_goodSC_phiWidth[detBin.first]->Fill(superCluster_phiWidth[idx_goodSC]);
      }
 
      if (abs(superCluster_eta[idx_fakeSC]) > detBin.second.first && abs(superCluster_eta[idx_fakeSC]) < detBin.second.second){
@@ -311,6 +361,8 @@ Bool_t SCAnalyzer::Process(Long64_t entry)
        h_fakeSC_fullR9[detBin.first]->Fill(superCluster_full5x5_r9[idx_fakeSC]);
        h_fakeSC_fullSigmaIetaIeta[detBin.first]->Fill(superCluster_full5x5_sigmaIetaIeta[idx_fakeSC]);
        h_fakeSC_fullSigmaIphiIphi[detBin.first]->Fill(superCluster_full5x5_sigmaIphiIphi[idx_fakeSC]);
+       h_fakeSC_etaWidth[detBin.first]->Fill(superCluster_etaWidth[idx_fakeSC]);
+       h_fakeSC_phiWidth[detBin.first]->Fill(superCluster_phiWidth[idx_fakeSC]);
      }   
    }
 
@@ -339,7 +391,7 @@ void SCAnalyzer::SlaveTerminate()
    // have been processed. When running with PROOF SlaveTerminate() is called
    // on each slave server.
 
-   Info("SlaveTerminate", "Good-fake candidates / total : %i / %i ", NcandEvents, NtotEvents );
+   Info("SlaveTerminate", "Good-fake candidates / total : %i / %i = %f ", NcandEvents, NtotEvents, float(NcandEvents)/float(NtotEvents) );
 
    fout->Write();
    Info("SlaveTerminate", "Output file was written");

@@ -36,7 +36,10 @@ def doBinnedROCAnalysis(inputfile, outputdir, var, varname, det, detname, doNorm
   # get overflowed histo
   hgood = getOverflowedHisto(hgood_temp)
   hfake = getOverflowedHisto(hfake_temp)
-   
+
+  #hgood = getUnderflowedHisto(hgood_temp2)
+  #hfake = getUnderflowedHisto(hfake_temp2)
+
   # set the style
   hgood.SetLineColor(ROOT.kRed)
   hgood.SetFillColor(ROOT.kRed)
@@ -68,17 +71,26 @@ def doBinnedROCAnalysis(inputfile, outputdir, var, varname, det, detname, doNorm
       hgood.GetYaxis().SetRangeUser(0,max_y*1.4)
     elif i==1: # norm
       norm = '_norm'
-      hgood.DrawNormalized('hist')
-      hfake.DrawNormalized('histsame')
+      hgoodNorm = hgood.DrawNormalized('hist').GetYaxis().SetRangeUser(0., 0.4)
+      hfakeNorm = hfake.DrawNormalized('histsame')
+      #max_y = max(hgoodNorm.GetMaximum(),hfakeNorm.GetMaximum())
+      #hgoodNorm.GetYaxis().SetRangeUser(0,max_y*1.4)
+
+      #print 'var={}, det={}, max_y={}'.format(var, det, max_y)
+      #print 'good={} bin={} edge={}, fake={} bin={} edge={}'.format(hgoodNorm.GetMaximum(),hgoodNorm.GetMaximumBin(),hgoodNorm.GetBinLowEdge(hgoodNorm.GetMaximumBin()),hfakeNorm.GetMaximum(),hfakeNorm.GetMaximumBin(),hfakeNorm.GetBinLowEdge(hfakeNorm.GetMaximumBin()))
+      # method GetMaximum() for normalized histogram is buggy!
 
     leg = ROOT.TLegend() 
     leg=defaultLegend(x1=0.6,y1=0.7,x2=0.95,y2=0.90)
-    leg.AddEntry(hgood, 'signal #gamma', 'F')   
-    leg.AddEntry(hfake, 'fake #gamma', 'F')   
+    leg.AddEntry(hgood, 'signal SC', 'F')   
+    leg.AddEntry(hfake, 'fake SC', 'F')   
     leg.Draw('same')
 
     # Tlatex with detector information
-    defaultLabels([detname], x=0.6, y=0.65, spacing = 0.04, size = 0.03, dx = 0.12)
+    # Tlatex with information on the mean
+    meangood = 'good SC mean : {:.3f}'.format(hgood.GetMean()) 
+    meanfake = 'fake SC mean : {:.3f}'.format(hfake.GetMean()) 
+    defaultLabels([detname,meangood,meanfake], x=0.6, y=0.65, spacing = 0.04, size = 0.03, dx = 0.12)
 
     c.SaveAs(outputdir + '/h_' + var + det + norm + '.pdf')
     c.SaveAs(outputdir + '/h_' + var + det + norm + '.png')
@@ -139,8 +151,14 @@ Plots the comparison between rocs for specified variables and detectors
 '''
 def plotROCcomparison(gROCs,  variables={'R9':'R9'}, dets={'all':'EB+EE'}):
 
+  outputdir_comp = 'roc_comparison_{l1}_{l2}'.format(l1=gROCs.keys()[0],l2=gROCs.keys()[1])
+  os.system('mkdir -p ./plots/{}'.format(outputdir_comp))
+
   for det,detname in dets.items():
+    if det == '': continue # protect against non-sense
+    if det == '_all': continue
     for var,varname in variables.items():
+      if 'kin' in var: continue # protect against non-sense
       c = ROOT.TCanvas()
       leg = ROOT.TLegend()
       leg=defaultLegend(x1=0.6,y1=0.8,x2=0.95,y2=0.90)
@@ -157,9 +175,9 @@ def plotROCcomparison(gROCs,  variables={'R9':'R9'}, dets={'all':'EB+EE'}):
   
       leg.Draw('same')
       defaultLabels([detname,varname], x=0.7, y=0.7, spacing = 0.04, size = 0.03, dx = 0.12)
-      c.SaveAs('./plots/roc_comparison_{var}_{det}_{l1}_{l2}.pdf'.format(var=var, det=det, l1=gROCs.keys()[0],l2=gROCs.keys()[1]))
-      c.SaveAs('./plots/roc_comparison_{var}_{det}_{l1}_{l2}.png'.format(var=var, det=det, l1=gROCs.keys()[0],l2=gROCs.keys()[1]))
-      c.SaveAs('./plots/roc_comparison_{var}_{det}_{l1}_{l2}.root'.format(var=var, det=det, l1=gROCs.keys()[0],l2=gROCs.keys()[1]))
+      c.SaveAs('./plots/{od}/roc_comparison_{var}{det}.pdf'.format(od=outputdir_comp,var=var, det=det))
+      c.SaveAs('./plots/{od}/roc_comparison_{var}{det}.png'.format(od=outputdir_comp,var=var, det=det))
+      c.SaveAs('./plots/{od}/roc_comparison_{var}{det}.root'.format(od=outputdir_comp,var=var, det=det))
 
 
 def getOptions():
@@ -187,6 +205,8 @@ if __name__ == "__main__":
     'fullR9' : 'r_{9} (full 5x5)',
     'fullSigmaIetaIeta' : '#sigma_{i#eta i#eta} (full 5x5)' ,
     'fullSigmaIphiIphi' : '#sigma_{i#phi i#phi} (full 5x5)',
+    'etaWidth' : '#eta width',
+    'phiWidth' : '#phi width',
     'kineta' : "#eta",
     'kinphi' : "#phi",
     'kinet' : "E_{T} (GeV)",
@@ -194,7 +214,7 @@ if __name__ == "__main__":
   }
 
   dets = {
-    '_all' : 'EB+EE',
+    #'_all' : 'EB+EE',
     '_EB'  : 'EB, |eta|<1.44',
     '_EEclose' : 'EE, 1.48<|#eta|<2.2',
     '_EEfar' : 'EE, |#eta|>2.2',
