@@ -4,7 +4,6 @@ import ratioPlot as RP
 import os
 import os.path
 
-
 qs_common = [
 
 ## End-caps

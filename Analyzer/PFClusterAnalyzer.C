@@ -521,6 +521,8 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
       //---caloParticle---
 
+      //cout << endl << "caloParticle " << icP << " with simEnergy " << caloParticle_simEnergy[icP] << ", simEta " << caloParticle_simEta[icP] << " and simPhi " << caloParticle_simPhi[icP] << endl;
+      
       if(flag_doEB){
          if(TMath::Abs(caloParticle_simEta[icP])<1.479){
             h_caloParticle_genEnergy_EB->Fill(caloParticle_genEnergy[icP]);
@@ -698,7 +700,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
 
       vector<int> vector_matched_indices;
       if(flag_doMatching_score){
-         vector<int> input_vector = caloParticle_pfCluster_sim_fraction_min1_MatchedIndex[icP];
+         vector<int> input_vector = caloParticle_pfCluster_sim_fraction_MatchedIndex[icP];
 
          vector<pair<int,float>> pair_clusterIndex_score;
 
@@ -706,8 +708,11 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             if(input_vector[iPF]!=-1){
                pair<int,float> pair_clusterIndex_score_tmp;
                pair_clusterIndex_score_tmp.first = input_vector[iPF];
-               pair_clusterIndex_score_tmp.second = pfCluster_sim_fraction_min1[input_vector[iPF]][icP];
-               pair_clusterIndex_score.push_back(pair_clusterIndex_score_tmp);
+               pair_clusterIndex_score_tmp.second = pfCluster_sim_fraction[input_vector[iPF]][icP];
+               // we apply cut on score > 0.01
+               if(pair_clusterIndex_score_tmp.second > 0.01){
+                  pair_clusterIndex_score.push_back(pair_clusterIndex_score_tmp);
+               }
             }
          }
 
@@ -715,7 +720,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          //if(input_vector.size()>2){ 
          // cout << "sorted: " << endl;
          // for(unsigned int iSort(0); iSort<pair_clusterIndex_score.size(); ++iSort){
-         //    cout << pair_clusterIndex_score[iSort].first << " " << pair_clusterIndex_score[iSort].second << endl;
+         //    cout << "pfCluster " <<  pair_clusterIndex_score[iSort].first << " with score " << pair_clusterIndex_score[iSort].second << endl;
          // }
          // }
 
@@ -777,6 +782,8 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
             filling_phi    = pfCluster_phi[matched_index];
             filling_eta    = pfCluster_eta[matched_index];
 
+            //cout << "matched PFCluster " << matched_index << " with energy " << filling_energy << ", eta " << filling_eta << " and phi " << filling_phi << endl;
+            
             if(flag_doEB){
                if(TMath::Abs(caloParticle_simEta[icP])<1.479){
                   nOccurrences = pfClusterHit_energy[matched_index].size();
