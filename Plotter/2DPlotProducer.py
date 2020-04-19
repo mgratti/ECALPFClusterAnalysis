@@ -907,7 +907,7 @@ if __name__ == "__main__":
          if printWithColour:
             if do_resoOverScale != 'True':
                #histo_summary.GetZaxis().SetTitle(item)
-               histo_summary.GetZaxis().SetTitle('Scale Ratio new/ref [%]'.format(a=item))
+               histo_summary.GetZaxis().SetTitle('{a} Ratio new/ref [%]'.format(a=item))
             else:
                if item == 'Resolution':
                   #histo_summary.GetZaxis().SetTitle('Resolution')
@@ -917,7 +917,7 @@ if __name__ == "__main__":
             histo_summary.GetZaxis().SetTitleSize(0.04)
             histo_summary.GetZaxis().SetTitleOffset(1.2)
             if item == 'Resolution':
-               histo_summary.GetZaxis().SetRangeUser(-100,100)
+               histo_summary.GetZaxis().SetRangeUser(-100,50)
             elif item == 'Efficiency':
                histo_summary.GetZaxis().SetRangeUser(-100.001,0.001)
             elif item == 'NoiseRate':
@@ -928,7 +928,7 @@ if __name__ == "__main__":
          c_summary = TCanvas('c_summary_{a}'.format(a=item), 'c_summary_{a}'.format(a=item), 1500, 1500)
 
 
-         fileToRead = open("scale_2023_ratio.txt", "r")
+         fileToRead = open("resolution_2021_ratio.txt", "r")
          lineQte = fileToRead.readlines()
 
          if printWithColour:
@@ -1008,7 +1008,8 @@ if __name__ == "__main__":
                                  if quantity == 0: quantity = 0.0001
                                  '''
                                  histo_summary.Fill(iEta, iEn, quantity)
-                                 histo_summary.SetBarOffset(0.3)
+                                 if printError:
+                                    histo_summary.SetBarOffset(0.3)
                if printWithNumber == True:
                   histo_summary.Draw('text' + 'colz')
                else:
@@ -1046,7 +1047,7 @@ if __name__ == "__main__":
                if iEta == '1p44_1p48': continue
                x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
                x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-               if iEn == "1_5" or iEn == '5_10' or iEn == '10_15' or iEn == '15_20':
+               if printError and (iEn == "1_5" or iEn == '5_10' or iEn == '10_15' or iEn == '15_20'):
                   y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.75
                else:
                   y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
