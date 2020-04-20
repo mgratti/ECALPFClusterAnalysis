@@ -33,6 +33,8 @@ struct FitParameters{
    map<TString, map<TString, Float_t>> map_mean;
    map<TString, map<TString, vector<Float_t>>> map_mean_error;
    map<TString, map<TString, Float_t>> map_chisquare;
+   map<TString, map<TString, Float_t>> map_rms;
+   map<TString, map<TString, Float_t>> map_rms_error;
 };
 
 struct PlottingTools{

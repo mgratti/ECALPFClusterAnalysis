@@ -163,8 +163,8 @@ void EoverEtrue_fit(TString fineBinning_energy,
             ETranges.push_back({"1_20", "20_40", "40_60", "60_80", "80_100"});
          }
          else{
-            //ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
-            ETranges.push_back({"10_15"});
+            ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
+            //ETranges.push_back({"10_15"});
          }
       }
       else if(do_0p1to200GeV[iFile]){
@@ -172,8 +172,8 @@ void EoverEtrue_fit(TString fineBinning_energy,
             ETranges.push_back({"1_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
          }
          else{
-            //ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
-            ETranges.push_back({"10_15"});
+            ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
+            //ETranges.push_back({"10_15"});
          }
       }
    }
@@ -183,8 +183,8 @@ void EoverEtrue_fit(TString fineBinning_energy,
       ETAranges_EB = {"0p00_0p50", "0p50_1p00", "1p00_1p48"};
    }
    else{
-      //ETAranges_EB = {"0p00_0p40", "0p40_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
-      ETAranges_EB = {"0p40_0p80"};
+      ETAranges_EB = {"0p00_0p40", "0p40_0p80", "0p80_1p00", "1p00_1p20", "1p20_1p44", "1p44_1p48"};
+      //ETAranges_EB = {"0p40_0p80"};
    }
 
    vector<TString> ETAranges_EE;
@@ -192,8 +192,8 @@ void EoverEtrue_fit(TString fineBinning_energy,
       ETAranges_EE = {"1p48_2p00", "2p00_2p50", "2p50_3p00"};
    }
    else{
-      //ETAranges_EE = {"1p48_1p64", "1p64_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
-      ETAranges_EE = {"2p00_2p20"};
+      ETAranges_EE = {"1p48_1p64", "1p64_1p85", "1p85_2p00", "2p00_2p20", "2p20_2p40", "2p40_2p60", "2p60_2p80", "2p80_3p00"};
+      //ETAranges_EE = {"2p00_2p20"};
    }
 
    // and adjust the boundaries
@@ -280,11 +280,11 @@ void EoverEtrue_fit(TString fineBinning_energy,
          if(!file.is_open()){
             if(do_EB[iFile]){
                fitParameters_EB = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EB");
-               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, ETranges[iFile], ETAranges[iFile]);
+               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, fitParameters_EB.map_rms, fitParameters_EB.map_rms_error, ETranges[iFile], ETAranges[iFile]);
             }
             else{
                fitParameters_EE = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EE");
-               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, ETranges[iFile], ETAranges[iFile]);
+               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, fitParameters_EE.map_rms, fitParameters_EE.map_rms_error, ETranges[iFile], ETAranges[iFile]);
             }
          }
          else{

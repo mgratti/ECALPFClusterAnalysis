@@ -58,7 +58,13 @@ FitParameters performFit(string fileName,
    map<TString, map<TString, Float_t>> map_mean;
    map<TString, map<TString, vector<Float_t>>> map_mean_error;
 
+   // for the chi2
    map<TString, map<TString, Float_t>> map_chisquare;
+
+   // for the RMS (of the distribution - without fit)
+   map<TString, map<TString, Float_t>> map_rms;
+   map<TString, map<TString, Float_t>> map_rms_error;
+   
 
    TFile* inputFile = 0;
    TString name_tmp = fileName.c_str();
@@ -108,6 +114,9 @@ FitParameters performFit(string fileName,
             exit(11);
          }
 
+         // get the standard deviation and RMS of the files
+         float rms = dmhist->GetRMS();
+         float rms_error = dmhist->GetRMSError();
 
          // we declare dm as a RooRealVar (for the residual) and as a RooDataHist (for the fit):
          RooRealVar* EoverEtrue = new RooRealVar("EoverEtrue","EoverEtrue" ,rangeMin,rangeMax);
@@ -474,6 +483,9 @@ FitParameters performFit(string fileName,
          map_mean_error[ETranges[i]][ETAranges[j]].push_back(mean->getAsymErrorLo());
 
          map_chisquare[ETranges[i]][ETAranges[j]] = chisquare;
+         
+         map_rms[ETranges[i]][ETAranges[j]] = rms;
+         map_rms_error[ETranges[i]][ETAranges[j]] = rms_error;
       }
    }
 
@@ -482,6 +494,8 @@ FitParameters performFit(string fileName,
    fitParameters.map_mean        = map_mean;
    fitParameters.map_mean_error  = map_mean_error;
    fitParameters.map_chisquare   = map_chisquare;
+   fitParameters.map_rms         = map_rms; 
+   fitParameters.map_rms_error   = map_rms_error; 
 
    return fitParameters;
 
