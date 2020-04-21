@@ -202,7 +202,7 @@ FitParameters performFit(string fileName,
             sigma_max = c2*dmhist->GetStdDev()/c1;
          }
          else{
-            sigma_init = 0.5*dmhist->GetStdDev();
+            sigma_init = 0.8*dmhist->GetStdDev();
             sigma_max = 1.6*dmhist->GetStdDev();
          } 
 
