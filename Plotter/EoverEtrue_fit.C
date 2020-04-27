@@ -163,8 +163,8 @@ void EoverEtrue_fit(TString fineBinning_energy,
             ETranges.push_back({"1_20", "20_40", "40_60", "60_80", "80_100"});
          }
          else{
-            //ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
-            ETranges.push_back({"10_15"});
+            ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100"});
+            //ETranges.push_back({"10_15"});
          }
       }
       else if(do_0p1to200GeV[iFile]){
@@ -173,7 +173,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
          }
          else{
             ETranges.push_back({"1_5", "5_10", "10_15", "15_20", "20_40", "40_60", "60_80", "80_100", "100_120", "120_140", "140_160", "160_180", "180_200"});
-            //ETranges.push_back({"10_15"});
+            //ETranges.push_back({"60_80"});
          }
       }
    }

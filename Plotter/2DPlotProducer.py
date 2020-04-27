@@ -14,9 +14,10 @@ from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed,
 
 # define a class Sample which has all the attributes to be retrieved from the samples
 class Sample(object):
-   def __init__(self, energy=0, eta=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0, resolution_error=0, efficiency_error=0, noiseRate_error=0, scale_error=0, noiseOccupancy=0, rms=0, rms_error=0):
+   def __init__(self, energy=0, eta=0, chi2=0, pfRecHit=0, seeding=0, resolution=0, scale=0, efficiency=0, noiseRate=0, resolution_error=0, efficiency_error=0, noiseRate_error=0, scale_error=0, noiseOccupancy=0, rms=0, rms_error=0):
       self.energy = energy
       self.eta = eta
+      self.chi2 = chi2
       self.pfRecHit = pfRecHit
       self.seeding = seeding
       self.resolution = resolution
@@ -42,6 +43,7 @@ def getOptions():
    parser.add_argument('--doRankingPlot', type=str, dest='doRankingPlot', help='ranking plot', default='True')
    parser.add_argument('--doSummaryPlot', type=str, dest='doSummaryPlot', help='summary plot', default='True')
    parser.add_argument('--doDecisionPlot', type=str, dest='doDecisionPlot', help='decision plot', default='True')
+   parser.add_argument('--doChi2Plot', type=str, dest='doChi2Plot', help='chi2 as a function of quantity ratio', default='True')
    parser.add_argument('--doResoOverScale', type=str, dest='doResoOverScale', help='use reso/scale?', default='True')
    parser.add_argument('--doPopUpPlot', type=str, dest='doPopUpPlot', help='want plots to pop up?', default='True')
    return parser.parse_args()
@@ -93,7 +95,9 @@ def getSampleItems(inputfile):
          index2 = line.find(' ', index1+1)
          etaBin = line[index1+1:index2]
       
-         index3 = line.find(' ', index2+1) #we skip the chi2
+         index3 = line.find(' ', index2+1) 
+         chiSquare = line[index2+1:index3]
+
          index4 = line.find(' ', index3+1)
          reso = line[index3+1:index4]
       
@@ -120,16 +124,16 @@ def getSampleItems(inputfile):
 
          index12 = line.find(' ', index11+1)
          noiseOcc = line[index11+1:index12]
-
+          
          index13 = line.find(' ', index12+1)
          rms = line[index12+1:index13]
-         
+
          index14 = line.find(' ', index13+1)
          rms_err = line[index13+1:index14]
          
          #print('pfrechit {t1} seeding {t2} energyBin {a1} etaBin {a2} reso {a3} mean {a4} eff {a5}').format(t1=PFRecHitThrs, t2=seedThrs, a1=energyBin, a2=etaBin, a3=reso, a4=mean, a5=eff)
       
-         thisSample = Sample(energy=energyBin, eta=etaBin, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise, resolution_error = reso_err, efficiency_error = eff_err, noiseRate_error = noise_err, scale_error=scale_err, noiseOccupancy=noiseOcc, rms=rms, rms_error=rms_err)
+         thisSample = Sample(energy=energyBin, eta=etaBin, chi2=chiSquare, pfRecHit=PFRecHitThrs, seeding=seedThrs, resolution=reso, scale=mean, efficiency=eff, noiseRate=noise, resolution_error = reso_err, efficiency_error = eff_err, noiseRate_error = noise_err, scale_error=scale_err, noiseOccupancy=noiseOcc, rms=rms, rms_error=rms_err)
          output.append(thisSample)
  
          if energyBin not in EnBins and energyBin != 'ETranges':
@@ -283,6 +287,7 @@ if __name__ == "__main__":
    do_rankingPlot=opt.doRankingPlot
    do_summaryPlot=opt.doSummaryPlot
    do_decisionPlot=opt.doDecisionPlot
+   do_chi2Plot=opt.doChi2Plot
    do_resoOverScale=opt.doResoOverScale
    do_popUpPlot = opt.doPopUpPlot
    
@@ -806,8 +811,8 @@ if __name__ == "__main__":
 
    # those are the fixed pair of thresholds per eta bin
    # needed for the decisionPlots, and for the summaryPlot depending on the option
+   '''
    table_pair = {}
-   #'''  
    table_pair['0p00_0p40'] = '0.0 0.0'
    table_pair['0p40_0p80'] = '0.0 0.0'
    table_pair['0p80_1p00'] = '0.0 0.0'
@@ -822,7 +827,7 @@ if __name__ == "__main__":
    table_pair['2p60_2p80'] = '0.0 0.0'
    table_pair['2p80_3p00'] = '0.0 0.0'
    ''' 
-
+   table_pair = {}
    table_pair['0p00_0p40'] = '3.0 3.0'
    table_pair['0p40_0p80'] = '3.0 3.0'
    table_pair['0p80_1p00'] = '3.0 3.0'
@@ -836,7 +841,7 @@ if __name__ == "__main__":
    table_pair['2p40_2p60'] = '3.0 3.0'
    table_pair['2p60_2p80'] = '4.0 4.0'
    table_pair['2p80_3p00'] = '4.0 4.0'
-   '''   
+   #''' 
    # bins where the statistics is too low to be tuned on
    lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
    
@@ -849,13 +854,13 @@ if __name__ == "__main__":
       printFromTable = True   #true means taking fixed pairs of thresholds from table instead of outcome of selection
       printWithNumber = True #true means plotting pair, false means plotting number of z dimension
       printPair = False
-      printError = True
+      printError = False
+      printChi2 = False
+
 
       if printWithColour == False:
          printWithNumber = False
 
-      #fileQte = open("rms_2023_t0.txt", "w+")
-    
       # in order not to plot the full energy range
       for iEn in EnRanges[:]:
          if getFloat(getUpperBin(iEn)) > 100:
@@ -893,7 +898,7 @@ if __name__ == "__main__":
 
       whichQuantities = ['']
       if printWithColour:
-         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'NoiseOccupancy', 'RMS']
+         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'NoiseOccupancy', 'Scale', 'RMS']
       
       for item in whichQuantities:
          if printWithColour:
@@ -914,33 +919,28 @@ if __name__ == "__main__":
    
          if printWithColour:
             if do_resoOverScale != 'True':
-               #histo_summary.GetZaxis().SetTitle(item)
-               #histo_summary.GetZaxis().SetTitle('{a} Ratio new/ref [%]'.format(a=item))
-               histo_summary.GetZaxis().SetTitle('RMS Ratio new/ref [%]')
+               histo_summary.GetZaxis().SetTitle(item)
             else:
                if item == 'Resolution':
-                  #histo_summary.GetZaxis().SetTitle('Resolution')
-                  histo_summary.GetZaxis().SetTitle('Scale Ratio new/ref [%]'.format(a=item))
+                  histo_summary.GetZaxis().SetTitle('Resolution')
                else:
-                  histo_summary.GetZaxis().SetTitle('{a} Ratio new/ref [%]'.format(a=item))
+                  histo_summary.GetZaxis().SetTitle(item)
             histo_summary.GetZaxis().SetTitleSize(0.04)
             histo_summary.GetZaxis().SetTitleOffset(1.2)
             if item == 'Resolution':
-               histo_summary.GetZaxis().SetRangeUser(-100,50)
+               histo_summary.GetZaxis().SetRangeUser(-0.0001,0.3)
             elif item == 'Efficiency':
-               histo_summary.GetZaxis().SetRangeUser(-100.001,0.001)
+               histo_summary.GetZaxis().SetRangeUser(-0.0001,1)
             elif item == 'NoiseRate':
-               histo_summary.GetZaxis().SetRangeUser(-100,0.001)
+               histo_summary.GetZaxis().SetRangeUser(-0.0001,1)
             elif item == 'NoiseOccupancy':
                histo_summary.GetZaxis().SetRangeUser(0, 20)
+            elif item == 'Scale':
+               histo_summary.GetZaxis().SetRangeUser(0.7, 1.3)
             elif item == 'RMS':
-               histo_summary.GetZaxis().SetRangeUser(-100, 50)
+               histo_summary.GetZaxis().SetRangeUser(0, 0.3)
 
          c_summary = TCanvas('c_summary_{a}'.format(a=item), 'c_summary_{a}'.format(a=item), 1500, 1500)
-
-
-         fileToRead = open("rms_2023_ratio.txt", "r")
-         lineQte = fileToRead.readlines()
 
          if printWithColour:
             for iEn in EnRanges:
@@ -964,6 +964,10 @@ if __name__ == "__main__":
                                     #if quantity == 0.: quantity=0.001
                                  elif item == 'NoiseOccupancy':
                                     quantity = getFloat(iSample.noiseOccupancy)
+                                 elif item == 'Scale':
+                                    quantity = getFloat(iSample.scale)
+                                 elif item == 'RMS':
+                                    quantity = getFloat(iSample.rms)
                                  histo_summary.Fill(iEta, iEn, quantity)
                         else:
                             if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
@@ -979,52 +983,37 @@ if __name__ == "__main__":
                                     quantity = getFloat(iSample.noiseRate)
                                  elif item == 'NoiseOccupancy':
                                     quantity = getFloat(iSample.noiseOccupancy)
-                                 histo_summary.Fill(iEta, iEn, quantity)
-                     else:
-                         
-                        for iLine in lineQte:
-                        
-                           index1_a = iLine.find(' ')
-                           index1_b = iLine.find(' ', index1_a+1)
-                           index1_c = iLine.find(' ', index1_b+1)
-                           ETrange  = iLine[0:index1_a]
-                           ETArange = iLine[index1_a+1:index1_b]
-                           if iEn == ETrange and iEta ==ETArange:
-                        
-                              if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
-                                 quantity = float(iLine[index1_b+1:index1_c])
-                                 ''' 
-                                 if item == 'Resolution':
-                                    if do_resoOverScale != 'True':
-                                       quantity = getFloat(iSample.resolution)
-                                       quantity_error = getFloat(iSample.resolution_error)
-                                    else:
-                                       if getFloat(iSample.scale) != 0 and getFloat(iSample.resolution) != 0:
-                                          quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
-                                          quantity_error = quantity * (getFloat(iSample.resolution_error)/getFloat(iSample.resolution) + getFloat(iSample.scale_error)/getFloat(iSample.scale))
-                                       else:
-                                          quantity = getFloat(iSample.resolution)
-                                          quantity_error = getFloat(iSample.resolution_error)
-                                    #fileQte.write('{a} {b} {c} {d} \n'.format(a=iEn, b=iEta, c=quantity, d=quantity_error))
-                                 elif item == 'Efficiency':
-                                    quantity = getFloat(iSample.efficiency)
-                                    quantity_error = getFloat(iSample.efficiency_error)
-                                    #fileQte.write('{a} {b} {c} {d} \n'.format(a=iEn, b=iEta, c=quantity, d=quantity_error))
-                                 elif item == 'NoiseRate':
-                                    quantity = getFloat(iSample.noiseRate)
-                                    quantity_error = getFloat(iSample.noiseRate_error)
-                                    #fileQte.write('{a} {b} {c} {d} \n'.format(a=iEn, b=iEta, c=quantity, d=quantity_error))
-                                 elif item == 'NoiseOccupancy':
-                                    quantity = getFloat(iSample.noiseOccupancy)
+                                 elif item == 'Scale':
+                                    quantity = getFloat(iSample.scale)
                                  elif item == 'RMS':
                                     quantity = getFloat(iSample.rms)
-                                    quantity_error = getFloat(iSample.rms_error)
-                                    fileQte.write('{a} {b} {c} {d} \n'.format(a=iEn, b=iEta, c=quantity, d=quantity_error))
-                                 if quantity == 0: quantity = 0.0001
-                                 '''
                                  histo_summary.Fill(iEta, iEn, quantity)
-                                 if printError:
+                                 if printError or printChi2: #shifts the text so that error can be printed
                                     histo_summary.SetBarOffset(0.3)
+                     else:
+                        if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
+                           if item == 'Resolution':
+                              if do_resoOverScale != 'True':
+                                 quantity = getFloat(iSample.resolution)
+                              else:
+                                 if getFloat(iSample.scale) != 0:
+                                    quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                                 else:
+                                    quantity = getFloat(iSample.resolution)
+                           elif item == 'Efficiency':
+                              quantity = getFloat(iSample.efficiency)
+                           elif item == 'NoiseRate':
+                              quantity = getFloat(iSample.noiseRate)
+                           elif item == 'NoiseOccupancy':
+                              quantity = getFloat(iSample.noiseOccupancy)
+                           elif item == 'Scale':
+                              quantity = getFloat(iSample.scale)
+                           elif item == 'RMS':
+                              quantity = getFloat(iSample.rms)
+                           if quantity == 0: quantity = 0.0001
+                           histo_summary.Fill(iEta, iEn, quantity)
+                           if printError or printChi2: #shifts the text so that error can be printed
+                              histo_summary.SetBarOffset(0.3)
                if printWithNumber == True:
                   histo_summary.Draw('text' + 'colz')
                else:
@@ -1033,7 +1022,7 @@ if __name__ == "__main__":
             histo_summary.Draw()
         
          #make so that only 1 digit is printed when using text function
-         gStyle.SetPaintTextFormat(".1f");
+         gStyle.SetPaintTextFormat(".2f");
 
          #draw dashed lines
          dashed_lines = []
@@ -1062,7 +1051,7 @@ if __name__ == "__main__":
                if iEta == '1p44_1p48': continue
                x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
                x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-               if printError and (iEn == "1_5" or iEn == '5_10' or iEn == '10_15' or iEn == '15_20'):
+               if (printError or printChi2) and (iEn == "1_5" or iEn == '5_10' or iEn == '10_15' or iEn == '15_20'):
                   y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.75
                else:
                   y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
@@ -1089,26 +1078,39 @@ if __name__ == "__main__":
                         score_print.SetFillColorAlpha(0, 0)
                      elif printError: #we print the error
                         for iSample in samples_binned[iEn][iEta]:
-                           for iLine in lineQte:
-                        
-                              index1_a = iLine.find(' ')
-                              index1_b = iLine.find(' ', index1_a+1)
-                              index1_c = iLine.find(' ', index1_b+1)
-                              index1_d = iLine.find(' ', index1_c+1)
-                              ETrange  = iLine[0:index1_a]
-                              ETArange = iLine[index1_a+1:index1_b]
-                              if iEn == ETrange and iEta ==ETArange:
+                                 if item == 'Resolution':
+                                    if do_resoOverScale != 'True':
+                                       quantity_error = getFloat(iSample.resolution_error)
+                                    else:
+                                       if getFloat(iSample.scale) != 0 and getFloat(iSample.resolution) != 0:
+                                          quantity_error = quantity * (getFloat(iSample.resolution_error)/getFloat(iSample.resolution) + getFloat(iSample.scale_error)/getFloat(iSample.scale))
+                                       else:
+                                          quantity_error = getFloat(iSample.resolution_error)
+                                 elif item == 'Efficiency':
+                                    quantity_error = getFloat(iSample.efficiency_error)
+                                 elif item == 'NoiseRate':
+                                    quantity_error = getFloat(iSample.noiseRate_error)
+                                 #elif item == 'NoiseOccupancy':
+                                 #   quantity = getFloat(iSample.noiseOccupancy)
+                                 elif item == 'RMS':
+                                    quantity_error = getFloat(iSample.rms_error)
+                                 
                                  if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
-                                    score_print.AddText('#pm {a}'.format(a=round(float(iLine[index1_c+1:index1_d]), 1)))
+                                    score_print.AddText('#pm {a}'.format(a=round(float(quantity_error), 3)))
                                     score_print.SetFillColorAlpha(0, 0)
-
+                     elif printChi2: #we print the chi2 (for the resolution)
+                        for iSample in samples_binned[iEn][iEta]:
+                           if item == 'Resolution' or item == 'Scale':
+                              if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
+                                 score_print.AddText("{a}{b}".format(a='#chi^{2}', b=round(float(iSample.chi2), 2)))
+                                 score_print.SetFillColorAlpha(0, 0)
                   else:
                      score_print.SetFillColor(1)
                      score_print.SetFillStyle(3244)
                score_label.append(score_print)
             
          for label in score_label:
-            if printPair or printError:
+            if printPair or printError or printChi2:
                label.Draw('same')
             label.SetBorderSize(0)
             label.SetTextSize(0.015)
@@ -1201,13 +1203,18 @@ if __name__ == "__main__":
         
 
          if item == 'Resolution': 
-            c_summary.SaveAs('{a}/summaryPlot_resolution.png'.format(a=outputdir)) 
+            if do_resoOverScale == 'True':
+               c_summary.SaveAs('{a}/summaryPlot_resolution.png'.format(a=outputdir)) 
+            else:
+               c_summary.SaveAs('{a}/summaryPlot_resolutionOnly.png'.format(a=outputdir)) 
          elif item == 'Efficiency':
             c_summary.SaveAs('{a}/summaryPlot_efficiency.png'.format(a=outputdir))
          elif item == 'NoiseRate':
             c_summary.SaveAs('{a}/summaryPlot_noiseRate.png'.format(a=outputdir))
          elif item == 'NoiseOccupancy':
             c_summary.SaveAs('{a}/summaryPlot_noiseOccupancy.png'.format(a=outputdir))
+         elif item == 'Scale':
+            c_summary.SaveAs('{a}/summaryPlot_scale.png'.format(a=outputdir))
          elif item == 'RMS':
             c_summary.SaveAs('{a}/summaryPlot_rms.png'.format(a=outputdir))
          else:
@@ -1404,65 +1411,53 @@ if __name__ == "__main__":
          c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.png'.format(d=outputdir, a=iEta, b=label1, c=label2))
 
 
-filer = open("rms_2023_ratio.txt", "w+")
-file1 = open("rms_2023_t3-4.txt", "r")
-file2 = open("rms_2023_t0.txt")
-lines1 = file1.readlines()
-lines2 = file2.readlines()
-
-for line1 in lines1:
-   for line2 in lines2:
-
-      index1_a = line1.find(' ')
-      index1_b = line1.find(' ', index1_a+1)
-      index1_c = line1.find(' ', index1_b+1)
-      index1_d = line1.find(' ', index1_c+1)
-      ETrange1  = line1[0:index1_a]
-      ETArange1 = line1[index1_a+1:index1_b]
-      quantity1 = line1[index1_b+1:index1_c]
-      error1 = line1[index1_c+1:index1_d]
-
-      index2_a = line2.find(' ')
-      index2_b = line2.find(' ', index2_a+1)
-      index2_c = line2.find(' ', index2_b+1)
-      index2_d = line2.find(' ', index2_c+1)
-      ETrange2  = line2[0:index2_a]
-      ETArange2 = line2[index2_a+1:index2_b]
-      quantity2 = line2[index2_b+1:index2_c]
-      error2 = line2[index2_c+1:index2_d]
-
-      if ETrange1 == ETrange2:
-         if ETArange1 == ETArange2:
-            #if float(quantity2) != 0 and float(quantity1) != 0:
-            #   ratio = (float(quantity1)/float(quantity2)-1)*100
-            #   #ratio_err = ratio * (float(error1)/float(quantity1) + float(error2)/float(quantity2))
-            #   ratio_err = 100*float(error1)/float(quantity2) + 100*float(quantity1)*float(error2)/(float(quantity2)*float(quantity2)) 
-            #else:
-            #   ratio = 1
-            if float(quantity2) != 0:
-               ratio = (float(quantity1)/float(quantity2)-1)*100
-               #ratio_err = ratio * (float(error1)/float(quantity1) + float(error2)/float(quantity2))
-               ratio_err = 100*float(error1)/float(quantity2) + 100*float(quantity1)*float(error2)/(float(quantity2)*float(quantity2)) 
-            else:
-               ratio = 0.0
-            if ratio == 0.0:
-               ratio = 0.0001
-            filer.write('{a} {b} {c} {d} \n'.format(a=ETrange1, b=ETArange1, c=(ratio), d=(ratio_err)))
+   if do_chi2Plot == 'True':
+      # histo chi2
+      histo_chi2 = TH2D('histo_chi2', 'histo_chi2', 1000, -100, 100, 50, 0, 15)
+      
+      # file with ratio resolution
+      fileToRead = open("scale_2021_ratio.txt", "r")
+      lineQte = fileToRead.readlines()
 
 
+      for iEn in EnRanges:
+         for iEta in EtaRanges:
+            for iSample in samples_binned[iEn][iEta]:
+               if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
+                  chiSquare = iSample.chi2
+                  if chiSquare == '-nan': continue
+               for iLine in lineQte:
+                  index1_a = iLine.find(' ')
+                  index1_b = iLine.find(' ', index1_a+1)
+                  index1_c = iLine.find(' ', index1_b+1)
+                  ETrange  = iLine[0:index1_a]
+                  ETArange = iLine[index1_a+1:index1_b]
+                  if iEn == ETrange and iEta ==ETArange:
+                     if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
+                        reso_ratio = float(iLine[index1_b+1:index1_c])
+                        histo_chi2.Fill(reso_ratio, getFloat(chiSquare))
 
+      gStyle.SetOptStat(0)
+      gStyle.SetPadRightMargin(0.16) 
+     
+      histo_chi2.SetTitle(' ')
 
+      histo_chi2.GetXaxis().SetTitle('Scale Ratio 2021')
+      histo_chi2.GetXaxis().SetTitleSize(0.04)
+      histo_chi2.GetXaxis().SetTitleOffset(1.2)
+         
+      histo_chi2.GetYaxis().SetTitle('{a} of Ref'.format(a='#chi^{2}'))
+      histo_chi2.GetYaxis().SetTitleSize(0.04)
+      histo_chi2.GetYaxis().SetTitleOffset(1.2)
+    
+      c_chi2 = TCanvas('c_chi2', 'c', 900, 900)
+      histo_chi2.SetMarkerStyle(21)
+      histo_chi2.SetMarkerSize(1.5)
+      histo_chi2.SetMarkerColor(4)
+      histo_chi2.Draw()
+      #histo_chi2.Draw('text' +'same')
 
-
-
-
-
-
-
-
-
-
-
+      c_chi2.SaveAs('{dir}/chi2.png'.format(dir=outputdir))
 
 
 

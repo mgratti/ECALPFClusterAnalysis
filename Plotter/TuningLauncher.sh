@@ -59,11 +59,13 @@ declare -a FilesArray=(
                         #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v1_t0_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T8_v2_t0_n30000"
                         #
-                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t0_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t0_n30000_njd0"
+                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v1_t0_n30000"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_pfrh2.0_seed2.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t22_n30000"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t33_n30000"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t44_n30000"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t0_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t0_n30000_njd0"
+                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T1_v2_t0_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed2.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t22_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t33_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t44_n30000"
@@ -73,6 +75,10 @@ declare -a FilesArray=(
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t0_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t33_n30000_njd0"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t33_n30000_njd0"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t44_n30000_njd0"
                         )
 
 
@@ -90,8 +96,9 @@ do_noiseRatePlot='False'
 do_rankingPlot='False'
 do_summaryPlot='True'
 do_decisionPlot='False'
+do_chi2Plot='False'
 
-do_resoOverScale='False'
+do_resoOverScale='True'
 do_popUpPlot='False'
 
 # -----  2. Advanced parameters ----- #
@@ -152,7 +159,7 @@ if [ "$do_writeFiles" = true ] ; then
 
 fi
 
-python 2DPlotProducer.py --doResolutionPlot=$do_resolutionPlot --doScalePlot=$do_scalePlot --doEfficiencyPlot=$do_efficiencyPlot --doNoiseRatePlot=$do_noiseRatePlot --doRankingPlot=$do_rankingPlot --doSummaryPlot=$do_summaryPlot --doDecisionPlot=$do_decisionPlot --doPopUpPlot=$do_popUpPlot --doResoOverScale=$do_resoOverScale
+python 2DPlotProducer.py --doResolutionPlot=$do_resolutionPlot --doScalePlot=$do_scalePlot --doEfficiencyPlot=$do_efficiencyPlot --doNoiseRatePlot=$do_noiseRatePlot --doRankingPlot=$do_rankingPlot --doSummaryPlot=$do_summaryPlot --doDecisionPlot=$do_decisionPlot --doPopUpPlot=$do_popUpPlot --doResoOverScale=$do_resoOverScale --doChi2Plot=$do_chi2Plot
 
 
 rm fileSamples.txt

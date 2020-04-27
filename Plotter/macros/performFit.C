@@ -261,7 +261,6 @@ FitParameters performFit(string fileName,
 
          RooCBShape *CBpdf = new RooCBShape("CBpdf", "CBpdf", *EoverEtrue, *mean, *sigma, *alpha, *n);
 
-
          // double crystal ball (same gaussian body but different exponential tails)
          RooRealVar *alpha_1  = new RooRealVar("alpha_1", "alpha_1", 1., alpha_1_min, alpha_2_max);
          RooRealVar *n_1      = new RooRealVar("n_1", "n_1", n_1_min, n_1_max);
