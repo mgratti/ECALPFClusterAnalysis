@@ -59,7 +59,13 @@ python validate.py -f1 /work/mratti/validation/histo_photon_E1to100GeV_closeEcal
 ```
 
 ### NoisePlotter
+This set of scripts is used to:
+* determine ring-averages starting from xtal-dep thresholds
+* write in txt files values of proposed thresholds to be sent to conveners for tag creation
+* plot noise curves
+
 First determine average of the thresholds in each eta ring.
+This script also write the thresholds to a txt file. See script for more details.
 ```
 cd noisePlotter
 root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_2023.txt\"\)
@@ -85,6 +91,11 @@ Do the plotting:
 
 * specify the events and clusters of your choice in ```eventPlotter.py```
 * run with ```python eventPlotter.py```
+
+
+### SCAnalyzer
+To study the shower shapes in g+jets EM enriched samples.
+
 
 
 
