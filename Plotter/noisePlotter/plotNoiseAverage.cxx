@@ -14,7 +14,7 @@ Performs average over ring
 
 Outputs separate TGraphs for EB and EE at 1 sigma of the noise, as a function of eta 
 
-Also outputs the proposed thresholds for Run-3 in a txt file (3,4) x sigma_2021 or sigma_2023
+Also outputs the proposed thresholds for Run-3 in a txt file (3,4) x sigma_current_year
 
 root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_2023.txt\"\)
 
@@ -109,10 +109,17 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
     std::cout << " ERROR: you may have appended the tag twice or the input is not of the desired format !" << std::endl;
   }
 
+  // ---------------
+  // Prepare output 
+  // --------------
+  TString path = TString(nameInputFile.c_str());
+  path.ReplaceAll(".txt", "");
+  gSystem->Exec("mkdir " + path );
+
   // --------------
   // Write proposed thresholds to txt file
   // --------------
-  std::ofstream ofile ("proposedThresholds_34sigma.txt", ios::out); // now open
+  std::ofstream ofile (path+"/"+"proposedThresholds_34sigma.txt", ios::out); // now open
   for (int iter=0; iter<ObjectToSave.size(); iter++){
     //std::cout << "IN " << ix_ieta.at(iter) << " " << iy_iphi.at(iter) << " " << iz.at(iter) <<  " "  << Object.at(iter) << std::endl; 
     //std::cout << "OUT " << ix_ieta.at(iter) << " " << iy_iphi.at(iter) << " " << iz.at(iter) <<  " "  << ObjectToSave.at(iter) << std::endl; 
@@ -203,12 +210,6 @@ void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer_
     eta.at(iter) = mean_eta;  // reset eta with the average eta over the ring
   }
 
-  // ---------------
-  // Prepare output dir
-  // --------------
-  TString path = TString(nameInputFile.c_str());
-  path.ReplaceAll(".txt", "");
-  gSystem->Exec("mkdir " + path );
 
 
   /*

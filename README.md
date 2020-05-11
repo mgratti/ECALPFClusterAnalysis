@@ -59,22 +59,51 @@ python validate.py -f1 /work/mratti/validation/histo_photon_E1to100GeV_closeEcal
 ```
 
 ### NoisePlotter
-This set of scripts is used to:
+Multiple tasks are handled by this sub-package:
 * determine ring-averages starting from xtal-dep thresholds
 * write in txt files values of proposed thresholds to be sent to conveners for tag creation
 * plot noise curves
 
-First determine average of the thresholds in each eta ring.
-This script also write the thresholds to a txt file. See script for more details.
+
+1) Start from noise tags produced by Amina, with x-tal dependent thresholds, e.g. EcalPFRecHitThresholds_TL235_mixed
+and get corresponding txt files following /work/mratti/cmssw_workarea/RECORD_DEVs/CMSSW_10_6_0/src/usercode/useful.sh
+and copy EB and EE txt files to RecoSimStudies/Dumpers/data/noise/
+
+2) for EB only, perform the average over the ring; the outliers, aka crystals more than 5 sigma away from the average, keep their own threshold.
+The file for the ring average will be created, copied to $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/ and used for the sample production
+
 ```
-cd noisePlotter
-root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_2023.txt\"\)
+for i in TL235 TL315 TL400 TL550;
+do
+  echo "*********************************"
+  echo $i
+  cd Plotter/noisePlotter/getEBRingAverage
+  cp $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EB_$i.txt .
+  root -l -b -q plotObject_untouched_ringaverage.cxx\(\"PFRecHitThresholds_EB_$i.txt\"\)
+  root -l -b -q root2txt.C
+  cp productCleaned.txt $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EB_ringaveraged_$i.txt
+  cat $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EB_ringaveraged_$i.txt $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EE_$i.txt > ../PFRecHitThresholds_EB_ringaveraged_EE_$i.txt
+  cd ../../..
+  #
+done
 ```
-Then smooth the noise graph and merge EB and EE in a single one.
+
+
+Now we can plot the thresholds and create new txt files with different noise multipliers.
+Keep in mind that for EB we will always assume that the ring average has been performed with the correct outlier treatment, while for EE not.
+
+3) Make the noise curves and produce a txt file with proposed thresholds. 
+This will produce an intermediate directory with the outputs within.
 ```
-python getMergedGraph.py -t PFRecHitThresholds_EB_ringaveraged_EE_2023
+cd Plotter/noisePlotter
+root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_${i}.txt\"\)
 ```
-Output is in ```PFRecHitThresholds_EB_ringaveraged_EE_2023/mergedGraphs.root```
+
+4) Then smooth the noise graph and merge EB and EE in a single one.
+```
+python getMergedGraph.py -t PFRecHitThresholds_EB_ringaveraged_EE_${i}
+```
+Output is in ```PFRecHitThresholds_EB_ringaveraged_EE_TL235/mergedGraphs.root```
 Graphs to be used are ```merged_smooth_i``` where i is the multiplier of the sigma noise, to be drawn with "AL" options.
 
 ### SingleEventAnalyzer
