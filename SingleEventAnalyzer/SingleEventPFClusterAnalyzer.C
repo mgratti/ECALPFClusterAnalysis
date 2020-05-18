@@ -48,7 +48,8 @@ void SingleEventPFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    // events to check
    eventsToCheck.push_back(50);
-   eventsToCheck.push_back(63);
+   eventsToCheck.push_back(2);
+   eventsToCheck.push_back(7);
 
    N_perEvent_plots=eventsToCheck.size();
    if(N_perEvent_plots>N_max_perEvent_plots) throw "You want to check more events than currently allowed, please correct!";
@@ -119,8 +120,13 @@ Bool_t SingleEventPFClusterAnalyzer::Process(Long64_t entry)
    if(std::find(eventsToCheck.begin(), eventsToCheck.end(), evt) != eventsToCheck.end()) 
      doFill = true;
 
+   if(pfCluster_energy.GetSize() > N_perEvent_perCluster_plots) 
+     std::cout << "Warning: Number of pfclusters in evt=" << evt << " is too high, please increase N_perEvent_perCluster_plots" << std::endl;
    // PFClusters loop
    for(int iPFCl=0; iPFCl<pfCluster_energy.GetSize(); iPFCl++){
+
+     if (iPFCl >= N_perEvent_perCluster_plots) break; // protection against too high number of pfclusters
+
      if( (flag_doEB && fabs(pfCluster_eta[iPFCl])>1.479) || (flag_doEE && fabs(pfCluster_eta[iPFCl])<1.479) ) continue;
      
      // determine sub-detector of current pfcluster
@@ -140,7 +146,7 @@ Bool_t SingleEventPFClusterAnalyzer::Process(Long64_t entry)
          N_fracs_above30++;
          if (N_fracs_above30==1) {
            N_pfcl_fracs_above30++; // increment only once for pfcluster
-           std::cout << "Found fraction > 30%, frac=" << fraction << " evt="<< evt << " iPFCl="<< iPFCl 
+           std::cout << "Found fraction > 30%, frac=" << fraction << " evt="<< evt << " iPFCl="<< iPFCl << " energy=" << pfCluster_energy[iPFCl] 
                      << " det="<< det << " ieta/ix=" << pfCluster_ieta[iPFCl] << " iphi/iy=" << pfCluster_iphi[iPFCl] << std::endl;
            }
        }
