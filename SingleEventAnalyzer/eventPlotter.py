@@ -7,7 +7,7 @@ colors = [1,2,6,7,5]
 #colors = [ROOT.kBlack,  ROOT.kRed, ROOT.kMagenta, ROOT.kGray+1, ROOT.kViolet+1]
 markers = [29,41,43,45,49]
 
-def doPlotAnalysis(inputfile,outdir,evt=0,det='EB',pfclusters=[1,2]):
+def doPlotAnalysis(inputfile,outdir,evt=0,det='EB',pfclusters=[1,2],suffix=''):
 
   os.system('mkdir -p {}'.format(outdir))
 
@@ -22,6 +22,7 @@ def doPlotAnalysis(inputfile,outdir,evt=0,det='EB',pfclusters=[1,2]):
   pfcl_hitsenergies = []
   pfcl_energy = []
   pfcl_bestcpenergy = []
+  bar_offset = -0.45
 
   for ipfcl,idx in enumerate(pfclusters):
 
@@ -47,8 +48,10 @@ def doPlotAnalysis(inputfile,outdir,evt=0,det='EB',pfclusters=[1,2]):
     #pfcl_hitsfractions[ipfcl]['histo'].SetMarkerStyle(20)
     pfcl_hitsfractions[ipfcl]['histo'].SetMarkerSize(0.85)
     #print ipfcl, ipfcl % 2 == 0
-    sign_bar_offset = 1 if ipfcl % 2 == True else -1
-    bar_offset = sign_bar_offset * 0.2
+    print ' ipfcl=', ipfcl, ' bar_offset=', bar_offset
+    bar_offset += 0.22
+    #sign_bar_offset = 1 if ipfcl % 2 == True else -1
+    #bar_offset = sign_bar_offset * 0.1
     pfcl_hitsfractions[ipfcl]['histo'].SetBarOffset(bar_offset)
     pfcl_hitsfractions[ipfcl]['drawopt'] = 'TEXTsame'
 
@@ -102,10 +105,10 @@ def doPlotAnalysis(inputfile,outdir,evt=0,det='EB',pfclusters=[1,2]):
     latex.DrawLatex(x-ipfcl*0.05,y,string)
        
 
-  c.SaveAs(outdir+'/'+analysis_name+'.pdf')
-  c.SaveAs(outdir+'/'+analysis_name+'.png')
-  c.SaveAs(outdir+'/'+analysis_name+'.C')
-  c.SaveAs(outdir+'/'+analysis_name+'.root')
+  c.SaveAs(outdir+'/'+analysis_name+suffix+'.pdf')
+  c.SaveAs(outdir+'/'+analysis_name+suffix+'.png')
+  c.SaveAs(outdir+'/'+analysis_name+suffix+'.C')
+  c.SaveAs(outdir+'/'+analysis_name+suffix+'.root')
 
 if __name__ == "__main__":
 
@@ -124,9 +127,22 @@ if __name__ == "__main__":
     print 'considering variation ', var
     inputfile = './outputfiles/T2_v1_t12_{}.root'.format(var)
     outdir=odir+inputfile.split('/')[2].split('.root')[0]
-    doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=63,det='EB',pfclusters=[2,3])
+    #doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=63,det='EB',pfclusters=[2,3])
+    doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=50,det='EB',pfclusters=[1,2])
 
-
+  # max dist varied
+  variations = ['1', '5', '10', '20']
+  for var in variations:
+    print 'considering variation ', var
+    inputfile = './outputfiles/T2_v6_t11_d{}_n15.root'.format(var)
+    outdir=odir+inputfile.split('/')[2].split('.root')[0]
+    #if var=='10' or var=='5' or var=='20':
+    doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=7,det='EEP',pfclusters=[22,23,24,25],suffix='_d'+var)
+    #if var=='1':
+       #doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=7,det='EEP',pfclusters=[22,23,24,25]suffix='_'+var)
+    #doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=1,det='EEM',pfclusters=[6,7])
+    #doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=1,det='EEP',pfclusters=[15,16])
+    #doPlotAnalysis(inputfile=inputfile,outdir=outdir,evt=2,det='EEM',pfclusters=[60,63])
   
 #  inputfile = '../Analyzer/outputfiles/T2_v1_t12_EB.root'; 
 #  outdir=odir+inputfile.split('/')[3].split('.root')[0]

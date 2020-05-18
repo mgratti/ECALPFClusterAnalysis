@@ -28,7 +28,25 @@ void start_SingleEventPFClusterAnalyzer(){
    "./outputfiles/T2_v1_t12_s10.root", 
    "./outputfiles/T2_v1_t12_s0.1.root", 
   };
-  
+
+  TString dir = "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/";
+
+  std::vector<TString> inFileNames_maxSigmaDist = {
+   dir + "photon_E1.0to200GeV_closeEcal_EEfar_wPU_pfrh1.0_seed1.0_thrXtalEBXtalEE_shs1.0_maxd1.0_y2023_T2_v6_t11_d1_n15.root", 
+   dir + "photon_E1.0to200GeV_closeEcal_EEfar_wPU_pfrh1.0_seed1.0_thrXtalEBXtalEE_shs1.0_maxd5.0_y2023_T2_v6_t11_d5_n15.root", 
+   dir + "photon_E1.0to200GeV_closeEcal_EEfar_wPU_pfrh1.0_seed1.0_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T2_v6_t11_d10_n15.root", 
+   dir + "photon_E1.0to200GeV_closeEcal_EEfar_wPU_pfrh1.0_seed1.0_thrXtalEBXtalEE_shs1.0_maxd20.0_y2023_T2_v6_t11_d20_n15.root", 
+  };
+
+  std::vector<TString> outFileNames_maxSigmaDist = {
+   "./outputfiles/T2_v6_t11_d1_n15.root", 
+   "./outputfiles/T2_v6_t11_d5_n15.root", 
+   "./outputfiles/T2_v6_t11_d10_n15.root", 
+   "./outputfiles/T2_v6_t11_d20_n15.root", 
+  };
+
+  //std::vector<TString> inFileNamesToUse = inFileNames_maxSigmaDist;
+  //std::vector<TString> outFileNamesToUse = outFileNames_maxSigmaDist;
   std::vector<TString> inFileNamesToUse = inFileNames;
   std::vector<TString> outFileNamesToUse = outFileNames;
 

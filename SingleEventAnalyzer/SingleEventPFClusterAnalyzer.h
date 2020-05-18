@@ -145,7 +145,7 @@ public :
    std::vector<int> eventsToCheck;
    int N_max_perEvent_plots = 10; // please don't go above 20, otherwise memory consumption will explode...
    int N_perEvent_plots;
-   int N_perEvent_perCluster_plots = 100; // do not exceed 400
+   int N_perEvent_perCluster_plots = 300; // do not exceed 400
    bool flag_doEB;
    bool flag_doEE;
 
