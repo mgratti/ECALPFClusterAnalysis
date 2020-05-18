@@ -10,8 +10,8 @@
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=false
-doPlotter=true
+doAnalyser=true
+doPlotter=false
 
 
 # Enter the production label of the files that you want to analyse
@@ -89,10 +89,14 @@ declare -a FilesArray=(
                         #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t33_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t44_n30000_njd0"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T10_v1_t0_n30000_njd0"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T10_v2_t0_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T10_v1_t0_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T10_v2_t0_n30000_njd0"
                         #"fixedDumper_EE"
                         #"oldDumper_EE"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_lumi0_2_n50_njd0"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_lumi0_n50_njd0"
+                        "photon_E1to100GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_lumi1_2_n50_njd0"
+                        "photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_lumi1_n50_njd0"
                         )
 
 
