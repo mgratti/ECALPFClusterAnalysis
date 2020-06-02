@@ -855,7 +855,7 @@ if __name__ == "__main__":
       printWithNumber = True #true means plotting pair, false means plotting number of z dimension
       printPair = False
       printError = False
-      printChi2 = True
+      printChi2 = False
 
 
       if printWithColour == False:
