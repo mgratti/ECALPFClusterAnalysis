@@ -47,6 +47,19 @@ NB: if `do_fakeRatePlot`is also set to True, then the fakeRate plots are also go
 - `do_scanThrs`: produces the plots looping on all the fileNames, at fixed energy or eta 
 - `do_popUpPlot`: do you want to see the plot while the code is running? 
 
+
+## Tuning
+Add files that you want to study and which plots to produce in TuningLauncher.sh and do
+```
+source TuningLauncher.sh
+```
+
+### Get ratio maps
+Write filenames of samples that you wish to compare, and do
+```
+python doRatioMaps.py
+```
+
 ### Validator
 
 Before launching a new production with significant changes, it is worth to check the basic distributions compared to previous productions.

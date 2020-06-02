@@ -3,45 +3,32 @@
 # source AnalyserLauncher.sh
 
 # to run on the batch:
-# sbatch -p wn --account=cn-test -o logs/analyser.log -e logs/analyser.log --job-name=analyser --ntasks=10 AnalyserLauncher.sh
+# sbatch -p wn --account=t3 -o logs/analyser.log -e logs/analyser.log --job-name=analyser --ntasks=10 AnalyserLauncher.sh
 
 
 
 #----------- USER'S DECISION BOARD --------------//
 
 # What do you want to do? 
-doAnalyser=false
-doPlotter=true
+doAnalyser=true
+doPlotter=false
+
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T1_v2_t0_n30000"
-                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed1.0_thrXtalEBXtalEE_y2023_T2_v2_t11_n30000"
-                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t12_n30000"
-                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t13_n30000"
-                        "photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh1.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t14_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed2.0_thrXtalEBXtalEE_y2023_T2_v2_t22_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t23_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh2.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t24_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t33_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t34_n30000"
-                        #"photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t44_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v1_t0_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed1.0_thrRingEBXtalEE_y2023_T2_v1_t11_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed2.0_thrRingEBXtalEE_y2023_T2_v1_t12_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t13_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh1.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t14_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed2.0_thrRingEBXtalEE_y2023_T1_v1_t22_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t23_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh2.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t24_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t33_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t34_n30000"
-                        #"photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t44_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0"
                         )
+
 
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
-#inDirectory="/t3home/anlyon/CMSSW_10_6_1_patch1/src/RecoSimStudies/Dumpers/test/outputfiles/dumpedFiles/"
 # Choose one of the following matching strategies
 doMatching_simFraction=true
 doMatching_deltaR=false
@@ -52,24 +39,26 @@ doMatching_deltaR=false
 # Plotter parameters
 ######################
 
+do_writeFiles=true
+
 # ----- 1.  What do you want to plot? ----- #
-do_resolutionPlot=true
-do_scalePlot=true
-do_efficiencyPlot=true
-do_fakeRatePlot=true
+do_resolutionPlot=false
+do_scalePlot=false
+do_efficiencyPlot=false
+do_fakeRatePlot=false
 
 # Plotting the scale and resolution launches the fitting procedure. 
 # If you want to avoid that and only get the efficiency and fakeRate plot, turn this option to true
 do_efficiencyPlotOnly=false
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH SAME MATCHING, turn this option to true
-do_ratioPlot=true
+do_ratioPlot=false
 
 # If you want to produce the ratio plot between the two first files that you inserted WITH DIFFERENT MATCHING, turn this option to true. Requires do_ratioPlot to be set to true
 do_useDifMatching=false
 
 # If you want to scan over the different thresholds, turn this option to true
-do_scanThrs=true
+do_scanThrs=false
 
 # do you want to enable pop-up plots?
 do_popUpPlot=false
@@ -164,7 +153,7 @@ for iFile in ${FilesArray[@]}; do
       if [ "$doMatching_deltaR" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_deltaR"
       fi
-      echo $fileNameforPlotter >> file.txt
+      echo $fileNameforPlotter >> fileSamples.txt
       echo "#############################################################################################"
       echo "# " 
       echo "   Running Plotter on"
@@ -173,12 +162,12 @@ for iFile in ${FilesArray[@]}; do
       echo "#############################################################################################"
       
       if [ "$do_popUpPlot" = false ] ; then       
-         root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\")"
+         root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\", \"$do_writeFiles\")"
       fi 
       if [ "$do_popUpPlot" = true ] ; then
-         root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\")"
+         root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\", \"$do_writeFiles\")"
       fi 
-      rm file.txt
+      rm fileSamples.txt
    fi
  
 done
@@ -197,17 +186,17 @@ if [ "$doPlotter" = true ] && ([ "$do_ratioPlot" = true ] || [ "$do_scanThrs" = 
             fileNameforPlotter=$fileNameforPlotter"_deltaR"
          fi
       fi
-      echo $fileNameforPlotter >> file.txt
+      echo $fileNameforPlotter >> fileSamples.txt
    done
 
    if [ "$do_popUpPlot" = false ] ; then     
-      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\")"
+      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\", \"$do_writeFiles\")"
    fi
    if [ "$do_popUpPlot" = true ] ; then
-      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\")"
+      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", \"$do_resolutionPlot\", \"$do_scalePlot\", \"$do_efficiencyPlot\", \"$do_fakeRatePlot\", \"$do_efficiencyPlotOnly\", \"$do_ratioPlot\", \"$do_scanThrs\", \"$do_autoScale\", \"$do_writeFiles\")"
    fi 
 
-   rm file.txt
+   rm fileSamples.txt
  
 fi
 
