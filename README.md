@@ -1,6 +1,6 @@
 ## Installation 
-- go in your favorite CMSSW release repository, e.g CMSSW_10_0_1
-- cd CMSSW_10_0_1/src
+- go in your favorite CMSSW release repository, e.g CMSSW_10_6_1_patch1
+- cd CMSSW_10_6_1_patch1/src
 - cmsenv
 - git clone git@github.com:pfclustering/ECALPFClusterAnalysis.git
 
