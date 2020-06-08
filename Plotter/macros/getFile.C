@@ -18,9 +18,10 @@ void getFile(string fileName,
       map<TString, map<TString, Float_t>> map_rms, 
       map<TString, map<TString, Float_t>> map_rms_error, 
       vector<TString> ETranges, 
-      vector<TString> ETAranges){
+      vector<TString> ETAranges,
+      string user){
 
-   ofstream outFile("/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
+   ofstream outFile("/t3home/" + user + "/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
    outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate resolution_error efficiency_error noiseRate_error scale_error noiseOccupancy rms rms_error" << endl;
    TString label = fileName.c_str();
    TString filename;
