@@ -23,20 +23,12 @@ doRefThrs1 = False
 doModThrs1 = True
 
 sample1 = []
-#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t33_n30000_njd0")
-#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0")
-#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t33_n30000_njd0")
-#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t44_n30000_njd0")
                         
 sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0")
 sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0")
 sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0")
 sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0")
 
-#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t33_n30000")
-#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t44_n30000")
-#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000")
-#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000")
 
 #--------------
 
@@ -45,16 +37,6 @@ doRefThrs2 = False
 doModThrs2 = True
 
 sample2 = []
-#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T10_v1_t0_n30000_njd0")
-#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T10_v2_t0_n30000_njd0")
-
-#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t0_n30000")
-#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t0_n30000")
-
-#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0")
-#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0")
-#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0")
-#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0")
 
 sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t33_n30000_njd0")
 sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0")

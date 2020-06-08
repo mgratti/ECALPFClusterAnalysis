@@ -12,7 +12,7 @@
 user="anlyon"
 
 # What do you want to do? 
-doAnalyser=false
+doAnalyser=true
 doPlotter=true
 
 
