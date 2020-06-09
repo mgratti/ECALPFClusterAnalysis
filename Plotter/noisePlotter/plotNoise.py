@@ -10,7 +10,7 @@ if __name__ == '__main__':
   ROOT.gROOT.ProcessLine('setTDRStyle()')
   ROOT.gROOT.SetBatch(True)
 
-  tags = [ '2021', 'TL235', 'TL315', 'TL400', '2023', 'TL550']
+  tags = [ 'TL150', 'TL180', 'TL235', 'TL315', 'TL400', 'TL450', 'TL550']
   tags.reverse()
   colors = [   ROOT.kOrange+1, ROOT.kRed, ROOT.kMagenta+2, ROOT.kViolet+8, ROOT.kAzure-8, ROOT.kAzure+6 ,
                             ROOT.kGreen+1, ROOT.kSpring+4, ROOT.kYellow -5, ROOT.kYellow -3, ROOT.kYellow, ROOT.kOrange
@@ -33,6 +33,8 @@ if __name__ == '__main__':
     leg.AddEntry(graph, tag, 'LP')
     if i==0:
       graph.Draw('AL')
+      graph.GetXaxis().SetTitle('#eta')
+      graph.GetYaxis().SetTitle('Expected 1#sigma noise (GeV)')
     else:
       graph.Draw('same')
 
