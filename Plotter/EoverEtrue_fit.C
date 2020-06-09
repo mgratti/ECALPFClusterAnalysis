@@ -79,7 +79,8 @@ void EoverEtrue_fit(TString fineBinning_energy,
       TString ratioPlot, 
       TString scanThrs, 
       TString autoScale, 
-      TString writeFiles){
+      TString writeFiles,
+      string user){
 
    // we fetch argurments of the function
    Bool_t do_fineBinning_energy = fineBinning_energy=="true" ? true : false;
@@ -217,7 +218,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
    // define the output directory
    vector<string> outputdir;
    for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-      string outputdir_tmp = "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[iFile];
+      string outputdir_tmp = "/t3home/" + user + "/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[iFile];
       if(do_binningEt){
          outputdir_tmp += "_EtaEtBinned";
       }
@@ -280,11 +281,11 @@ void EoverEtrue_fit(TString fineBinning_energy,
          if(!file.is_open()){
             if(do_EB[iFile]){
                fitParameters_EB = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EB");
-               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, fitParameters_EB.map_rms, fitParameters_EB.map_rms_error, ETranges[iFile], ETAranges[iFile]);
+               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, fitParameters_EB.map_rms, fitParameters_EB.map_rms_error, ETranges[iFile], ETAranges[iFile], user);
             }
             else{
                fitParameters_EE = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EE");
-               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, fitParameters_EE.map_rms, fitParameters_EE.map_rms_error, ETranges[iFile], ETAranges[iFile]);
+               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, fitParameters_EE.map_rms, fitParameters_EE.map_rms_error, ETranges[iFile], ETAranges[iFile], user);
             }
          }
          else{
