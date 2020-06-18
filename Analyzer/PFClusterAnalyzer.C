@@ -278,8 +278,7 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    if(flag_doEE){
       h_PFClusters_caloMatched_size_EE    = new TH1F("h_PFClusters_caloMatched_size_EE","h_PFClusters_caloMatched_size_EE",50,0.,50.);
       h_PFClusters_caloMatched_nRecHit_EE = new TH1F("h_PFClusters_caloMatched_nRecHit_EE","h_PFClusters_caloMatched_nRecHit_EE",50,0.,50.);
-      //h_PFClusters_caloMatched_rawEnergy_EE  = new TH1F("h_PFClusters_caloMatched_rawEnergy_EE","h_PFClusters_caloMatched_rawEnergy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
-      h_PFClusters_caloMatched_energy_EE  = new TH1F("h_PFClusters_caloMatched_energy_EE","h_PFClusters_caloMatched_energy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
+      h_PFClusters_caloMatched_rawEnergy_EE  = new TH1F("h_PFClusters_caloMatched_rawEnergy_EE","h_PFClusters_caloMatched_rawEnergy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
       h_PFClusters_caloMatched_et_EE      = new TH1F("h_PFClusters_caloMatched_et_EE","h_PFClusters_caloMatched_et_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
       h_PFClusters_caloMatched_eta_EE     = new TH1F("h_PFClusters_caloMatched_eta_EE","h_PFClusters_caloMatched_eta_EE",300,-3.,3.);
       h_PFClusters_caloMatched_phi_EE     = new TH1F("h_PFClusters_caloMatched_phi_EE","h_PFClusters_caloMatched_phi_EE",128,-3.2,3.2);
@@ -879,8 +878,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                   h_PFClusters_caloMatched_nRecHit_vs_energy_EE->Fill(nOccurrences, filling_energy);
 
                   N_pfCl++;
-                  //h_PFClusters_caloMatched_rawEnergy_EE->Fill(filling_energy);
-                  h_PFClusters_caloMatched_energy_EE->Fill(filling_energy);
+                  h_PFClusters_caloMatched_rawEnergy_EE->Fill(filling_energy);
                   h_PFClusters_caloMatched_et_EE->Fill(filling_energy*TMath::Sin(2*TMath::ATan(TMath::Exp(-filling_eta))));
                   h_PFClusters_caloMatched_phi_EE->Fill(filling_phi);
                   h_PFClusters_caloMatched_eta_EE->Fill(filling_eta);
