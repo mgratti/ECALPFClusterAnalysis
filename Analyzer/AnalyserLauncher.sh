@@ -34,8 +34,8 @@ declare -a FilesArray=(
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
 # Choose one of the following matching strategies
-doMatching_simFraction=false
-doMatching_simFraction_withHF=true
+doMatching_simFraction=true
+doMatching_simFraction_withHF=false
 doMatching_deltaR=false
 
 
@@ -100,23 +100,23 @@ do_BGfit=false
 
 
 #if the user chooses more than one matching method, pick up the default value
-if [ "$doMatching_numberOfHits" = true ] ; then
+if [ "$doMatching_simFraction_withHF" = true ] ; then
    if [ "$doMatching_simFraction" = true ] || [ "$doMatching_deltaR" = true ] ; then
-      doMatching_numberOfHits=false
+      doMatching_simFraction_withHF=false
       doMatching_simFraction=true
       doMatching_deltaR=false
    fi
 fi
 if [ "$doMatching_simFraction" = true ] ; then
-   if [ "$doMatching_numberOfHits" = true ] || [ "$doMatching_deltaR" = true ] ; then
-      doMatching_numberOfHits=false
+   if [ "$doMatching_simFraction_withHF" = true ] || [ "$doMatching_deltaR" = true ] ; then
+      doMatching_simFraction_withHF=false
       doMatching_simFraction=true
       doMatching_deltaR=false
    fi
 fi
 if [ "$doMatching_deltaR" = true ] ; then
-   if [ "$doMatching_numberOfHits" = true ] || [ "$doMatching_simFraction" = true ] ; then
-      doMatching_numberOfHits=false
+   if [ "$doMatching_simFraction_withHF" = true ] || [ "$doMatching_simFraction" = true ] ; then
+      doMatching_simFraction_withHF=false
       doMatching_simFraction=true
       doMatching_deltaR=false
    fi
@@ -124,9 +124,6 @@ fi
 
 echo "Start" 
 
-if [ "$doMatching_numberOfHits" = true ] ; then
-   matchingMethod="simFraction"
-fi
 if [ "$doMatching_simFraction" = true ] ; then
    matchingMethod="simFraction"
 fi
@@ -151,9 +148,6 @@ for iFile in ${FilesArray[@]}; do
    fi
    if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = false ] && [ "$do_scanThrs" = false ] ; then
       fileNameforPlotter="histo_"$iFile
-      if [ "$doMatching_numberOfHits" = true ] ; then
-         fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
-      fi
       if [ "$doMatching_simFraction" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_simFraction"
       fi
@@ -186,9 +180,6 @@ if [ "$doPlotter" = true ] && ([ "$do_ratioPlot" = true ] || [ "$do_scanThrs" = 
    for iFile in ${FilesArray[@]}; do
       fileNameforPlotter="histo_"$iFile
       if [ "$do_useDifMatching" = false ] ; then
-         if [ "$doMatching_numberOfHits" = true ] ; then
-            fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
-         fi
          if [ "$doMatching_simFraction" = true ] ; then
             fileNameforPlotter=$fileNameforPlotter"_simFraction"
          fi
