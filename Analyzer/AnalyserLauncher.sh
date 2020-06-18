@@ -13,26 +13,29 @@ user="anlyon"
 
 # What do you want to do? 
 doAnalyser=true
-doPlotter=true
+doPlotter=false
 
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0"
+                        "photon_E1to100GeV_closeEcal_EEclose_noPU_thrsLumi2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l180_newDumper_n50"
+                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_thrsLumi2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l180_oldDumper_n50_njd0"
                         )
 
 
 # Enter the location of the dumped files
 inDirectory="/work/anlyon/dumpedFiles/"
 # Choose one of the following matching strategies
-doMatching_simFraction=true
+doMatching_simFraction=false
+doMatching_simFraction_withHF=true
 doMatching_deltaR=false
 
 
@@ -122,11 +125,13 @@ fi
 echo "Start" 
 
 if [ "$doMatching_numberOfHits" = true ] ; then
-   #matchingMethod="numberOfHits"
    matchingMethod="simFraction"
 fi
 if [ "$doMatching_simFraction" = true ] ; then
    matchingMethod="simFraction"
+fi
+if [ "$doMatching_simFraction_withHF" = true ] ; then
+   matchingMethod="simFraction_withHF"
 fi
 if [ "$doMatching_deltaR" = true ] ; then
    matchingMethod="deltaR"
@@ -151,6 +156,9 @@ for iFile in ${FilesArray[@]}; do
       fi
       if [ "$doMatching_simFraction" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_simFraction"
+      fi
+      if [ "$doMatching_simFraction_withHF" = true ] ; then
+         fileNameforPlotter=$fileNameforPlotter"_simFraction_wHF"
       fi
       if [ "$doMatching_deltaR" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_deltaR"
@@ -183,6 +191,9 @@ if [ "$doPlotter" = true ] && ([ "$do_ratioPlot" = true ] || [ "$do_scanThrs" = 
          fi
          if [ "$doMatching_simFraction" = true ] ; then
             fileNameforPlotter=$fileNameforPlotter"_simFraction"
+         fi
+         if [ "$doMatching_simFraction_withHF" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_simFraction_wHF"
          fi
          if [ "$doMatching_deltaR" = true ] ; then
             fileNameforPlotter=$fileNameforPlotter"_deltaR"
