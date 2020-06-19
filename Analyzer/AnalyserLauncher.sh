@@ -12,8 +12,8 @@
 user="anlyon"
 
 # What do you want to do? 
-doAnalyser=true
-doPlotter=false
+doAnalyser=false
+doPlotter=true
 
 
 # Enter the production label of the files that you want to analyse
@@ -26,8 +26,12 @@ declare -a FilesArray=(
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0"
-                        "photon_E1to100GeV_closeEcal_EEclose_noPU_thrsLumi2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l180_newDumper_n50"
+                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_thrsLumi2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l180_newDumper_n50"
                         #"photon_E1to100GeV_closeEcal_EEclose_noPU_thrsLumi2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l180_oldDumper_n50_njd0"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t33_n30000"
+                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t44_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t33_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t44_n30000"
                         )
 
 

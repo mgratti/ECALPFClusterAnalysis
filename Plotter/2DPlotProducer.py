@@ -898,7 +898,7 @@ if __name__ == "__main__":
 
       whichQuantities = ['']
       if printWithColour:
-         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'NoiseOccupancy', 'Scale', 'RMS']
+         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'Scale']
       
       for item in whichQuantities:
          if printWithColour:
