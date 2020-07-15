@@ -9,20 +9,73 @@
 
 #----------- USER'S DECISION BOARD --------------//
 
-user="anlyon"
+user="mratti"
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0"
-                        )
 
+# first batch
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v1_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v1_t44_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v2_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v2_t44_n30000_njd0"
+
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v1_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v1_t44_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v2_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v2_t44_n30000_njd0"
+
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v1_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v1_t44_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t44_n30000_njd0"
+
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t44_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v2_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v2_t44_n30000_njd0"
+
+
+# second batch
+"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v1_t33_n30000_njd0"
+"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v1_t44_n30000_njd0"
+"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v2_t33_n30000_njd0"
+"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v2_t44_n30000_njd0"
+
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v1_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v1_t44_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v2_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v2_t44_n30000_njd0"
+
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v1_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v1_t44_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v2_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v2_t44_n30000_njd0"
+
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v1_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v1_t44_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t33_n30000_njd0"
+#"photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t44_n30000_njd0"
+
+)
+
+#label="_T14_l235_thl180"
+#label="_T17_l180_thl235"
+#label="_T16_l450_thl400"
+#label="_T15_l400_thl450"
+#
+label="_T170_l180_thl180"
+#label="_T140_l235_thl235"
+#label="_T150_l400_thl400"
+#label="_T160_l450_thl450"
 
 do_writeFiles=false
 
@@ -101,7 +154,7 @@ if [ "$do_writeFiles" = true ] ; then
 
 fi
 
-python 2DPlotProducer.py --doResolutionPlot=$do_resolutionPlot --doScalePlot=$do_scalePlot --doEfficiencyPlot=$do_efficiencyPlot --doNoiseRatePlot=$do_noiseRatePlot --doRankingPlot=$do_rankingPlot --doSummaryPlot=$do_summaryPlot --doDecisionPlot=$do_decisionPlot --doPopUpPlot=$do_popUpPlot --doResoOverScale=$do_resoOverScale --doChi2Plot=$do_chi2Plot
+python 2DPlotProducer.py --doResolutionPlot=$do_resolutionPlot --doScalePlot=$do_scalePlot --doEfficiencyPlot=$do_efficiencyPlot --doNoiseRatePlot=$do_noiseRatePlot --doRankingPlot=$do_rankingPlot --doSummaryPlot=$do_summaryPlot --doDecisionPlot=$do_decisionPlot --doPopUpPlot=$do_popUpPlot --doResoOverScale=$do_resoOverScale --doChi2Plot=$do_chi2Plot --label=$label
 
 rm fileSamples.txt
  

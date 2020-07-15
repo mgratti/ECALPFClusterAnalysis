@@ -37,14 +37,14 @@
 #include <fstream>
 #include <algorithm>
 
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/objects.h"
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/utils.h"
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/performFit.C"
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/producePlot.C"
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/produceScanPlots.C"
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getFile.C"
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getBoundaries.C"
-#include "/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/plotterInit.C"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/objects.h"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/utils.h"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/performFit.C"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/producePlot.C"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/produceScanPlots.C"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getFile.C"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getBoundaries.C"
+#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/plotterInit.C"
 
 
 using namespace RooFit ;
@@ -218,7 +218,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
    // define the output directory
    vector<string> outputdir;
    for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-      string outputdir_tmp = "/t3home/" + user + "/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[iFile];
+      string outputdir_tmp = "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[iFile];
       if(do_binningEt){
          outputdir_tmp += "_EtaEtBinned";
       }

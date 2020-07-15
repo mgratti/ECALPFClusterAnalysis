@@ -65,5 +65,5 @@ if __name__ == "__main__":
       outputfile = file1.replace('EEfar', 'EEMerged')
    
    print "Going to merge files {file1} \n and {file2} \n into file {output}".format(file1=file1, file2=file2, output=outputfile)
-   os.system('hadd {output} {file1} {file2}'.format(output=outputfile, file1=opt.f1, file2=opt.f2))
+   os.system('hadd -f {output} {file1} {file2}'.format(output=outputfile, file1=opt.f1, file2=opt.f2))
    print "Done"

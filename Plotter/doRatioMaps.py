@@ -3,7 +3,7 @@ import os
 import collections
 import operator
 import numpy as np
-from math import sin, atan, exp, log
+from math import sin, atan, exp, log, sqrt
 
 sys.path.append('noisePlotter/')
 import getMergedGraph as noisePlotter
@@ -16,7 +16,14 @@ from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed,
 #---------------------------------------------------------#
 
 # choose label of z axis
-label = "TL235/TL180"
+#label = "TL235/TL180"
+#thrlabel = "180" # in reality is the label of the noise conditions of the sample
+#label = "TL180/TL235"
+#thrlabel = "235"
+#label = "TL450/TL400"
+#thrlabel = "400"
+label = "TL400/TL450"
+thrlabel = "450"
 
 ### file1 ###
 doRefThrs1 = False
@@ -24,11 +31,26 @@ doModThrs1 = True
 
 sample1 = []
                         
-sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0")
-sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0")
-sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0")
-sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v1_t33_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v1_t44_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v2_t33_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T17_v2_t44_n30000_njd0")
 
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v1_t33_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v1_t44_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v2_t33_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T14_v2_t44_n30000_njd0")
+
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t33_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t44_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v2_t33_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v2_t44_n30000_njd0")
+
+sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v1_t33_n30000_njd0")
+sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v1_t44_n30000_njd0")
+sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t33_n30000_njd0")
+sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t44_n30000_njd0")
+#
 
 #--------------
 
@@ -38,15 +60,34 @@ doModThrs2 = True
 
 sample2 = []
 
-sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t33_n30000_njd0")
-sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0")
-sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t33_n30000_njd0")
-sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t44_n30000_njd0")
+
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v1_t33_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v1_t44_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v2_t33_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi180_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l180_T170_v2_t44_n30000_njd0")
+
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v1_t33_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v1_t44_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v2_t33_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l235_T140_v2_t44_n30000_njd0")
+##
+#
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v1_t33_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v1_t44_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v2_t33_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v2_t44_n30000_njd0")
+
+sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v1_t33_n30000_njd0")
+sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v1_t44_n30000_njd0")
+sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t33_n30000_njd0")
+sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t44_n30000_njd0")
+
 
 #--------------
 
 # choose to define the resolution as sigma (=False) or sigma/mu (=True)
 do_resoOverScale = 'True'
+do_absDiffNoise = 'True'
 
 #---------------------------------------------------------#
 
@@ -282,7 +323,7 @@ if __name__ == "__main__":
    gROOT.SetBatch(True)
 
    #outputdirectory
-   outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/ratioMaps'
+   outputdir = '/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/ratioMaps/ratioMaps_{}'.format(label.replace('/','over'))
    os.system('mkdir {}'.format(outputdir))
 
    # file dir
@@ -437,13 +478,17 @@ if __name__ == "__main__":
 
             if ETrange1 == ETrange2:
                if ETArange1 == ETArange2:
-                  if float(quantity2) != 0:
-                     ratio = (float(quantity1)/float(quantity2)-1)*100
-                     ratio_err = 100*float(error1)/float(quantity2) + 100*float(quantity1)*float(error2)/(float(quantity2)*float(quantity2)) 
+                  if item == 'NoiseRate' and do_absDiffNoise=='True':
+                     ratio = (float(quantity1)-float(quantity2))
+                     ratio_err = sqrt(float(error1)*float(error1) + float(error2)*float(error2))
                   else:
-                     ratio = 0.0
-                  if ratio == 0.0:
-                     ratio = 0.0001
+                     if float(quantity2) != 0:
+                        ratio = (float(quantity1)/float(quantity2)-1)*100
+                        ratio_err = 100*float(error1)/float(quantity2) + 100*float(quantity1)*float(error2)/(float(quantity2)*float(quantity2)) 
+                     else:
+                        ratio = 0.0
+                     if ratio == 0.0:
+                        ratio = 0.0001
                   filer.write('{a} {b} {c} {d} \n'.format(a=ETrange1, b=ETArange1, c=(ratio), d=(ratio_err)))
       filer.close()
    
@@ -505,9 +550,14 @@ if __name__ == "__main__":
       histo_summary.GetYaxis().SetTitleSize(0.04)
       histo_summary.GetYaxis().SetTitleOffset(1.2)
 
-      #label2 = label
-      #histo_summary.GetZaxis().SetTitle('{a} Ratio {b} [%]'.format(a=item, b=label))
-      histo_summary.GetZaxis().SetTitle(" {a} Ratio {b} [%]".format(a=item, b=label2))
+      if item=='NoiseRate' and do_absDiffNoise=='True':
+        label2 = label2.replace('/', '-')
+        label3 = 'Abs. diff.' 
+        label4 = ''
+      else:
+        label3 = 'Rel. diff.'  # was 'Ratio'
+        label4 = '[%]'
+      histo_summary.GetZaxis().SetTitle(" {a} {c} {b} {d}".format(a=item, b=label2, c=label3, d=label4))
       histo_summary.GetZaxis().SetTitleSize(0.04)
       histo_summary.GetZaxis().SetTitleOffset(1.2)
       if item == 'Resolution':
@@ -515,7 +565,10 @@ if __name__ == "__main__":
       elif item == 'Efficiency':
          histo_summary.GetZaxis().SetRangeUser(-100.001,0.001)
       elif item == 'NoiseRate':
-         histo_summary.GetZaxis().SetRangeUser(-100,0.001)
+         if do_absDiffNoise == 'True':
+           histo_summary.GetZaxis().SetRangeUser(-10,10)
+         else:
+           histo_summary.GetZaxis().SetRangeUser(-100,0.001)
       elif item == 'Scale':
          histo_summary.GetZaxis().SetRangeUser(-10, 0)
 
@@ -625,7 +678,6 @@ if __name__ == "__main__":
       f_ET_10.SetLineColor(kMagenta)
       f_ET_10.Draw('same')
 
-
       legend1 = TLegend(0.1, 0.85, 0.4, 0.9)
       legend1.AddEntry('f_ET_2', 'E_{T} = 2GeV', 'l')
       legend1.SetTextSize(0.025);
@@ -651,7 +703,7 @@ if __name__ == "__main__":
       legend3.Draw('same')
 
       # noise curves
-      inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023/graphs.root'
+      inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_TL{tl}/graphs.root'.format(tl=thrlabel)
       #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2021/graphs.root'
       graphEB = noisePlotter.getGraph(inputFileName, graphName='gr_EB_Object', doSmoothing=True)
       graphEE= noisePlotter.getGraph(inputFileName, graphName='gr_EE_Object', doSmoothing=True)
@@ -666,25 +718,25 @@ if __name__ == "__main__":
       mergedGraph1.SetMarkerSize(1.2)
       mergedGraph1.SetMarkerStyle(8)
       mergedGraph1.SetMarkerColor(1)
-      #mergedGraph1.Draw('C')
+      mergedGraph1.Draw('C')
 
       mergedGraph2.SetLineWidth(4)
       mergedGraph2.SetMarkerSize(1.2)
       mergedGraph2.SetMarkerStyle(8)
       mergedGraph2.SetMarkerColor(1)
-      #mergedGraph2.Draw('C')
+      mergedGraph2.Draw('C')
 
       mergedGraph3.SetLineWidth(4)
       mergedGraph3.SetMarkerSize(1.2)
       mergedGraph3.SetMarkerStyle(8)
       mergedGraph3.SetMarkerColor(1)
-      #mergedGraph3.Draw('C')
+      mergedGraph3.Draw('C')
 
       mergedGraph4.SetLineWidth(4)
       mergedGraph4.SetMarkerSize(1.2)
       mergedGraph4.SetMarkerStyle(8)
       mergedGraph4.SetMarkerColor(1)
-      #mergedGraph4.Draw('C')
+      mergedGraph4.Draw('C')
      
 
       legend4 = TLegend(0.1, 0.7, 0.4, 0.75)
@@ -693,7 +745,7 @@ if __name__ == "__main__":
       legend4.SetLineColor(0);
       legend4.SetFillColorAlpha(0,0);
       legend4.SetBorderSize(0);
-      #legend4.Draw('same')
+      legend4.Draw('same')
      
 
       if item == 'Resolution': 

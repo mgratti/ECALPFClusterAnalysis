@@ -21,7 +21,7 @@ void getFile(string fileName,
       vector<TString> ETAranges,
       string user){
 
-   ofstream outFile("/t3home/" + user + "/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
+   ofstream outFile("/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/samples/" + fileName + ".txt"); 
    outFile << "ETranges ETAranges chi2 resolution scale efficiency noiseRate resolution_error efficiency_error noiseRate_error scale_error noiseOccupancy rms rms_error" << endl;
    TString label = fileName.c_str();
    TString filename;
