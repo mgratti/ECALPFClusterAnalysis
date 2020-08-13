@@ -193,6 +193,14 @@ class PFClusterAnalyzer : public TSelector {
       TH1F* h_PFClusters_caloMatched_EEP_phi;
       TH1F* h_PFClusters_caloMatched_EEP_eOverEtrue;
 
+      TH1F* h_PFClusters_score_simFraction_EB;
+      TH1F* h_PFClusters_score_simFraction_withHF_EB;
+      TH1F* h_PFClusters_score_ratio_EB;
+      TH1F* h_PFClusters_score_simFraction_EE;
+      TH1F* h_PFClusters_score_simFraction_withHF_EE;
+      TH1F* h_PFClusters_score_ratio_EE;
+      
+      
       // calo particles
       TH1F* h_caloParticle_size_EB;
       TH1F* h_caloParticle_genEnergy_EB;

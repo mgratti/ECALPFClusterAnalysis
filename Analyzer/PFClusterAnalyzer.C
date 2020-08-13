@@ -271,6 +271,10 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
 
    // initialize histograms
    if(flag_doEE){
+      h_PFClusters_score_simFraction_EE = new TH1F("h_PFClusters_score_simFraction_EE","h_PFClusters_score_simFraction_EE",150,0.,1.1);
+      h_PFClusters_score_simFraction_withHF_EE = new TH1F("h_PFClusters_score_simFraction_withHF_EE","h_PFClusters_score_simFraction_withHF_EE",150,0.,1.1);
+      h_PFClusters_score_ratio_EE = new TH1F("h_PFClusters_score_ratio_EE","h_PFClusters_score_ratio_EE",150,0.,1.1);
+
       h_PFClusters_caloMatched_size_EE    = new TH1F("h_PFClusters_caloMatched_size_EE","h_PFClusters_caloMatched_size_EE",50,0.,50.);
       h_PFClusters_caloMatched_nRecHit_EE = new TH1F("h_PFClusters_caloMatched_nRecHit_EE","h_PFClusters_caloMatched_nRecHit_EE",50,0.,50.);
       h_PFClusters_caloMatched_rawEnergy_EE  = new TH1F("h_PFClusters_caloMatched_rawEnergy_EE","h_PFClusters_caloMatched_rawEnergy_EE",nBins_energy,rangeMin_energy,rangeMax_energy);
@@ -303,6 +307,10 @@ void PFClusterAnalyzer::SlaveBegin(TTree * /*tree*/)
    }
 
    if(flag_doEB){
+      h_PFClusters_score_simFraction_EB = new TH1F("h_PFClusters_score_simFraction_EB","h_PFClusters_score_simFraction_EB",150,0.,1.2);
+      h_PFClusters_score_simFraction_withHF_EB = new TH1F("h_PFClusters_score_simFraction_withHF_EB","h_PFClusters_score_simFraction_withHF_EB",150,0.,1.2);
+      h_PFClusters_score_ratio_EB = new TH1F("h_PFClusters_score_ratio_EB","h_PFClusters_score_ratio_EB",150,0.,1.1);
+      
       h_PFClusters_caloMatched_size_EB    = new TH1F("h_PFClusters_caloMatched_size_EB","h_PFClusters_caloMatched_size_EB",50,0.,50.);
       h_PFClusters_caloMatched_nRecHit_EB = new TH1F("h_PFClusters_caloMatched_nRecHit_EB","h_PFClusters_caloMatched_nRecHit_EB",50,0.,50.);
       h_PFClusters_caloMatched_rawEnergy_EB  = new TH1F("h_PFClusters_caloMatched_rawEnergy_EB","h_PFClusters_caloMatched_rawEnergy_EB",nBins_energy,rangeMin_energy,rangeMax_energy);
@@ -668,6 +676,16 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                else if(flag_use_simfraction_wHF){
                   pair_clusterIndex_score_tmp.second = pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP];
                }
+               if(flag_doEB){
+                  h_PFClusters_score_simFraction_EB->Fill(pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
+                  h_PFClusters_score_simFraction_withHF_EB->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]);
+                  h_PFClusters_score_ratio_EB->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]/pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
+               }
+               else if(flag_doEE){
+                  //h_PFClusters_score_simFraction_EE->Fill(pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
+                  //h_PFClusters_score_simFraction_withHF_EE->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]);
+                  //h_PFClusters_score_ratio_EE->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]/pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
+               }
                // we apply cut on score > score_thrs
                if(pair_clusterIndex_score_tmp.second > score_thrs){
                   pair_clusterIndex_score.push_back(pair_clusterIndex_score_tmp);
@@ -676,6 +694,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }
 
          sort(pair_clusterIndex_score.begin(), pair_clusterIndex_score.end(), sortbysecdesc);
+         h_PFClusters_score_simFraction_EE->Fill(pair_clusterIndex_score[0].second);
+         //h_PFClusters_score_simFraction_withHF_EE->Fill();
+
          //if(input_vector.size()>2){ 
          // cout << "sorted: " << endl;
          // for(unsigned int iSort(0); iSort<pair_clusterIndex_score.size(); ++iSort){
