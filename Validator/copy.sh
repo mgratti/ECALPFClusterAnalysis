@@ -1,6 +1,6 @@
 # assumes eos mounted on t3home
-dirname="2021_vs_2023"
+dirname="old_vs_newFromScratch"
 
-cp -r $dirname /t3home/mratti/eos/www/EcalDPG/validation/.
-cp HTACCESS /t3home/mratti/eos/www/EcalDPG/validation/$dirname/.htaccess
+cp -r $dirname /eos/home-m/mratti/www/EcalDPG/validation/.
+cp HTACCESS /eos/home-m/mratti/www/EcalDPG/validation/$dirname/.htaccess
 

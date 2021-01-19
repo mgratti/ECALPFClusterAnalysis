@@ -77,46 +77,85 @@ Multiple tasks are handled by this sub-package:
 * write in txt files values of proposed thresholds to be sent to conveners for tag creation
 * plot noise curves
 
+##### 1) Dump the thresholds
+```
+cd $CMSSW_BASE/src/
+```
+Follow instructions https://github.com/ferriff/usercode#dumper-setup to setup the ```conddb_dumper```.
 
-1) Start from noise tags produced by Amina, with x-tal dependent thresholds, e.g. EcalPFRecHitThresholds_TL235_mixed
-and get corresponding txt files following /work/mratti/cmssw_workarea/RECORD_DEVs/CMSSW_10_6_0/src/usercode/useful.sh
-and copy EB and EE txt files to RecoSimStudies/Dumpers/data/noise/
+Start from existing threshold tags produced with x-tal by x-tal thresholds, e.g. ```EcalPFRecHitThresholds_TL235_mixed``` ( [link to conddb entry](https://cms-conddb.cern.ch/cmsDbBrowser/list/Prod/tags/EcalPFRecHitThresholds_TL235_mixed) )
 
-2) for EB only, perform the average over the ring; the outliers, aka crystals more than 5 sigma away from the average, keep their own threshold.
-The file for the ring average will be created, copied to $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/ and used for the sample production
+Set the list of tags to dump:
+```
+LUMIS="TL150 TL235 TL315 TL400 TL450 TL550"
+```
+
+Use the ```conddb_dumper```
+```
+for i in $LUMIS
+do
+  echo $i
+  conddb_dumper -O EcalPFRecHitThresholds -t EcalPFRecHitThresholds_${i}_mixed
+  head -61200 dump_EcalPFRecHitThresholds__since_00000001_till_18446744073709551615.dat > PFRecHitThresholds_EB_${i}.txt
+  tail -14648 dump_EcalPFRecHitThresholds__since_00000001_till_18446744073709551615.dat > PFRecHitThresholds_EE_${i}.txt
+  rm dump_EcalPFRecHitThresholds__since_00000001_till_18446744073709551615.dat
+done
+```
+Copy the just obtained txt files for usage in the sample production:
+```
+cp PFRecHitThresholds_E*.txt $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/
+```
+
+Note that for TL180, the name of the original tag has a different convention: ```EcalPFRecHitThresholds_UL_2018_2e3sig```, so for this one the dumping has to be performed separately.
+
+
+##### 2) Perform the ring average and outlier removal for EB
+For EB only, perform the average over the ring; the outliers, aka crystals more than 5 sigma away from the average, keep their own threshold.
+The file for the ring average will be created, copied to $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/ and thus made available for use in the sample production.
 
 ```
-for i in TL235 TL315 TL400 TL550;
+cd $CMSSW_BASE/src/ECALPFClusterAnalysis/Plotter/noisePlotter/
+
+for i in $LUMIS
 do
   echo "*********************************"
   echo $i
-  cd Plotter/noisePlotter/getEBRingAverage
+  cd getEBRingAverage
   cp $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EB_$i.txt .
   root -l -b -q plotObject_untouched_ringaverage.cxx\(\"PFRecHitThresholds_EB_$i.txt\"\)
   root -l -b -q root2txt.C
   cp productCleaned.txt $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EB_ringaveraged_$i.txt
   cat $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EB_ringaveraged_$i.txt $CMSSW_BASE/src/RecoSimStudies/Dumpers/data/noise/PFRecHitThresholds_EE_$i.txt > ../PFRecHitThresholds_EB_ringaveraged_EE_$i.txt
-  cd ../../..
+  cd ..
   #
 done
 ```
 
-
-Now we can plot the thresholds and create new txt files with different noise multipliers.
+##### 3) Create new threshold files with new sigma multipliers
+Now we can create new txt files with different noise multipliers which will be sent to conveners and used to create new PFRecHit db records.
+This step also create graphs with ring averages performed for plotting purposes.
 Keep in mind that for EB we will always assume that the ring average has been performed with the correct outlier treatment, while for EE not.
 
-3) Make the noise curves and produce a txt file with proposed thresholds. 
-This will produce an intermediate directory with the outputs within.
+If needed, edit ```plotNoiseAverage.cxx``` to change the noise multipliers in getPropThrValue(), then run it:
 ```
-cd Plotter/noisePlotter
-root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_${i}.txt\"\)
+for i in $LUMIS
+do
+  root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_${i}.txt\"\)
+done
 ```
+Output will be a directory of the form PFRecHitThresholds_EB_ringaveraged_EE_${i}, containing:
+  * ```proposedThresholds_34sigma.txt``` => file for thresholds
+  * ```graphs.root``` => containing ROOT TGraphs with ring averages separately for sub-detectors
 
-4) Then smooth the noise graph and merge EB and EE in a single one.
+##### 4) Plot the noise graphs
+Then smooth the noise graph and merge EB and EE in a single one.
 ```
-python getMergedGraph.py -t PFRecHitThresholds_EB_ringaveraged_EE_${i}
+for i in $LUMIS
+do
+  python getMergedGraph.py -t PFRecHitThresholds_EB_ringaveraged_EE_${i}
+done
 ```
-Output is in ```PFRecHitThresholds_EB_ringaveraged_EE_TL235/mergedGraphs.root```
+Output is in ```PFRecHitThresholds_EB_ringaveraged_EE_${i}/mergedGraphs.root```
 Graphs to be used are ```merged_smooth_i``` where i is the multiplier of the sigma noise, to be drawn with "AL" options.
 
 ### SingleEventAnalyzer

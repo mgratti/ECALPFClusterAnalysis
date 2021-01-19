@@ -7,36 +7,37 @@ ix/ieta iy/iphi   iz/0       Value        rawId
 All xtals of EB first and all xtals of EE second
 
 The script assumes that the input Value corresponds to:
-   - 2 sigma of the noise in EB
-   - 2/3 sigma of the noise in EE, for |eta|<2.5/|eta|>2.5
+   - 2.2 sigma of the noise in EB (that is 2 sigma + 10% margin, Run-2 configuration)
+   - 2.2/3.3 sigma of the noise in EE, for |eta|<2.5/|eta|>2.5 (that is 2/3 sigma + 10% margin, Run-2 configuration)
 
 Performs average over ring
 
-Outputs separate TGraphs for EB and EE at 1 sigma of the noise, as a function of eta 
+Outputs separate TGraphs for EB and EE at 1.0 sigma of the noise, as a function of eta 
 
-Also outputs the proposed thresholds for Run-3 in a txt file (3,4) x sigma_current_year
+Also outputs the proposed thresholds for Run-3 in a txt file (3.0,4.0) x sigma_current_year
 
 root -l -b -q plotNoiseAverage.cxx\(\"PFRecHitThresholds_EB_ringaveraged_EE_2023.txt\"\)
 
 */
 
-
-float getNoiseValue(float value, int ix_ieta, int iy_iphi, bool isEB, float outSigma=1.){
+// for plotting purposes
+float getNoiseValue(float value, int ix_ieta, int iy_iphi, bool isEB){
 
   float noiseValue=0;
   if(isEB)
-    noiseValue = value/2.*outSigma;
+    noiseValue = value/2.2;  // Remember that inputs assumed a 10% margin on sigma
   else{
     float eta= -log(tan(0.5*atan(sqrt((ix_ieta-50.5)*(ix_ieta-50.5)+(iy_iphi-50.5)*(iy_iphi-50.5))*2.98/328.)));
     if(abs(eta)<2.5)
-      noiseValue = value/2.*outSigma;
+      noiseValue = value/2.2; // Remember that inputs assumed a 10% margin on sigma 
     else
-      noiseValue = value/3.*outSigma;
+      noiseValue = value/3.3; // Remember that inputs assumed a 10% margin on sigma 
   }
   return noiseValue;
 }
 
-float getPropThrValue(float value, int ix_ieta, int iy_iphi, bool isEB, float outSigma=1.){
+// for writing the new threshold
+float getPropThrValue(float value, int ix_ieta, int iy_iphi, bool isEB){
 
   // proposed thresholds for Run3:
   //   - 3.0 x sigma_2023 for eta<2.5
@@ -44,13 +45,13 @@ float getPropThrValue(float value, int ix_ieta, int iy_iphi, bool isEB, float ou
 
   float noiseValue=0;
   if(isEB)
-    noiseValue = value/2.2*3.;
+    noiseValue = value/2.2*3.; // Remember that inputs assumed a 10% margin on sigma 
   else{
     float eta= -log(tan(0.5*atan(sqrt((ix_ieta-50.5)*(ix_ieta-50.5)+(iy_iphi-50.5)*(iy_iphi-50.5))*2.98/328.)));
     if(abs(eta)<2.5)
-      noiseValue = value/2.2*3.;
+      noiseValue = value/2.2*3.; // Remember that inputs assumed a 10% margin on sigma 
     else {
-      noiseValue = value/3.3*4.;  
+      noiseValue = value/3.3*4.; // Remember that inputs assumed a 10% margin on sigma  
       std::cout << "eta= " << eta << " " << ix_ieta << " " << iy_iphi << " " << noiseValue << std::endl;
     }
   }
@@ -58,7 +59,7 @@ float getPropThrValue(float value, int ix_ieta, int iy_iphi, bool isEB, float ou
 }
 
 
-void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer__since_00000001_till_18446744073709551615.dat", float outSigma=1.)
+void plotNoiseAverage(std::string nameInputFile = "dump_EcalCondObjectContainer__since_00000001_till_18446744073709551615.dat")
 {
 
   gStyle->SetOptStat(0);

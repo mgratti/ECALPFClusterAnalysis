@@ -46,6 +46,7 @@ def getOptions():
    parser.add_argument('--doChi2Plot', type=str, dest='doChi2Plot', help='chi2 as a function of quantity ratio', default='True')
    parser.add_argument('--doResoOverScale', type=str, dest='doResoOverScale', help='use reso/scale?', default='True')
    parser.add_argument('--doPopUpPlot', type=str, dest='doPopUpPlot', help='want plots to pop up?', default='True')
+   parser.add_argument('--label', type=str, dest='label', help='label', default='')
    return parser.parse_args()
 
 
@@ -295,7 +296,7 @@ if __name__ == "__main__":
       gROOT.SetBatch(True)
 
    #outputdirectory
-   outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/2DScan'
+   outputdir = '/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/2DScan{l}/'.format(l=opt.label)
    #outputdir = '/afs/cern.ch/user/a/anlyon/CMSSW_10_6_1_patch1/src/Plotter/myPlots/2DScan'
    os.system('mkdir {}'.format(outputdir))
 
@@ -1164,7 +1165,7 @@ if __name__ == "__main__":
 
          # noise curves
          #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023/graphs.root'
-         inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2021/graphs.root'
+         inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_TL{tl}/graphs.root'.format(tl=opt.label.split('thl')[1])
          graphEB = noisePlotter.getGraph(inputFileName, graphName='gr_EB_Object', doSmoothing=True)
          graphEE= noisePlotter.getGraph(inputFileName, graphName='gr_EE_Object', doSmoothing=True)
          
