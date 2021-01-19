@@ -5,7 +5,9 @@ import ROOT
 graph_saver = []
 
 def getGraph(inputfileName,graphName,doSmoothing=False):
-
+  '''
+  gets the graph from file and optionally applies a smoothing
+  '''
   f = ROOT.TFile.Open(inputfileName,'r')
   graph = f.Get(graphName)
   if graph==None: raise RuntimeError('no graph was found')
@@ -33,7 +35,9 @@ def saveGraphs(outputfileName, graphs):
 
 
 def mergeGraphs(g1,g2,suffix='',mult=1):
-
+  '''
+  merges graph g1 and g2, returns merged*mult
+  '''
   g = ROOT.TGraph()
   if mult == 3.3: mult_forName = '3p3'
   elif mult == 4.4: mult_forName = '4p4'
