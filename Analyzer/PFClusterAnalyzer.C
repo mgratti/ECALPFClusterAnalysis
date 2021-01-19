@@ -682,9 +682,9 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
                   h_PFClusters_score_ratio_EB->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]/pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
                }
                else if(flag_doEE){
-                  //h_PFClusters_score_simFraction_EE->Fill(pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
-                  //h_PFClusters_score_simFraction_withHF_EE->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]);
-                  //h_PFClusters_score_ratio_EE->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]/pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
+                  h_PFClusters_score_simFraction_EE->Fill(pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
+                  h_PFClusters_score_simFraction_withHF_EE->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]);
+                  h_PFClusters_score_ratio_EE->Fill(pfCluster_sim_fraction[input_vector[iPF]][icP]/pfCluster_sim_fraction_noHitsFraction[input_vector[iPF]][icP]);
                }
                // we apply cut on score > score_thrs
                if(pair_clusterIndex_score_tmp.second > score_thrs){
@@ -694,7 +694,7 @@ Bool_t PFClusterAnalyzer::Process(Long64_t entry)
          }
 
          sort(pair_clusterIndex_score.begin(), pair_clusterIndex_score.end(), sortbysecdesc);
-         h_PFClusters_score_simFraction_EE->Fill(pair_clusterIndex_score[0].second);
+         //h_PFClusters_score_simFraction_EE->Fill(pair_clusterIndex_score[0].second);
          //h_PFClusters_score_simFraction_withHF_EE->Fill();
 
          //if(input_vector.size()>2){ 
