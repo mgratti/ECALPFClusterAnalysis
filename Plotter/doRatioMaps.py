@@ -16,7 +16,7 @@ from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed,
 #---------------------------------------------------------#
 
 # choose label of z axis
-label = "TL235/TL180"
+label = "condTL450/condTL400"
 
 ### file1 ###
 doRefThrs1 = False
@@ -24,11 +24,31 @@ doModThrs1 = True
 
 sample1 = []
                         
-sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0")
-sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0")
-sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0")
-sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0")
 
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t33_n30000_simFraction_wHF.txt")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t44_n30000_simFraction_wHF.txt")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t33_n30000_simFraction_wHF.txt")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t44_n30000_simFraction_wHF.txt")
+
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t33_n30000_simFraction.txt")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v1_t44_n30000_simFraction.txt")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t33_n30000_simFraction.txt")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T9_v2_t44_n30000_simFraction.txt")
+
+sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v1_t33_n30000_njd0_simFraction.txt")
+sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v1_t44_n30000_njd0_simFraction.txt")
+sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t33_n30000_njd0_simFraction.txt")
+sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t44_n30000_njd0_simFraction.txt")
+
+
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t33_n30000_njd0_simFraction.txt")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t44_n30000_njd0_simFraction.txt")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v2_t33_n30000_njd0_simFraction.txt")
+#sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v2_t44_n30000_njd0_simFraction.txt")
 
 #--------------
 
@@ -38,10 +58,30 @@ doModThrs2 = True
 
 sample2 = []
 
-sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t33_n30000_njd0")
-sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0")
-sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t33_n30000_njd0")
-sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t44_n30000_njd0")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t33_n30000_njd0_simFraction.txt")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0_simFraction.txt")
+#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t33_n30000_njd0_simFraction.txt")
+#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v2_t44_n30000_njd0_simFraction.txt")
+
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t33_n30000_simFraction.txt")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t44_n30000_simFraction.txt")
+#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t33_n30000_simFraction.txt")
+#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t44_n30000_simFraction.txt")
+
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t33_n30000_simFraction.txt")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t44_n30000_simFraction.txt")
+#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t33_n30000_simFraction.txt")
+#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t44_n30000_simFraction.txt")
+
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v1_t33_n30000_njd0_simFraction.txt")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v1_t44_n30000_njd0_simFraction.txt")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t33_n30000_njd0_simFraction.txt")
+#sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t44_n30000_njd0_simFraction.txt")
+
+sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v1_t33_n30000_njd0_simFraction.txt")
+sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v1_t44_n30000_njd0_simFraction.txt")
+sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v2_t33_n30000_njd0_simFraction.txt")
+sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T150_v2_t44_n30000_njd0_simFraction.txt")
 
 #--------------
 
@@ -82,7 +122,8 @@ def getSampleItems(inputsamples):
    Seeding = []
 
    for sample in inputsamples:
-      inputfile = 'samples/histo_' + sample[0:len(sample)] + '_simFraction.txt'
+      #inputfile = 'samples/histo_' + sample[0:len(sample)] + '_simFraction.txt'
+      inputfile = 'samples/histo_' + sample[0:len(sample)] 
 
       #we get the seeding and pfrechit thresholds from the fileName
       indexSeedinf = inputfile.find('seed', 0)
@@ -511,9 +552,9 @@ if __name__ == "__main__":
       histo_summary.GetZaxis().SetTitleSize(0.04)
       histo_summary.GetZaxis().SetTitleOffset(1.2)
       if item == 'Resolution':
-         histo_summary.GetZaxis().SetRangeUser(-100,50)
+         histo_summary.GetZaxis().SetRangeUser(-100,30)
       elif item == 'Efficiency':
-         histo_summary.GetZaxis().SetRangeUser(-100.001,0.001)
+         histo_summary.GetZaxis().SetRangeUser(-10.001,0.001)
       elif item == 'NoiseRate':
          histo_summary.GetZaxis().SetRangeUser(-100,0.001)
       elif item == 'Scale':

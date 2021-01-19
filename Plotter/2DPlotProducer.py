@@ -852,10 +852,11 @@ if __name__ == "__main__":
 
       printWithColour = True  #true means plotting the z scale (reso/eff/noise maps)
       printFromTable = True   #true means taking fixed pairs of thresholds from table instead of outcome of selection
-      printWithNumber = True #true means plotting pair, false means plotting number of z dimension
+      printWithNumber = True #true means plotting number of z dimension
       printPair = False
       printError = False
       printChi2 = False
+      doPlotCurves = True
 
 
       if printWithColour == False:
@@ -898,7 +899,7 @@ if __name__ == "__main__":
 
       whichQuantities = ['']
       if printWithColour:
-         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'NoiseOccupancy', 'Scale', 'RMS']
+         whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'Scale']
       
       for item in whichQuantities:
          if printWithColour:
@@ -1120,17 +1121,19 @@ if __name__ == "__main__":
          # we plot transverse energy at given values
          f_ET_2 = TF1('f_ET_2', '2/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
          f_ET_2.SetLineWidth(4)
-         f_ET_2.Draw('same')
 
          f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
          f_ET_5.SetLineWidth(4)
          f_ET_5.SetLineColor(kBlue)
-         f_ET_5.Draw('same')
 
          f_ET_10 = TF1('f_ET_10', '10/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
          f_ET_10.SetLineWidth(4)
          f_ET_10.SetLineColor(kMagenta)
-         f_ET_10.Draw('same')
+
+         if doPlotCurves:
+           f_ET_2.Draw('same')
+           f_ET_5.Draw('same')
+           f_ET_10.Draw('same')
 
 
          legend1 = TLegend(0.1, 0.85, 0.4, 0.9)
@@ -1139,7 +1142,6 @@ if __name__ == "__main__":
          legend1.SetLineColor(0);
          legend1.SetFillColorAlpha(0, 0);
          legend1.SetBorderSize(0);
-         legend1.Draw('same')
 
          legend2 = TLegend(0.1, 0.8, 0.4, 0.85)
          legend2.AddEntry('f_ET_5', 'E_{T} = 5GeV', 'l')
@@ -1147,7 +1149,6 @@ if __name__ == "__main__":
          legend2.SetLineColor(0);
          legend2.SetFillColorAlpha(0, 0);
          legend2.SetBorderSize(0);
-         legend2.Draw('same')
 
          legend3 = TLegend(0.1, 0.75, 0.4, 0.8)
          legend3.AddEntry('f_ET_10', 'E_{T} = 10GeV', 'l')
@@ -1155,7 +1156,11 @@ if __name__ == "__main__":
          legend3.SetLineColor(0);
          legend3.SetFillColorAlpha(0, 0);
          legend3.SetBorderSize(0);
-         legend3.Draw('same')
+
+         if doPlotCurves:
+            legend1.Draw('same')
+            legend2.Draw('same')
+            legend3.Draw('same')
 
          # noise curves
          #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023/graphs.root'
@@ -1173,26 +1178,27 @@ if __name__ == "__main__":
          mergedGraph1.SetMarkerSize(1.2)
          mergedGraph1.SetMarkerStyle(8)
          mergedGraph1.SetMarkerColor(1)
-         mergedGraph1.Draw('C')
 
          mergedGraph2.SetLineWidth(4)
          mergedGraph2.SetMarkerSize(1.2)
          mergedGraph2.SetMarkerStyle(8)
          mergedGraph2.SetMarkerColor(1)
-         mergedGraph2.Draw('C')
 
          mergedGraph3.SetLineWidth(4)
          mergedGraph3.SetMarkerSize(1.2)
          mergedGraph3.SetMarkerStyle(8)
          mergedGraph3.SetMarkerColor(1)
-         mergedGraph3.Draw('C')
 
          mergedGraph4.SetLineWidth(4)
          mergedGraph4.SetMarkerSize(1.2)
          mergedGraph4.SetMarkerStyle(8)
          mergedGraph4.SetMarkerColor(1)
-         mergedGraph4.Draw('C')
-        
+
+         if doPlotCurves:
+           mergedGraph1.Draw('C')
+           mergedGraph2.Draw('C')
+           mergedGraph3.Draw('C')
+           mergedGraph4.Draw('C')
 
          legend4 = TLegend(0.1, 0.7, 0.4, 0.75)
          legend4.AddEntry('merged_smooth_1', 'noise curves {1,..,4}#sigma', 'l')
@@ -1200,8 +1206,10 @@ if __name__ == "__main__":
          legend4.SetLineColor(0);
          legend4.SetFillColorAlpha(0,0);
          legend4.SetBorderSize(0);
-         legend4.Draw('same')
-        
+
+         if doPlotCurves:
+           legend4.Draw('same')
+
 
          if item == 'Resolution': 
             if do_resoOverScale == 'True':

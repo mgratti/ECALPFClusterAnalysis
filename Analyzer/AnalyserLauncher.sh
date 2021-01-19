@@ -13,19 +13,25 @@ user="anlyon"
 
 # What do you want to do? 
 doAnalyser=true
-doPlotter=true
+doPlotter=false
 
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
-                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0"
-                        "photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t33_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v1_t44_n30000_njd0"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0"
                         #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0"
-                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t33_n30000_njd0"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi150_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T12_v2_t44_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0"
                         #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t44_n30000_njd0"
+                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_thrsLumi2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l180_newDumper_n50"
+                        #"photon_E1to100GeV_closeEcal_EEclose_noPU_thrsLumi2021_pfrhRef_seedRef_wMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l180_oldDumper_n50_njd0"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t33_n30000"
+                        #"photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T18_v1_t44_n30000"
+                        "photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t33_n30000"
+                        #"photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_l450_T18_v2_t44_n30000"
                         )
 
 
@@ -33,6 +39,7 @@ declare -a FilesArray=(
 inDirectory="/work/anlyon/dumpedFiles/"
 # Choose one of the following matching strategies
 doMatching_simFraction=true
+doMatching_simFraction_withHF=false
 doMatching_deltaR=false
 
 
@@ -97,23 +104,23 @@ do_BGfit=false
 
 
 #if the user chooses more than one matching method, pick up the default value
-if [ "$doMatching_numberOfHits" = true ] ; then
+if [ "$doMatching_simFraction_withHF" = true ] ; then
    if [ "$doMatching_simFraction" = true ] || [ "$doMatching_deltaR" = true ] ; then
-      doMatching_numberOfHits=false
+      doMatching_simFraction_withHF=false
       doMatching_simFraction=true
       doMatching_deltaR=false
    fi
 fi
 if [ "$doMatching_simFraction" = true ] ; then
-   if [ "$doMatching_numberOfHits" = true ] || [ "$doMatching_deltaR" = true ] ; then
-      doMatching_numberOfHits=false
+   if [ "$doMatching_simFraction_withHF" = true ] || [ "$doMatching_deltaR" = true ] ; then
+      doMatching_simFraction_withHF=false
       doMatching_simFraction=true
       doMatching_deltaR=false
    fi
 fi
 if [ "$doMatching_deltaR" = true ] ; then
-   if [ "$doMatching_numberOfHits" = true ] || [ "$doMatching_simFraction" = true ] ; then
-      doMatching_numberOfHits=false
+   if [ "$doMatching_simFraction_withHF" = true ] || [ "$doMatching_simFraction" = true ] ; then
+      doMatching_simFraction_withHF=false
       doMatching_simFraction=true
       doMatching_deltaR=false
    fi
@@ -121,12 +128,11 @@ fi
 
 echo "Start" 
 
-if [ "$doMatching_numberOfHits" = true ] ; then
-   #matchingMethod="numberOfHits"
-   matchingMethod="simFraction"
-fi
 if [ "$doMatching_simFraction" = true ] ; then
    matchingMethod="simFraction"
+fi
+if [ "$doMatching_simFraction_withHF" = true ] ; then
+   matchingMethod="simFraction_withHF"
 fi
 if [ "$doMatching_deltaR" = true ] ; then
    matchingMethod="deltaR"
@@ -146,11 +152,11 @@ for iFile in ${FilesArray[@]}; do
    fi
    if [ "$doPlotter" = true ] && [ "$do_ratioPlot" = false ] && [ "$do_scanThrs" = false ] ; then
       fileNameforPlotter="histo_"$iFile
-      if [ "$doMatching_numberOfHits" = true ] ; then
-         fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
-      fi
       if [ "$doMatching_simFraction" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_simFraction"
+      fi
+      if [ "$doMatching_simFraction_withHF" = true ] ; then
+         fileNameforPlotter=$fileNameforPlotter"_simFraction_wHF"
       fi
       if [ "$doMatching_deltaR" = true ] ; then
          fileNameforPlotter=$fileNameforPlotter"_deltaR"
@@ -178,11 +184,11 @@ if [ "$doPlotter" = true ] && ([ "$do_ratioPlot" = true ] || [ "$do_scanThrs" = 
    for iFile in ${FilesArray[@]}; do
       fileNameforPlotter="histo_"$iFile
       if [ "$do_useDifMatching" = false ] ; then
-         if [ "$doMatching_numberOfHits" = true ] ; then
-            fileNameforPlotter=$fileNameforPlotter"_numberOfHits"
-         fi
          if [ "$doMatching_simFraction" = true ] ; then
             fileNameforPlotter=$fileNameforPlotter"_simFraction"
+         fi
+         if [ "$doMatching_simFraction_withHF" = true ] ; then
+            fileNameforPlotter=$fileNameforPlotter"_simFraction_wHF"
          fi
          if [ "$doMatching_deltaR" = true ] ; then
             fileNameforPlotter=$fileNameforPlotter"_deltaR"
