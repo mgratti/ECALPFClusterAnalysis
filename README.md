@@ -83,7 +83,7 @@ cd $CMSSW_BASE/src/
 ```
 Follow instructions https://github.com/ferriff/usercode#dumper-setup to setup the ```conddb_dumper```.
 
-Start from existing threshold tags produced with x-tal by x-tal thresholds, e.g. ```EcalPFRecHitThresholds_TL235_mixed```.
+Start from existing threshold tags produced with x-tal by x-tal thresholds, e.g. ```EcalPFRecHitThresholds_TL235_mixed``` ( [link to conddb entry](https://cms-conddb.cern.ch/cmsDbBrowser/list/Prod/tags/EcalPFRecHitThresholds_TL235_mixed) )
 
 Set the list of tags to dump:
 ```
