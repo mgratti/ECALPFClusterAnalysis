@@ -72,14 +72,15 @@ declare -a FilesArray=(
 #label="_T16_l450_thl400"
 #label="_T15_l400_thl450"
 #
-label="_T170_l180_thl180"
-#label="_T140_l235_thl235"
+#label="_T170_l180_thl180"
+label="_T140_l235_thl235"
 #label="_T150_l400_thl400"
 #label="_T160_l450_thl450"
 
 do_writeFiles=false
 
 doMatching_simFraction=true
+doMatching_simFraction_withHF=false
 doMatching_deltaR=false
 
 
@@ -122,18 +123,13 @@ do_BGfit=false
 
 echo "Start" 
 
-if [ "$doMatching_simFraction" = true ] ; then
-   matchingMethod="simFraction"
-fi
-if [ "$doMatching_deltaR" = true ] ; then
-   matchingMethod="deltaR"
-fi
-
-
 for iFile in ${FilesArray[@]}; do
    fileNameforPlotter="histo_"$iFile
    if [ "$doMatching_simFraction" = true ] ; then
       fileNameforPlotter=$fileNameforPlotter"_simFraction"
+   fi
+   if [ "$doMatching_simFraction_withHF" = true ] ; then
+      fileNameforPlotter=$fileNameforPlotter"_simFraction_wHF"
    fi
    if [ "$doMatching_deltaR" = true ] ; then
       fileNameforPlotter=$fileNameforPlotter"_deltaR"
@@ -145,10 +141,10 @@ done
 
 if [ "$do_writeFiles" = true ] ; then
    if [ "$do_popUpPlot" = 'False' ] ; then     
-      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\",  \"$user\")"
+      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\", \"$user\")"
    fi
    if [ "$do_popUpPlot" = 'True' ] ; then
-      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\",  \"$user\")"
+      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\", \"$user\")"
    fi 
 
 

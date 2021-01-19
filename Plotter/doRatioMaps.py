@@ -82,7 +82,6 @@ sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_
 sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t33_n30000_njd0")
 sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T160_v2_t44_n30000_njd0")
 
-
 #--------------
 
 # choose to define the resolution as sigma (=False) or sigma/mu (=True)
@@ -123,7 +122,8 @@ def getSampleItems(inputsamples):
    Seeding = []
 
    for sample in inputsamples:
-      inputfile = 'samples/histo_' + sample[0:len(sample)] + '_simFraction.txt'
+      #inputfile = 'samples/histo_' + sample[0:len(sample)] + '_simFraction.txt'
+      inputfile = 'samples/histo_' + sample[0:len(sample)] 
 
       #we get the seeding and pfrechit thresholds from the fileName
       indexSeedinf = inputfile.find('seed', 0)
@@ -561,9 +561,9 @@ if __name__ == "__main__":
       histo_summary.GetZaxis().SetTitleSize(0.04)
       histo_summary.GetZaxis().SetTitleOffset(1.2)
       if item == 'Resolution':
-         histo_summary.GetZaxis().SetRangeUser(-100,50)
+         histo_summary.GetZaxis().SetRangeUser(-100,30)
       elif item == 'Efficiency':
-         histo_summary.GetZaxis().SetRangeUser(-100.001,0.001)
+         histo_summary.GetZaxis().SetRangeUser(-10.001,0.001)
       elif item == 'NoiseRate':
          if do_absDiffNoise == 'True':
            histo_summary.GetZaxis().SetRangeUser(-10,10)

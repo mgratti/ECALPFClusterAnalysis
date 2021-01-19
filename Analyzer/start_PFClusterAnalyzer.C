@@ -10,15 +10,19 @@
 
 void start_PFClusterAnalyzer(TString inFileName, TString inDirectory, string matchingMethod){
 
-   Bool_t doMatching_numberOfHits = false;
-   Bool_t doMatching_simFraction  = false;
-   Bool_t doMatching_deltaR       = false;
+   Bool_t doMatching_numberOfHits        = false;
+   Bool_t doMatching_simFraction         = false;
+   Bool_t doMatching_simFraction_withHF  = false;
+   Bool_t doMatching_deltaR              = false;
 
    if(matchingMethod == "numberOfHits"){
       doMatching_numberOfHits = true;
    }
    else if(matchingMethod == "simFraction"){
       doMatching_simFraction = true;
+   }
+   else if(matchingMethod == "simFraction_withHF"){
+      doMatching_simFraction_withHF = true;
    }
    else if(matchingMethod == "deltaR"){
       doMatching_deltaR = true;
@@ -45,6 +49,9 @@ void start_PFClusterAnalyzer(TString inFileName, TString inDirectory, string mat
    }
    else if(doMatching_simFraction){
       outFileName += "_simFraction";
+   }
+   else if(doMatching_simFraction_withHF){
+      outFileName += "_simFraction_wHF";
    }
    else if(doMatching_deltaR){
       outFileName += "_deltaR";
