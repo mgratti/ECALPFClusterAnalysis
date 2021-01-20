@@ -9,7 +9,6 @@
 
 #----------- USER'S DECISION BOARD --------------//
 
-user="anlyon"
 
 # Enter the production label of the files that you want to analyse
 declare -a FilesArray=(
@@ -186,10 +185,10 @@ done
 
 if [ "$do_writeFiles" = true ] ; then
    if [ "$do_popUpPlot" = 'False' ] ; then     
-      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\", \"$user\")"
+      root -l -q -b "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\")"
    fi
    if [ "$do_popUpPlot" = 'True' ] ; then
-      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\", \"$user\")"
+      root -l -q "../Plotter/EoverEtrue_fit.C+(\"$do_fineBinning_energy\", \"$do_fineBinning_eta\", \"$use_simEnergy\", \"$do_binningEt\", \"$do_CBfit\", \"$do_doubleCBfit\", \"$do_BGfit\", \"$do_fitPeak\", "false", "false", "false", "false", "false", "false", "false", "false", \"$do_writeFiles\")"
    fi 
 
 
