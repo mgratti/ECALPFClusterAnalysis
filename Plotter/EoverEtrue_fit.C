@@ -37,14 +37,14 @@
 #include <fstream>
 #include <algorithm>
 
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/objects.h"
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/utils.h"
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/performFit.C"
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/producePlot.C"
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/produceScanPlots.C"
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getFile.C"
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/getBoundaries.C"
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/plotterInit.C"
+#include "./macros/objects.h"
+#include "./macros/utils.h"
+#include "./macros/performFit.C"
+#include "./macros/producePlot.C"
+#include "./macros/produceScanPlots.C"
+#include "./macros/getFile.C"
+#include "./macros/getBoundaries.C"
+#include "./macros/plotterInit.C"
 
 
 using namespace RooFit ;
@@ -79,8 +79,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
       TString ratioPlot, 
       TString scanThrs, 
       TString autoScale, 
-      TString writeFiles,
-      string user){
+      TString writeFiles){
 
    // we fetch argurments of the function
    Bool_t do_fineBinning_energy = fineBinning_energy=="true" ? true : false;
@@ -218,7 +217,7 @@ void EoverEtrue_fit(TString fineBinning_energy,
    // define the output directory
    vector<string> outputdir;
    for(unsigned int iFile(0); iFile<fileName.size(); ++iFile){
-      string outputdir_tmp = "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/fits/" + fileName[iFile];
+      string outputdir_tmp = "./myPlots/fits/" + fileName[iFile];
       if(do_binningEt){
          outputdir_tmp += "_EtaEtBinned";
       }
@@ -281,11 +280,11 @@ void EoverEtrue_fit(TString fineBinning_energy,
          if(!file.is_open()){
             if(do_EB[iFile]){
                fitParameters_EB = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EB, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EB");
-               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, fitParameters_EB.map_rms, fitParameters_EB.map_rms_error, ETranges[iFile], ETAranges[iFile], user);
+               getFile(fileName[iFile], true, fitParameters_EB.map_sigma, fitParameters_EB.map_sigma_error, fitParameters_EB.map_mean, fitParameters_EB.map_mean_error, fitParameters_EB.map_chisquare, fitParameters_EB.map_rms, fitParameters_EB.map_rms_error, ETranges[iFile], ETAranges[iFile]);
             }
             else{
                fitParameters_EE = performFit(fileName[iFile], outputdir[iFile], kEvents[iFile], ETranges[iFile], ETAranges_EE, ETvalue, ETAvalue, pfrechit_thrs[iFile], seeding_thrs[iFile], flagList, "EE");
-               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, fitParameters_EE.map_rms, fitParameters_EE.map_rms_error, ETranges[iFile], ETAranges[iFile], user);
+               getFile(fileName[iFile], false, fitParameters_EE.map_sigma, fitParameters_EE.map_sigma_error, fitParameters_EE.map_mean, fitParameters_EE.map_mean_error, fitParameters_EE.map_chisquare, fitParameters_EE.map_rms, fitParameters_EE.map_rms_error, ETranges[iFile], ETAranges[iFile]);
             }
          }
          else{

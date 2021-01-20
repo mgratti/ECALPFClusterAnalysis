@@ -1,5 +1,5 @@
 
-#include "/work/mratti/cmssw_workarea/NEW_RECO_DEVs/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/macros/objects.h"
+#include "objects.h"
 
 
 PlottingTools getGraph(TString whichPlot, 
