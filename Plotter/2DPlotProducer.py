@@ -414,7 +414,7 @@ if __name__ == "__main__":
                            if quantity=='0': quantity='0.000001'
                            ref_quantity='0'
 
-                        histo.Fill(getFloat(iSample.seeding), getFloat(iSample.pfRecHit), getFloat(quantity))
+                        histo.Fill(iSample.seeding, iSample.pfRecHit, getFloat(quantity))
                         #print('{a} {b} {c} {d} {e}'.format(a=what, b=iPFRecHit, c=iSeeding, d=quantity, e=ref_quantity))
 	    
             #filling the histo_ratio
@@ -448,7 +448,7 @@ if __name__ == "__main__":
                            noiseRates.append('{a} {b} {c}'.format(a=iPFRecHit, b=iSeeding, c=quantity))
                            # note: we won't plot the ratio for the noiseRate
                         if getFloat(ref_quantity)!= 0:   
-                           histo_ratio.Fill(getFloat(iSample.seeding), getFloat(iSample.pfRecHit), getFloat(quantity)/getFloat(ref_quantity))
+                           histo_ratio.Fill(iSample.seeding, iSample.pfRecHit, getFloat(quantity)/getFloat(ref_quantity))
                            #if getFloat(quantity)/getFloat(ref_quantity) >= 1.01:
                            #   testFile.write('{a} {b} {c} {d} {e}% \n'.format(a=iEn, b=iEta, c=iPFRecHit, d=iSeeding, e=round((getFloat(quantity)/getFloat(ref_quantity)-1)*100, 3)))
             
@@ -461,10 +461,12 @@ if __name__ == "__main__":
             histo.GetXaxis().SetTitle('Seeding thrs multiplicity')
             histo.GetXaxis().SetTitleSize(0.04)
             histo.GetXaxis().SetTitleOffset(1.2)
+            histo.GetXaxis().SetLabelSize(0.055)
       
             histo.GetYaxis().SetTitle('PFRecHit thrs multiplicity')
             histo.GetYaxis().SetTitleSize(0.04)
             histo.GetYaxis().SetTitleOffset(1.2)
+            histo.GetYaxis().SetLabelSize(0.055)
  
    
             if what == 'Resolution':
@@ -480,13 +482,13 @@ if __name__ == "__main__":
                histo.GetZaxis().SetTitle('Noise Rate')
 
             if what == 'Resolution':
-               histo.GetZaxis().SetRangeUser(0, 0.4)
+               histo.GetZaxis().SetRangeUser(0, 0.2)
             elif what == 'Scale':
-               histo.GetZaxis().SetRangeUser(0.5, 1.5)
+               histo.GetZaxis().SetRangeUser(0.5, 1)
             elif what == 'Efficiency':
-               histo.GetZaxis().SetRangeUser(0, 1)
+               histo.GetZaxis().SetRangeUser(0.8, 1)
             elif what == 'NoiseRate':
-               histo.GetZaxis().SetRangeUser(0, 1)
+               histo.GetZaxis().SetRangeUser(0, 0.7)
  
             histo.GetZaxis().SetTitleSize(0.04)
             histo.GetZaxis().SetTitleOffset(1.2)
@@ -494,10 +496,12 @@ if __name__ == "__main__":
             histo_ratio.GetXaxis().SetTitle('Seeding thrs multiplicity')
             histo_ratio.GetXaxis().SetTitleSize(0.04)
             histo_ratio.GetXaxis().SetTitleOffset(1.2)
+            histo_ratio.GetXaxis().SetLabelSize(0.055)
       
             histo_ratio.GetYaxis().SetTitle('PFRecHit thrs multiplicity')
             histo_ratio.GetYaxis().SetTitleSize(0.04)
             histo_ratio.GetYaxis().SetTitleOffset(1.2)
+            histo_ratio.GetYaxis().SetLabelSize(0.055)
  
             if what == 'Resolution':
                if do_resoOverScale != 'True':
@@ -519,6 +523,7 @@ if __name__ == "__main__":
             histo_ratio.GetZaxis().SetTitleSize(0.04)
             histo_ratio.GetZaxis().SetTitleOffset(1.2)
             
+            gStyle.SetPaintTextFormat(".3f"); # only 3 digit printed in text mode
             
             c = TCanvas('c_{a}_{b}_{c}'.format(a=iEn, b=iEta, c=what), 'c', 900, 900)
             histo.Draw('colz')
