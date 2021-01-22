@@ -1169,8 +1169,8 @@ if __name__ == "__main__":
             legend3.Draw('same')
 
          # noise curves
-         #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023/graphs.root'
-         inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2021_TL{tl}/graphs.root'.format(tl=opt.label.split('thl')[1])
+         inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023/graphs.root'
+         #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2021_TL{tl}/graphs.root'.format(tl=opt.label.split('thl')[1])
          graphEB = noisePlotter.getGraph(inputFileName, graphName='gr_EB_Object', doSmoothing=True)
          graphEE= noisePlotter.getGraph(inputFileName, graphName='gr_EE_Object', doSmoothing=True)
          

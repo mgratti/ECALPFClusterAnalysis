@@ -15,10 +15,15 @@ from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed,
 
 #---------------------------------------------------------#
 
-# choose label of z axis
-label = "condTL450/condTL400"
+# choose title of the map
+title = "Fixed thresholds thrsTL400"
 
-thrlabel = "450"
+# choose label of z axis
+#label = "condTL450/condTL400"
+label = "condTL450,condTL400"
+
+# choose at which lumi to plot the noise curves
+thrlabel = "180"
 
 ### file1 ###
 doRefThrs1 = False
@@ -88,7 +93,7 @@ sample2.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_se
 
 # choose to define the resolution as sigma (=False) or sigma/mu (=True)
 do_resoOverScale = 'True'
-do_absDiffNoise = 'True'
+do_absDiffNoise = 'False'
 
 #---------------------------------------------------------#
 
@@ -325,11 +330,11 @@ if __name__ == "__main__":
    gROOT.SetBatch(True)
 
    #outputdirectory
-   outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/ratioMaps/ratioMaps_{}'.format(label.replace('/','over'))
-   os.system('mkdir {}'.format(outputdir))
+   outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/ratioMaps/ratioMaps_{}'.format(label.replace(',','_'))
+   os.system('mkdir -p {}'.format(outputdir))
 
    # file dir
-   os.system('mkdir files/rationmaps')
+   os.system('mkdir -p files/ratiomaps')
    
    # get the samples
    samples1, EnRanges, EtaRanges, pfRechitThrs, seedingThrs = getSampleItems(sample1)
@@ -540,7 +545,7 @@ if __name__ == "__main__":
    label2 = label
    for item in whichQuantities:
       histo_summary = TH2D('histo_summary_{a}'.format(a=item), 'histo_summary_{a}'.format(a=item), nBins_eta, binsEta, nBins_energy, binsEnergy)
-      histo_summary.SetTitle(' ')
+      histo_summary.SetTitle(title)
       
       histo_summary.GetXaxis().SetTitle('#eta')
       histo_summary.GetXaxis().SetLabelSize(0.028)
@@ -559,13 +564,13 @@ if __name__ == "__main__":
       else:
         label3 = 'Rel. diff.'  # was 'Ratio'
         label4 = '[%]'
-      histo_summary.GetZaxis().SetTitle(" {a} {c} {b} {d}".format(a=item, b=label2, c=label3, d=label4))
+      histo_summary.GetZaxis().SetTitle("{a}({b}) in {c} {d}".format(a=label3, b=label2, c=item, d=label4))
       histo_summary.GetZaxis().SetTitleSize(0.04)
       histo_summary.GetZaxis().SetTitleOffset(1.2)
       if item == 'Resolution':
-         histo_summary.GetZaxis().SetRangeUser(-100,30)
+         histo_summary.GetZaxis().SetRangeUser(-100,60)
       elif item == 'Efficiency':
-         histo_summary.GetZaxis().SetRangeUser(-10.001,0.001)
+         histo_summary.GetZaxis().SetRangeUser(-100,10)
       elif item == 'NoiseRate':
          if do_absDiffNoise == 'True':
            histo_summary.GetZaxis().SetRangeUser(-10,10)
@@ -720,25 +725,25 @@ if __name__ == "__main__":
       mergedGraph1.SetMarkerSize(1.2)
       mergedGraph1.SetMarkerStyle(8)
       mergedGraph1.SetMarkerColor(1)
-      mergedGraph1.Draw('C')
+      #mergedGraph1.Draw('C')
 
       mergedGraph2.SetLineWidth(4)
       mergedGraph2.SetMarkerSize(1.2)
       mergedGraph2.SetMarkerStyle(8)
       mergedGraph2.SetMarkerColor(1)
-      mergedGraph2.Draw('C')
+      #mergedGraph2.Draw('C')
 
       mergedGraph3.SetLineWidth(4)
       mergedGraph3.SetMarkerSize(1.2)
       mergedGraph3.SetMarkerStyle(8)
       mergedGraph3.SetMarkerColor(1)
-      mergedGraph3.Draw('C')
+      #mergedGraph3.Draw('C')
 
       mergedGraph4.SetLineWidth(4)
       mergedGraph4.SetMarkerSize(1.2)
       mergedGraph4.SetMarkerStyle(8)
       mergedGraph4.SetMarkerColor(1)
-      mergedGraph4.Draw('C')
+      #mergedGraph4.Draw('C')
      
 
       legend4 = TLegend(0.1, 0.7, 0.4, 0.75)
@@ -747,7 +752,7 @@ if __name__ == "__main__":
       legend4.SetLineColor(0);
       legend4.SetFillColorAlpha(0,0);
       legend4.SetBorderSize(0);
-      legend4.Draw('same')
+      #legend4.Draw('same')
      
 
       if item == 'Resolution': 
