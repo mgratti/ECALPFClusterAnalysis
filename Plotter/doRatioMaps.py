@@ -9,8 +9,10 @@ sys.path.append('noisePlotter/')
 import getMergedGraph as noisePlotter
 
 from array import *
-from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TPad, TGraph, TLine, gROOT, gStyle
+from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TLatex, TPad, TGraph, TLine, gROOT, gStyle
 from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue, kBird, kCherry
+
+import CMS_lumi, tdrstyle
 
 
 #---------------------------------------------------------#
@@ -20,10 +22,12 @@ title = "Fixed thresholds thrsTL400"
 
 # choose label of z axis
 #label = "condTL450/condTL400"
-label = "condTL450,condTL400"
+#label = "condTL450,condTL400"
+label = "tuned_vs_ref_style"
 
 # choose at which lumi to plot the noise curves
-thrlabel = "180"
+#thrlabel = "180"
+thrlabel = "450"
 
 ### file1 ###
 doRefThrs1 = False
@@ -31,6 +35,16 @@ doModThrs1 = True
 
 sample1 = []
                         
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t33_n30000_simFraction.txt")
+#sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t44_n30000_simFraction.txt")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t33_n30000_simFraction.txt")
+#sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t44_n30000_simFraction.txt")
+
+#sample1.append("photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh3.0_seed3.0_thrRingEBXtalEE_y2023_T2_v1_t33_n30000_simFraction.txt")
+#sample1.append("photon_E1.0to100GeV_closeEcal_EB_noPU_pfrh4.0_seed4.0_thrRingEBXtalEE_y2023_T2_v1_t44_n30000_simFraction.txt")
+#sample1.append("photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh3.0_seed3.0_thrXtalEBXtalEE_y2023_T2_v2_t33_n30000_highStat2_simFraction.txt")
+#sample1.append("photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrh4.0_seed4.0_thrXtalEBXtalEE_y2023_T2_v2_t44_n30000_highStat2_simFraction.txt")
+
 #sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t33_n30000_njd0")
 #sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi235_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v1_t44_n30000_njd0")
 #sample1.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_thrsLumi235_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T13_v2_t33_n30000_njd0")
@@ -51,7 +65,6 @@ sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi400_pfrh4.0_seed4.0_
 sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t33_n30000_njd0_simFraction.txt")
 sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi400_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l450_T16_v2_t44_n30000_njd0_simFraction.txt")
 
-
 #sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t33_n30000_njd0_simFraction.txt")
 #sample1.append("photon_E1to100GeV_closeEcal_EB_noPU_thrsLumi450_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v1_t44_n30000_njd0_simFraction.txt")
 #sample1.append("photon_E1to100GeV_closeEcal_EEMerged_noPU_thrsLumi450_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_l400_T15_v2_t33_n30000_njd0_simFraction.txt")
@@ -63,6 +76,11 @@ doRefThrs2 = False
 doModThrs2 = True
 
 sample2 = []
+
+#sample2.append("photon_E1.0to100GeV_closeEcal_EB_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v1_t0_n30000_simFraction.txt")
+#sample2.append("photon_E1.0to200GeV_closeEcal_EEMerged_noPU_pfrhRef_seedRef_thrXtalEBXtalEE_y2023_T2_v2_t0_n30000_simFraction.txt")
+#sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v1_t0_n30000_njd0_simFraction.txt")
+#sample2.append("photon_E1to200GeV_closeEcal_EEMerged_noPU_noiseCond2023_pfrhRef_seedRef_noMargin_thrXtalEBXtalEE_shs1.0_maxd10.0_y2023_T6_v2_t0_n30000_njd0_simFraction.txt")
 
 #sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh3.0_seed3.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t33_n30000_njd0_simFraction.txt")
 #sample2.append("photon_E1to100GeV_closeEcal_EB_noPU_noiseCond2021_pfrh4.0_seed4.0_noMargin_thrRingEBXtalEE_shs1.0_maxd10.0_y2021_T11_v1_t44_n30000_njd0_simFraction.txt")
@@ -268,6 +286,14 @@ def getSupBin(input):
    return input[len(input)-1][index+1:len(input[len(input)-1])]
 
 
+def getRangeLabel(r):
+  r_min = r[:r.find('_')]
+  r_max = r[r.find('_')+1:]
+  range_label = '[' + r_min + ',' + r_max + ']'
+  range_label = range_label.replace('p', '.')
+  return range_label 
+
+
 # function to attribute a colour to each pair of thresholds
 def getColor(a, b):
    if a==1 and b==1:
@@ -329,6 +355,16 @@ if __name__ == "__main__":
       
    gROOT.SetBatch(True)
 
+   #set the tdr style
+   #tdrstyle.setTDRStyle()
+
+   CMS_lumi.writeExtraText = 1
+   CMS_lumi.extraText = "Preliminary"
+   CMS_lumi.lumi_sqrtS = "450 fb^{-1} (14 TeV)" # used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
+   iPos = 11
+   if( iPos==0 ): CMS_lumi.relPosX = 0.12
+   iPeriod = 0
+
    #outputdirectory
    outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/ratioMaps/ratioMaps_{}'.format(label.replace(',','_'))
    os.system('mkdir -p {}'.format(outputdir))
@@ -352,7 +388,6 @@ if __name__ == "__main__":
          for sample in samples1:
             if((iEn==sample.energy) and (iEta==sample.eta)):
                samples_binned1[iEn][iEta].append(sample)
- 
 
    samples2, EnRanges, EtaRanges, pfRechitThrs, seedingThrs = getSampleItems(sample2)
 
@@ -502,10 +537,16 @@ if __name__ == "__main__":
    # produce the ratio map
    
    # bins where the statistics is too low to be tuned on
-   lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
+   #lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
+   lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00'], ['1_5', '2p20_2p40'], ['5_10', '2p40_2p60'], ['10_15', '2p60_2p80'], ['15_20', '2p60_2p80'], ['15_20', '2p80_3p00'], ['20_40', '2p80_3p00']]
 
    printWithNumber = True #true means plotting pair, false means plotting number of z dimension
    printError = True
+      
+   # will draw the reference line for ET=5GeV
+   f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+   f_ET_5.SetLineWidth(4)
+   f_ET_5.SetLineColor(kRed) #0 #kBlue
  
    # in order not to plot the full energy range
    for iEn in EnRanges[:]:
@@ -539,41 +580,46 @@ if __name__ == "__main__":
 
    gStyle.SetOptStat(0)
    gStyle.SetPadRightMargin(0.16) 
+   gStyle.SetPadLeftMargin(0.13) 
+   #gStyle.SetPalette(100)
    
    whichQuantities = ['Resolution', 'Efficiency', 'NoiseRate', 'Scale']
    
    label2 = label
    for item in whichQuantities:
       histo_summary = TH2D('histo_summary_{a}'.format(a=item), 'histo_summary_{a}'.format(a=item), nBins_eta, binsEta, nBins_energy, binsEnergy)
-      histo_summary.SetTitle(title)
+      #histo_summary.SetTitle(title)
+      histo_summary.SetTitle('')
       
-      histo_summary.GetXaxis().SetTitle('#eta')
-      histo_summary.GetXaxis().SetLabelSize(0.028)
-      histo_summary.GetXaxis().SetTitleSize(0.04)
-      histo_summary.GetXaxis().SetTitleOffset(1.2)
+      histo_summary.GetXaxis().SetTitle('|#eta|')
+      histo_summary.GetXaxis().SetLabelSize(0.03) #0.028
+      histo_summary.GetXaxis().SetTitleSize(0.03)
+      histo_summary.GetXaxis().SetTitleOffset(1.5)
 
-      histo_summary.GetYaxis().SetTitle('Energy')
-      histo_summary.GetYaxis().SetLabelSize(0.028)
-      histo_summary.GetYaxis().SetTitleSize(0.04)
-      histo_summary.GetYaxis().SetTitleOffset(1.2)
+      histo_summary.GetYaxis().SetTitle('Energy [GeV]')
+      histo_summary.GetYaxis().SetLabelSize(0.03) #0.028
+      histo_summary.GetYaxis().SetTitleSize(0.03)
+      histo_summary.GetYaxis().SetTitleOffset(2.)
 
       if item=='NoiseRate' and do_absDiffNoise=='True':
         label2 = label2.replace('/', '-')
         label3 = 'Abs. diff.' 
         label4 = ''
       else:
-        label3 = 'Rel. diff.'  # was 'Ratio'
+        label3 = 'Relative difference'  # was 'Ratio'
         label4 = '[%]'
-      histo_summary.GetZaxis().SetTitle("{a}({b}) in {c} {d}".format(a=label3, b=label2, c=item, d=label4))
-      histo_summary.GetZaxis().SetTitleSize(0.04)
-      histo_summary.GetZaxis().SetTitleOffset(1.2)
+      #histo_summary.GetZaxis().SetTitle("{a}({b}) in {c} {d}".format(a=label3, b=label2, c=item, d=label4))
+      histo_summary.GetZaxis().SetTitle("{a} in {c} {d}".format(a=label3, b=label2, c=item if item!='NoiseRate' else 'Noise Rate', d=label4))
+      histo_summary.GetZaxis().SetLabelSize(0.027)
+      histo_summary.GetZaxis().SetTitleSize(0.03)
+      histo_summary.GetZaxis().SetTitleOffset(1.35)
       if item == 'Resolution':
-         histo_summary.GetZaxis().SetRangeUser(-100,60)
+         histo_summary.GetZaxis().SetRangeUser(-60, 60)
       elif item == 'Efficiency':
-         histo_summary.GetZaxis().SetRangeUser(-100,10)
+         histo_summary.GetZaxis().SetRangeUser(-100,0)
       elif item == 'NoiseRate':
          if do_absDiffNoise == 'True':
-           histo_summary.GetZaxis().SetRangeUser(-10,10)
+           histo_summary.GetZaxis().SetRangeUser(-1,0)
          else:
            histo_summary.GetZaxis().SetRangeUser(-100,0.001)
       elif item == 'Scale':
@@ -596,13 +642,15 @@ if __name__ == "__main__":
                      ETArange = iLine[index1_a+1:index1_b]
                      if iEn == ETrange and iEta ==ETArange:
                         quantity = float(iLine[index1_b+1:index1_c])
-                        histo_summary.Fill(iEta, iEn, quantity)
-                        if printError:
-                           histo_summary.SetBarOffset(0.3)
-         if printWithNumber == True:
-            histo_summary.Draw('text' + 'colz')
-         else:
-            histo_summary.Draw('colz')
+                        if [iEn, iEta] in lowStatBins: quantity =  -1000
+                        histo_summary.Fill(getRangeLabel(iEta), getRangeLabel(iEn), quantity)
+                        #if printError:
+                        #   if getRangeLength(iEn) == 5.: histo_summary.SetBarOffset(0.3)
+                        #   else: histo_summary.SetBarOffset(0.13)
+         #if printWithNumber == True:
+         #   histo_summary.Draw('text' + 'colz')
+         #else:
+         histo_summary.Draw('colz')
      
       #make so that only 1 digit is printed when using text function
       gStyle.SetPaintTextFormat(".1f");
@@ -629,43 +677,61 @@ if __name__ == "__main__":
       # we draw the best score 
       # if printWithNumber is off, then the pair the thresholds is instead written
       score_label = []
+      error_label = []
+      dash_label = []
       for iEn in EnRanges:
          for iEta in EtaRanges:
             if iEta == '1p44_1p48': continue
-            x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-            x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-            if printError and (iEn == "1_5" or iEn == '5_10' or iEn == '10_15' or iEn == '15_20'):
-               y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.75
-            else:
-               y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-            y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-            score_print = TPaveText(x1, y1, x2, y2)
-            if [iEn, iEta] not in lowStatBins:
-                  if printError: #we print the error
-                     for iLine in lineQte:
+            for iLine in lineQte:
                   
-                        index1_a = iLine.find(' ')
-                        index1_b = iLine.find(' ', index1_a+1)
-                        index1_c = iLine.find(' ', index1_b+1)
-                        index1_d = iLine.find(' ', index1_c+1)
-                        ETrange  = iLine[0:index1_a]
-                        ETArange = iLine[index1_a+1:index1_b]
-                        if iEn == ETrange and iEta ==ETArange:
-                           score_print.AddText('#pm {a}'.format(a=round(float(iLine[index1_c+1:index1_d]), 1)))
-                           score_print.SetFillColorAlpha(0, 0)
+               index1_a = iLine.find(' ')
+               index1_b = iLine.find(' ', index1_a+1)
+               index1_c = iLine.find(' ', index1_b+1)
+               index1_d = iLine.find(' ', index1_c+1)
+               ETrange  = iLine[0:index1_a]
+               ETArange = iLine[index1_a+1:index1_b]
+               if iEn == ETrange and iEta == ETArange:
+                  x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2.
+                  y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2.
+                  if iEn == '1_5': y1 = 2.5
+                  if iEta == '1p48_1p64': x1=1.54
+                  if [iEn, iEta] not in lowStatBins:
+                     offset = 0.01
+                     quantity = str(round(float(iLine[index1_b+1:index1_c]), 1))
+                     if not (item == 'NoiseRate' and quantity == '0.0'):
+                        score_print = TLatex(x1, y1+y1*offset, quantity)
+                        error_print = TLatex(x1, y1-y1*offset, '#pm{a}'.format(a=round(float(iLine[index1_c+1:index1_d]), 1)))
+                        score_label.append(score_print)
+                        error_label.append(error_print)
+                     else: 
+                        quantity = ' - '
+                        offset = 0
+                        score_print = TLatex(x1, y1+y1*offset, quantity)
+                        score_label.append(score_print)
+                  else:
+                     dash_print = TLatex(x1, y1, '#')
+                     dash_label.append(dash_print)
+    
+      f_ET_5.Draw('same')
 
-            else:
-               score_print.SetFillColor(1)
-               score_print.SetFillStyle(3244)
-            score_label.append(score_print)
-         
-      for label in score_label:
-         if printError:
+      if printError:
+         for label in error_label:
             label.Draw('same')
-         label.SetBorderSize(0)
-         label.SetTextSize(0.015)
-         label.SetTextFont(62)
-         label.SetTextAlign(11)
+            label.SetTextSize(0.015)
+            label.SetTextFont(62)
+            label.SetTextAlign(23)
+
+      if printWithNumber:
+        for label in score_label:
+           label.Draw('same')
+           label.SetTextSize(0.02)
+           label.SetTextFont(62)
+           label.SetTextAlign(21)
+        for label in dash_label:
+           label.Draw('same')
+           label.SetTextSize(0.03)
+           label.SetTextFont(62)
+           label.SetTextAlign(22)
       
       gStyle.SetOptStat(0)
       gStyle.SetPadRightMargin(0.16) 
@@ -673,17 +739,23 @@ if __name__ == "__main__":
       # we plot transverse energy at given values
       f_ET_2 = TF1('f_ET_2', '2/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
       f_ET_2.SetLineWidth(4)
-      f_ET_2.Draw('same')
+      #f_ET_2.Draw('same')
 
-      f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
-      f_ET_5.SetLineWidth(4)
-      f_ET_5.SetLineColor(kBlue)
-      f_ET_5.Draw('same')
+      #f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+      #f_ET_5.SetLineWidth(4)
+      #f_ET_5.SetLineColor(0) #kBlue
+      #f_ET_5.Draw('same')
 
       f_ET_10 = TF1('f_ET_10', '10/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
       f_ET_10.SetLineWidth(4)
       f_ET_10.SetLineColor(kMagenta)
-      f_ET_10.Draw('same')
+      #f_ET_10.Draw('same')
+
+      text_5 = TLatex(2.5, 32, 'E_{T} = 5 GeV')
+      text_5.SetTextSize(0.023)
+      text_5.SetTextColor(kRed) #0 #kBlue
+      text_5.SetTextAngle(48)
+      text_5.Draw()
 
       legend1 = TLegend(0.1, 0.85, 0.4, 0.9)
       legend1.AddEntry('f_ET_2', 'E_{T} = 2GeV', 'l')
@@ -691,7 +763,7 @@ if __name__ == "__main__":
       legend1.SetLineColor(0);
       legend1.SetFillColorAlpha(0, 0);
       legend1.SetBorderSize(0);
-      legend1.Draw('same')
+      #legend1.Draw('same')
 
       legend2 = TLegend(0.1, 0.8, 0.4, 0.85)
       legend2.AddEntry('f_ET_5', 'E_{T} = 5GeV', 'l')
@@ -699,7 +771,7 @@ if __name__ == "__main__":
       legend2.SetLineColor(0);
       legend2.SetFillColorAlpha(0, 0);
       legend2.SetBorderSize(0);
-      legend2.Draw('same')
+      #legend2.Draw('same')
 
       legend3 = TLegend(0.1, 0.75, 0.4, 0.8)
       legend3.AddEntry('f_ET_10', 'E_{T} = 10GeV', 'l')
@@ -707,11 +779,11 @@ if __name__ == "__main__":
       legend3.SetLineColor(0);
       legend3.SetFillColorAlpha(0, 0);
       legend3.SetBorderSize(0);
-      legend3.Draw('same')
+      #legend3.Draw('same')
 
       # noise curves
-      inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_TL{tl}/graphs.root'.format(tl=thrlabel)
-      #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2021/graphs.root'
+      #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_TL{tl}/graphs.root'.format(tl=thrlabel)
+      inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_TL450/graphs.root'
       graphEB = noisePlotter.getGraph(inputFileName, graphName='gr_EB_Object', doSmoothing=True)
       graphEE= noisePlotter.getGraph(inputFileName, graphName='gr_EE_Object', doSmoothing=True)
       
@@ -753,16 +825,21 @@ if __name__ == "__main__":
       legend4.SetFillColorAlpha(0,0);
       legend4.SetBorderSize(0);
       #legend4.Draw('same')
-     
+
+      CMS_lumi.CMS_lumi(c_summary, iPeriod, iPos)
 
       if item == 'Resolution': 
          c_summary.SaveAs('{a}/summaryPlot_resolution.png'.format(a=outputdir)) 
+         c_summary.SaveAs('{a}/summaryPlot_resolution.pdf'.format(a=outputdir)) 
       elif item == 'Efficiency':
          c_summary.SaveAs('{a}/summaryPlot_efficiency.png'.format(a=outputdir))
+         c_summary.SaveAs('{a}/summaryPlot_efficiency.pdf'.format(a=outputdir))
       elif item == 'NoiseRate':
          c_summary.SaveAs('{a}/summaryPlot_noiseRate.png'.format(a=outputdir))
+         c_summary.SaveAs('{a}/summaryPlot_noiseRate.pdf'.format(a=outputdir))
       elif item == 'Scale':
          c_summary.SaveAs('{a}/summaryPlot_scale.png'.format(a=outputdir))
+         c_summary.SaveAs('{a}/summaryPlot_scale.pdf'.format(a=outputdir))
 
 
 

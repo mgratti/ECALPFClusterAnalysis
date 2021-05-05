@@ -9,8 +9,11 @@ sys.path.append('noisePlotter/')
 import getMergedGraph as noisePlotter
 
 from array import *
-from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TPad, TGraph, TLine, gROOT, gStyle
+import ROOT
+from ROOT import TH2D, TH2Poly, TH1D, TF1, TLegend, TCanvas, TPaveText, TLatex, TPad, TGraph, TLine, gROOT, gStyle
 from ROOT import kWhite, kMagenta, kAzure, kPink, kSpring, kOrange, kCyan, kRed, kGreen, kBlue, kBird, kCherry
+
+import CMS_lumi, tdrstyle
 
 # define a class Sample which has all the attributes to be retrieved from the samples
 class Sample(object):
@@ -245,6 +248,14 @@ def getSupBin(input):
    return input[len(input)-1][index+1:len(input[len(input)-1])]
 
 
+def getRangeLabel(r):
+  r_min = r[:r.find('_')]
+  r_max = r[r.find('_')+1:]
+  range_label = '[' + r_min + ',' + r_max + ']'
+  range_label = range_label.replace('p', '.')
+  return range_label 
+
+
 # function that checks if different scores are compatible within their uncertainty
 def areOverlapping(input1, input2):
    if input2 < input1:
@@ -296,8 +307,9 @@ if __name__ == "__main__":
       gROOT.SetBatch(True)
 
    #outputdirectory
-   outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/2DScan{l}/'.format(l=opt.label)
-   #outputdir = '/afs/cern.ch/user/a/anlyon/CMSSW_10_6_1_patch1/src/Plotter/myPlots/2DScan'
+   #outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/2DScan{l}/'.format(l=opt.label)
+   outputdir = '/t3home/anlyon/CMSSW_10_6_1_patch1/src/ECALPFClusterAnalysis/Plotter/myPlots/2DScan'
+   #outputdir = '/afs/cern.ch/user/a/anlyon/CMSSW_10_6_1_patch1/src/Plotter/myPlots/2DScan/'
    os.system('mkdir {}'.format(outputdir))
 
  
@@ -413,7 +425,7 @@ if __name__ == "__main__":
                            quantity = iSample.noiseRate
                            if quantity=='0': quantity='0.000001'
                            ref_quantity='0'
-
+                           
                         histo.Fill(iSample.seeding, iSample.pfRecHit, getFloat(quantity))
                         #print('{a} {b} {c} {d} {e}'.format(a=what, b=iPFRecHit, c=iSeeding, d=quantity, e=ref_quantity))
 	    
@@ -453,10 +465,11 @@ if __name__ == "__main__":
                            #   testFile.write('{a} {b} {c} {d} {e}% \n'.format(a=iEn, b=iEta, c=iPFRecHit, d=iSeeding, e=round((getFloat(quantity)/getFloat(ref_quantity)-1)*100, 3)))
             
             gStyle.SetOptStat(0)
-            gStyle.SetPadRightMargin(0.16) 
+            gStyle.SetPadRightMargin(0.17) 
+            gStyle.SetPadLeftMargin(0.12) 
 
-            histo.SetTitle('Energy bin: {a}   #eta bin: {b}'.format(a=iEn, b=iEta))
-            histo_ratio.SetTitle('Energy bin: {a}   #eta bin: {b}'.format(a=iEn, b=iEta))
+            histo.SetTitle('Energy bin: {a} GeV   #eta bin: {b}'.format(a=getRangeLabel(iEn), b=getRangeLabel(iEta)))
+            histo_ratio.SetTitle('Energy bin: {a} GeV   #eta bin: {b}'.format(a=getRangeLabel(iEn), b=getRangeLabel(iEta)))
             
             histo.GetXaxis().SetTitle('Seeding thrs multiplicity')
             histo.GetXaxis().SetTitleSize(0.04)
@@ -465,7 +478,7 @@ if __name__ == "__main__":
       
             histo.GetYaxis().SetTitle('PFRecHit thrs multiplicity')
             histo.GetYaxis().SetTitleSize(0.04)
-            histo.GetYaxis().SetTitleOffset(1.2)
+            histo.GetYaxis().SetTitleOffset(1.3)
             histo.GetYaxis().SetLabelSize(0.055)
  
    
@@ -486,12 +499,12 @@ if __name__ == "__main__":
             elif what == 'Scale':
                histo.GetZaxis().SetRangeUser(0.5, 1)
             elif what == 'Efficiency':
-               histo.GetZaxis().SetRangeUser(0.8, 1)
+               histo.GetZaxis().SetRangeUser(0, 1)
             elif what == 'NoiseRate':
                histo.GetZaxis().SetRangeUser(0, 0.7)
  
             histo.GetZaxis().SetTitleSize(0.04)
-            histo.GetZaxis().SetTitleOffset(1.2)
+            histo.GetZaxis().SetTitleOffset(1.4)
     
             histo_ratio.GetXaxis().SetTitle('Seeding thrs multiplicity')
             histo_ratio.GetXaxis().SetTitleSize(0.04)
@@ -539,25 +552,34 @@ if __name__ == "__main__":
             if do_resolutionPlot == 'True' and what == 'Resolution':
                if do_resoOverScale != 'True':
                   c.SaveAs("{dir}/resolution_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+                  c.SaveAs("{dir}/resolution_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
                else:
                   c.SaveAs("{dir}/resolutionOverScale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+                  c.SaveAs("{dir}/resolutionOverScale_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
             elif do_scalePlot == 'True' and what == 'Scale':
                c.SaveAs("{dir}/scale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               c.SaveAs("{dir}/scale_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
             elif do_efficiencyPlot == 'True' and what == 'Efficiency':
                c.SaveAs("{dir}/efficiency_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               c.SaveAs("{dir}/efficiency_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
             elif do_noiseRatePlot == 'True' and what == 'NoiseRate':
                c.SaveAs("{dir}/noiseRate_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               c.SaveAs("{dir}/noiseRate_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
 
 
             if do_resolutionPlot == 'True' and what == 'Resolution':
                if do_resoOverScale != 'True':
                   c_ratio.SaveAs("{dir}/ratio_resolution_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+                  c_ratio.SaveAs("{dir}/ratio_resolution_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
                else:
                   c_ratio.SaveAs("{dir}/ratio_resolutionOverScale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+                  c_ratio.SaveAs("{dir}/ratio_resolutionOverScale_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
             elif do_scalePlot == 'True' and what == 'Scale':
                c_ratio.SaveAs("{dir}/ratio_scale_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               c_ratio.SaveAs("{dir}/ratio_scale_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
             elif do_efficiencyPlot == 'True' and what == 'Efficiency':
                c_ratio.SaveAs("{dir}/ratio_efficiency_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+               c_ratio.SaveAs("{dir}/ratio_efficiency_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
 	    	
             del histo
             del histo_ratio
@@ -812,6 +834,7 @@ if __name__ == "__main__":
                      noiseRates_ranking.Draw()
                
             c_ranking.SaveAs("{dir}/ranking_E_{a}_Eta_{b}.png".format(dir=outputdir, a=iEn, b=iEta))
+            c_ranking.SaveAs("{dir}/ranking_E_{a}_Eta_{b}.pdf".format(dir=outputdir, a=iEn, b=iEta))
 
   
 
@@ -849,10 +872,20 @@ if __name__ == "__main__":
    table_pair['2p80_3p00'] = '4.0 4.0'
    #''' 
    # bins where the statistics is too low to be tuned on
-   lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00']]
+   lowStatBins = [['1_5','2p80_3p00'], ['1_5','2p60_2p80'], ['1_5','2p40_2p60'], ['5_10','2p80_3p00'], ['5_10','2p60_2p80'], ['10_15','2p80_3p00'], ['1_5', '2p20_2p40'], ['5_10', '2p40_2p60'], ['10_15', '2p60_2p80'], ['15_20', '2p60_2p80'], ['15_20', '2p80_3p00'], ['20_40', '2p80_3p00']]
    
 
    # summary plot
+
+   CMS_lumi.writeExtraText = 1
+   CMS_lumi.extraText = "Preliminary"
+   CMS_lumi.lumi_sqrtS = "450 fb^{-1} (14 TeV)" # used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
+
+   iPos = 11
+   if( iPos==0 ): CMS_lumi.relPosX = 0.12
+
+   iPeriod = 0
+
    if do_summaryPlot=='True':
       print('Producing summary plot')
 
@@ -860,13 +893,18 @@ if __name__ == "__main__":
       printFromTable = True   #true means taking fixed pairs of thresholds from table instead of outcome of selection
       printWithNumber = True #true means plotting number of z dimension
       printPair = False
-      printError = False
+      printError = True
       printChi2 = False
       doPlotCurves = True
 
-
       if printWithColour == False:
          printWithNumber = False
+
+      #gStyle.SetPalette(100)
+      f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+      f_ET_5.SetLineWidth(4)
+      f_ET_5.SetLineColor(kRed) #0 #kBlue
+      f_ET_5.Draw()
 
       # in order not to plot the full energy range
       for iEn in EnRanges[:]:
@@ -914,15 +952,15 @@ if __name__ == "__main__":
            histo_summary = TH2D('histo_summary', 'histo_summary', nBins_eta, binInf_eta, binSup_eta, nBins_energy, binInf_energy, binSup_energy)
          histo_summary.SetTitle(' ')
          
-         histo_summary.GetXaxis().SetTitle('#eta')
-         histo_summary.GetXaxis().SetLabelSize(0.028)
-         histo_summary.GetXaxis().SetTitleSize(0.04)
-         histo_summary.GetXaxis().SetTitleOffset(1.2)
+         histo_summary.GetXaxis().SetTitle('|#eta|')
+         histo_summary.GetXaxis().SetLabelSize(0.03)
+         histo_summary.GetXaxis().SetTitleSize(0.03)
+         histo_summary.GetXaxis().SetTitleOffset(1.5)
 
-         histo_summary.GetYaxis().SetTitle('Energy')
-         histo_summary.GetYaxis().SetLabelSize(0.028)
-         histo_summary.GetYaxis().SetTitleSize(0.04)
-         histo_summary.GetYaxis().SetTitleOffset(1.2)
+         histo_summary.GetYaxis().SetTitle('Energy [GeV]')
+         histo_summary.GetYaxis().SetLabelSize(0.03)
+         histo_summary.GetYaxis().SetTitleSize(0.03)
+         histo_summary.GetYaxis().SetTitleOffset(2.)
    
          if printWithColour:
             if do_resoOverScale != 'True':
@@ -930,10 +968,15 @@ if __name__ == "__main__":
             else:
                if item == 'Resolution':
                   histo_summary.GetZaxis().SetTitle('Resolution')
+               elif item == 'NoiseRate':
+                  histo_summary.GetZaxis().SetTitle('Noise Rate')
                else:
                   histo_summary.GetZaxis().SetTitle(item)
-            histo_summary.GetZaxis().SetTitleSize(0.04)
-            histo_summary.GetZaxis().SetTitleOffset(1.2)
+            #histo_summary.GetZaxis().SetTitleSize(0.04)
+            #histo_summary.GetZaxis().SetTitleOffset(1.2)
+            histo_summary.GetZaxis().SetLabelSize(0.027)
+            histo_summary.GetZaxis().SetTitleSize(0.03)
+            histo_summary.GetZaxis().SetTitleOffset(1.5)
             if item == 'Resolution':
                histo_summary.GetZaxis().SetRangeUser(-0.0001,0.3)
             elif item == 'Efficiency':
@@ -975,7 +1018,8 @@ if __name__ == "__main__":
                                     quantity = getFloat(iSample.scale)
                                  elif item == 'RMS':
                                     quantity = getFloat(iSample.rms)
-                                 histo_summary.Fill(iEta, iEn, quantity)
+                                 if [iEn, iEta] in lowStatBins: quantity =  -1000
+                                 histo_summary.Fill(getRangeLabel(iEta), getRangeLabel(iEn), quantity)
                         else:
                             if iSample.pfRecHit==getFirstElement(selected_pair[iEn][iEta][0]):  
                               if iSample.seeding[0:len(iSample.pfRecHit)-1]==getSecondElement(selected_pair[iEn][iEta][0]):
@@ -994,7 +1038,8 @@ if __name__ == "__main__":
                                     quantity = getFloat(iSample.scale)
                                  elif item == 'RMS':
                                     quantity = getFloat(iSample.rms)
-                                 histo_summary.Fill(iEta, iEn, quantity)
+                                 if [iEn, iEta] in lowStatBins: quantity =  -1000
+                                 histo_summary.Fill(getRangeLabel(iEta), getRangeLabel(iEn), quantity)
                                  if printError or printChi2: #shifts the text so that error can be printed
                                     histo_summary.SetBarOffset(0.3)
                      else:
@@ -1018,13 +1063,14 @@ if __name__ == "__main__":
                            elif item == 'RMS':
                               quantity = getFloat(iSample.rms)
                            if quantity == 0: quantity = 0.0001
-                           histo_summary.Fill(iEta, iEn, quantity)
+                           if [iEn, iEta] in lowStatBins: quantity =  -1000
+                           histo_summary.Fill(getRangeLabel(iEta), getRangeLabel(iEn), quantity)
                            if printError or printChi2: #shifts the text so that error can be printed
                               histo_summary.SetBarOffset(0.3)
-               if printWithNumber == True:
-                  histo_summary.Draw('text' + 'colz')
-               else:
-                  histo_summary.Draw('colz')
+               #if printWithNumber == True:
+               #   histo_summary.Draw('text' + 'colz')
+               #else:
+               histo_summary.Draw('colz')
          else:
             histo_summary.Draw()
         
@@ -1053,37 +1099,59 @@ if __name__ == "__main__":
          # we draw the best score 
          # if printWithNumber is off, then the pair the thresholds is instead written
          score_label = []
+         error_label = []
+         dash_label = []
          for iEn in EnRanges:
             for iEta in EtaRanges:
                if iEta == '1p44_1p48': continue
-               x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 - (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-               x2 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2 + (getFloat(getUpperBin(iEta), 'p') - getFloat(getLowerBin(iEta), 'p'))*0.25
-               if (printError or printChi2) and (iEn == "1_5" or iEn == '5_10' or iEn == '10_15' or iEn == '15_20'):
-                  y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.75
-               else:
-                  y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 - (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-               y2 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2 + (getFloat(getUpperBin(iEn)) - getFloat(getLowerBin(iEn)))*0.25
-               score_print = TPaveText(x1, y1, x2, y2)
+               x1 = (getFloat(getUpperBin(iEta), 'p') + getFloat(getLowerBin(iEta), 'p'))/2.
+               y1 = (getFloat(getUpperBin(iEn)) + getFloat(getLowerBin(iEn)))/2.
+               if iEn == '1_5': y1 = 2.5
+               if iEta == '1p48_1p64': x1=1.54
+               offset = 0.015 if printError else 0.
                if not printFromTable:
                   if [iEn, iEta] not in lowStatBins:
                      if len(selected_pair[iEn][iEta])!=0 and selected_pair[iEn][iEta][0]!=' - ':
                         for iPair in selected_pair[iEn][iEta]:
-                           score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
-                           score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
+                           score_print = TLatex(x1, y1+y1*offset, '({a}, {b})'.format(a=int(getFloat(getFirstElement(iPair))), b=int(getFloat(getSecondElement(iPair, 'all')))))
+                           #score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(iPair))), int(getFloat(getSecondElement(iPair, 'all')))))
                      else:
-                        score_print.AddText(' - ')
-                     score_print.SetFillColorAlpha(0, 0)
-                  else: #we don't print pair in low stat bins
-                     score_print.SetFillColor(1)
-                     score_print.SetFillStyle(3244)
+                        score_print = TLatex(x1, y1+y1*offset, ' - ')
+                     #score_print.SetFillColorAlpha(0, 0)
+                  #else: #we don't print pair in low stat bins
+                  #   score_print.SetFillColor(1)
+                  #   score_print.SetFillStyle(3244)
                      
                else:
                   if [iEn, iEta] not in lowStatBins:
                      if printPair:
-                        score_print.AddText('({a}, {b})'.format(a=int(getFloat(getFirstElement(table_pair[iEta]))), b=int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
-                        score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(table_pair[iEta]))), int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
-                        score_print.SetFillColorAlpha(0, 0)
-                     elif printError: #we print the error
+                        score_print = TLatex(x1, y1+y1*offset, '({a}, {b})'.format(a=int(getFloat(getFirstElement(table_pair[iEta]))), b=int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
+                        score_label.append(score_print)
+                        #score_print.GetListOfLines().Last().SetTextColor(getColor(int(getFloat(getFirstElement(table_pair[iEta]))), int(getFloat(getSecondElement(table_pair[iEta], 'all')))))
+                     elif printWithNumber:
+                        for iSample in samples_binned[iEn][iEta]:
+                                 if item == 'Resolution':
+                                    if do_resoOverScale != 'True':
+                                       quantity = getFloat(iSample.resolution)
+                                    else:
+                                      if getFloat(iSample.scale) != 0:
+                                         quantity = getFloat(iSample.resolution)/getFloat(iSample.scale)
+                                      else:
+                                         quantity = getFloat(iSample.resolution)
+                                 elif item == 'Efficiency':
+                                    quantity = getFloat(iSample.efficiency)
+                                 elif item == 'NoiseRate':
+                                    quantity = getFloat(iSample.noiseRate)
+                                 #elif item == 'NoiseOccupancy':
+                                 #   quantity = getFloat(iSample.noiseOccupancy)
+                                 elif item == 'RMS':
+                                    quantity = getFloat(iSample.rms)
+                                 
+                                 if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
+                                    score_print = TLatex(x1, y1+y1*offset, '{a}'.format(a=round(float(quantity), 2)))
+                                    score_label.append(score_print)
+
+                     if printError: #we print the error
                         for iSample in samples_binned[iEn][iEta]:
                                  if item == 'Resolution':
                                     if do_resoOverScale != 'True':
@@ -1103,44 +1171,66 @@ if __name__ == "__main__":
                                     quantity_error = getFloat(iSample.rms_error)
                                  
                                  if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
-                                    score_print.AddText('#pm {a}'.format(a=round(float(quantity_error), 3)))
-                                    score_print.SetFillColorAlpha(0, 0)
+                                    error_print = TLatex(x1, y1-y1*offset, '#pm{a}'.format(a=round(float(quantity_error), 2)))
+                                    error_label.append(error_print)
                      elif printChi2: #we print the chi2 (for the resolution)
                         for iSample in samples_binned[iEn][iEta]:
-                           if item == 'Resolution' or item == 'Scale':
+                           #if item == 'Resolution' or item == 'Scale':
                               if iSample.pfRecHit==getFirstElement(table_pair[iEta]) and iSample.seeding==getSecondElement(table_pair[iEta], 'all'):
-                                 score_print.AddText("{a}{b}".format(a='#chi^{2}', b=round(float(iSample.chi2), 2)))
-                                 score_print.SetFillColorAlpha(0, 0)
+                                 error_print = TLatex(x1, y1-y1*offset, "{a}{b}".format(a='#chi^{2}', b=round(float(iSample.chi2), 2)))
+                                 error_label.append(error_print)
                   else:
-                     score_print.SetFillColor(1)
-                     score_print.SetFillStyle(3244)
-               score_label.append(score_print)
+                     dash_print = TLatex(x1, y1, '#')
+                     dash_label.append(dash_print)
             
-         for label in score_label:
-            if printPair or printError or printChi2:
+         f_ET_5.Draw('same')
+
+         if printError or printChi2:
+            for label in error_label:
                label.Draw('same')
-            label.SetBorderSize(0)
-            label.SetTextSize(0.015)
-            label.SetTextFont(62)
-            label.SetTextAlign(11)
+               #label.SetBorderSize(0)
+               label.SetTextColor(1)
+               label.SetTextSize(0.015)
+               label.SetTextFont(62)
+               label.SetTextAlign(23)
+
+         if printWithNumber or printPair:
+           for label in score_label:
+              label.Draw('same')
+              #if '#' not in label.Print():
+              label.SetTextColor(1)
+              label.SetTextSize(0.02)
+              label.SetTextFont(62)
+              label.SetTextAlign(21 if printError else 22)
+           for label in dash_label:
+              label.Draw('same')
+              #if '#' not in label.Print():
+              label.SetTextSize(0.03)
+              label.SetTextFont(62)
+              label.SetTextAlign(22)
          
          # we plot transverse energy at given values
          f_ET_2 = TF1('f_ET_2', '2/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
          f_ET_2.SetLineWidth(4)
 
-         f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
-         f_ET_5.SetLineWidth(4)
-         f_ET_5.SetLineColor(kBlue)
+         #f_ET_5 = TF1('f_ET_5', '5/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
+         #f_ET_5.SetLineWidth(4)
+         #f_ET_5.SetLineColor(0) #kBlue
 
          f_ET_10 = TF1('f_ET_10', '10/sin(2*atan(exp(-x)))', getFloat(getInfBin(EtaRanges), 'p'), getFloat(getSupBin(EtaRanges), 'p')) 
          f_ET_10.SetLineWidth(4)
          f_ET_10.SetLineColor(kMagenta)
 
-         if doPlotCurves:
-           f_ET_2.Draw('same')
-           f_ET_5.Draw('same')
-           f_ET_10.Draw('same')
+         #if doPlotCurves:
+           #f_ET_2.Draw('same')
+           #f_ET_5.Draw('same')
+           #f_ET_10.Draw('same')
 
+         text_5 = TLatex(2.5, 32, 'E_{T} = 5 GeV')
+         text_5.SetTextSize(0.023)
+         text_5.SetTextColor(kRed) #0 #kBlue
+         text_5.SetTextAngle(48)
+         text_5.Draw()
 
          legend1 = TLegend(0.1, 0.85, 0.4, 0.9)
          legend1.AddEntry('f_ET_2', 'E_{T} = 2GeV', 'l')
@@ -1163,13 +1253,14 @@ if __name__ == "__main__":
          legend3.SetFillColorAlpha(0, 0);
          legend3.SetBorderSize(0);
 
-         if doPlotCurves:
-            legend1.Draw('same')
-            legend2.Draw('same')
-            legend3.Draw('same')
+         #if doPlotCurves:
+         #   legend1.Draw('same')
+         #   legend2.Draw('same')
+         #   legend3.Draw('same')
 
          # noise curves
-         inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023/graphs.root'
+         #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2023_withSafety/graphs.root'
+         inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_TL450/graphs.root'
          #inputFileName = 'noisePlotter/PFRecHitThresholds_EB_ringaveraged_EE_2021_TL{tl}/graphs.root'.format(tl=opt.label.split('thl')[1])
          graphEB = noisePlotter.getGraph(inputFileName, graphName='gr_EB_Object', doSmoothing=True)
          graphEE= noisePlotter.getGraph(inputFileName, graphName='gr_EE_Object', doSmoothing=True)
@@ -1213,27 +1304,38 @@ if __name__ == "__main__":
          legend4.SetFillColorAlpha(0,0);
          legend4.SetBorderSize(0);
 
-         if doPlotCurves:
-           legend4.Draw('same')
+         text_5.Draw()
 
+         #if doPlotCurves:
+         #  legend4.Draw('same')
+
+         CMS_lumi.CMS_lumi(c_summary, iPeriod, iPos)
 
          if item == 'Resolution': 
             if do_resoOverScale == 'True':
                c_summary.SaveAs('{a}/summaryPlot_resolution.png'.format(a=outputdir)) 
+               c_summary.SaveAs('{a}/summaryPlot_resolution.pdf'.format(a=outputdir)) 
             else:
                c_summary.SaveAs('{a}/summaryPlot_resolutionOnly.png'.format(a=outputdir)) 
+               c_summary.SaveAs('{a}/summaryPlot_resolutionOnly.pdf'.format(a=outputdir)) 
          elif item == 'Efficiency':
             c_summary.SaveAs('{a}/summaryPlot_efficiency.png'.format(a=outputdir))
+            c_summary.SaveAs('{a}/summaryPlot_efficiency.pdf'.format(a=outputdir))
          elif item == 'NoiseRate':
             c_summary.SaveAs('{a}/summaryPlot_noiseRate.png'.format(a=outputdir))
+            c_summary.SaveAs('{a}/summaryPlot_noiseRate.pdf'.format(a=outputdir))
          elif item == 'NoiseOccupancy':
             c_summary.SaveAs('{a}/summaryPlot_noiseOccupancy.png'.format(a=outputdir))
+            c_summary.SaveAs('{a}/summaryPlot_noiseOccupancy.pdf'.format(a=outputdir))
          elif item == 'Scale':
             c_summary.SaveAs('{a}/summaryPlot_scale.png'.format(a=outputdir))
+            c_summary.SaveAs('{a}/summaryPlot_scale.pdf'.format(a=outputdir))
          elif item == 'RMS':
             c_summary.SaveAs('{a}/summaryPlot_rms.png'.format(a=outputdir))
+            c_summary.SaveAs('{a}/summaryPlot_rms.pdf'.format(a=outputdir))
          else:
             c_summary.SaveAs('{a}/summaryPlot.png'.format(a=outputdir))
+            c_summary.SaveAs('{a}/summaryPlot.pdf'.format(a=outputdir))
 
    '''
    table_pair = {}
@@ -1279,7 +1381,7 @@ if __name__ == "__main__":
          else:
             histo_decision_reso.SetTitle('Resolution          ')
          
-         histo_decision_reso.GetXaxis().SetTitle('#eta')
+         histo_decision_reso.GetXaxis().SetTitle('|#eta|')
          histo_decision_reso.GetXaxis().SetLabelSize(0.052)
          histo_decision_reso.GetXaxis().SetTitleSize(0.04)
          histo_decision_reso.GetXaxis().SetTitleOffset(1.2)
@@ -1296,7 +1398,7 @@ if __name__ == "__main__":
          histo_decision_eff = TH2D('histo_decision_eff_{a}'.format(a=iEta), 'histo_decision_eff_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
          histo_decision_eff.SetTitle('Efficiency         ')
          
-         histo_decision_eff.GetXaxis().SetTitle('#eta')
+         histo_decision_eff.GetXaxis().SetTitle('|#eta|')
          histo_decision_eff.GetXaxis().SetLabelSize(0.052)
          histo_decision_eff.GetXaxis().SetTitleSize(0.04)
          histo_decision_eff.GetXaxis().SetTitleOffset(1.2)
@@ -1313,7 +1415,7 @@ if __name__ == "__main__":
          histo_decision_noise = TH2D('histo_decision_noise_{a}'.format(a=iEta), 'histo_decision_noise_{a}'.format(a=iEta), 1, getFloat(getLowerBin(iEta), 'p'), getFloat(getUpperBin(iEta), 'p'), nBins_energy, binsEnergy) 
          histo_decision_noise.SetTitle('NoiseRate         ')
          
-         histo_decision_noise.GetXaxis().SetTitle('#eta')
+         histo_decision_noise.GetXaxis().SetTitle('|#eta|')
          histo_decision_noise.GetXaxis().SetLabelSize(0.052)
          histo_decision_noise.GetXaxis().SetTitleSize(0.04)
          histo_decision_noise.GetXaxis().SetTitleOffset(1.2)
@@ -1344,11 +1446,11 @@ if __name__ == "__main__":
                   else:
                      if getFloat(iSample.scale) != 0:
                         resolution = getFloat(iSample.resolution)/getFloat(iSample.scale)
-                  histo_decision_reso.Fill(iEta, iEn, resolution)
+                  histo_decision_reso.Fill(getRangeLabel(iEta), getRangeLabel(iEn), resolution)
                   efficiency = getFloat(iSample.efficiency)
-                  histo_decision_eff.Fill(iEta, iEn, efficiency)
+                  histo_decision_eff.Fill(getRangeLabel(iEta), getRangeLabel(iEn), efficiency)
                   noiseRate = getFloat(iSample.noiseRate)
-                  histo_decision_noise.Fill(iEta, iEn, noiseRate)
+                  histo_decision_noise.Fill(getRangeLabel(iEta), getRangeLabel(iEn), noiseRate)
 
 
          pad1.cd()
@@ -1424,6 +1526,7 @@ if __name__ == "__main__":
          label1 = getFirstElement(table_pair[iEta])[0:1]
          label2 = getSecondElement(table_pair[iEta], 'all')[0:1]
          c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.png'.format(d=outputdir, a=iEta, b=label1, c=label2))
+         c_decision.SaveAs('{d}/decisionPlot_{a}_{b}_{c}.pdf'.format(d=outputdir, a=iEta, b=label1, c=label2))
 
 
    if do_chi2Plot == 'True':
@@ -1473,6 +1576,7 @@ if __name__ == "__main__":
       #histo_chi2.Draw('text' +'same')
 
       c_chi2.SaveAs('{dir}/chi2.png'.format(dir=outputdir))
+      c_chi2.SaveAs('{dir}/chi2.pdf'.format(dir=outputdir))
 
 
 
